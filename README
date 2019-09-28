@@ -1,0 +1,111 @@
+Building
+-------------------------
+Dependencies (listed by opam package name and version)
+
+- coq                       8.7.0
+- coq-bignums               8.7.0
+- coq-coquelicot            3.0.1
+- coq-flocq                 2.6.0
+- coq-interval              3.3.0
+- coq-mathcomp-ssreflect    1.6.4
+- coq-stdpp                 1.1.0
+
+We have not tested compilation under other configurations.
+
+Proof scripts should build by simply typing "make".
+
+
+HTML Outline of Files
+-------------------------
+The file readme.html contains an outline of the paper by section with
+links to important lemmas and definitions that are mentioned in the
+paper. The CoqDoc html that it links to should be distributed as part
+of the supplementary material distribution, but it may have been deleted
+if you issued a command line "make clean". To rebuild it, please run
+"make html".
+
+Plaintext Guide to Files
+-------------------------
+In case the readme.html does not work, we give a plain text
+overview of important files.
+
+All source files are in the subdirectory theories/, so all the
+paths we will quote are with respect to that.
+
+- basic/ -- Some miscellaneous files that do not really belong
+  anywhere else: extensions to the ssreflect bigop library, 
+  tactics for converting between ssreflect nats and standard library nats,
+  etc.
+
+- prob/ -- Basic library of results for discrete probability theory.
+
+  * prob.v -- Definition of distributions, random variables, and expectation.
+  
+  * finite.v -- Specialized lemmas for distributions on finite types.
+
+  * rearrange.v -- Proof that absolutely convergent infinite series can be rearranged.
+    This is a matter of pure real analysis, but it is needed for showing that
+    countable series over a finite type must be equal to just a finite sum.
+
+  * double.v -- Proof that "summable" double series can be arranged
+    without changing their value. This is again a matter of analysis,
+    but it is needed for some facts involving products of
+    distributions and alternate formulas for calculating expectation.
+
+  * stochastic_order.v -- Facts about distributional equality and
+    stochastic dominance.  Various rules showing you can convert a
+    stochastic recurrence phrased in terms of pr_eq into one involving
+    pr_gt (for instance).
+
+- rec/ -- Proofs of Karp's theorem and extensions, solutions to some
+  recurrences (abstractly stated as stochastic recurrences, not yet
+  tied to the code (that happens in the next section))
+
+  * karp.v -- Karp's theorem 
+
+  * span2.v -- Extension to binary span recurrences.
+
+  * work2.v -- Extension to binary work recurrences.
+  
+  * decreasing_rec.v -- Some results about eventual termination of stochastic recurrence.
+
+  * leader_rec, quicksort_rec, counter_rec, log_rec, quickselect_rec --  solutions to various
+    recurrences, again, not yet tied to the code that they are derived from (see next section)
+
+- monad/ -- Definitions of probabilistic choice monads, various examples from paper.
+  
+  * monad.v -- probabilisitic choice monad.
+  
+  * monad_cost.v -- sequential cost monad.
+ 
+  * monad_par.v -- parallel cost monad.
+
+  * monad_hoare.v -- Hoare-esque rules for reasoning about the monad.
+
+  * quicksort.v -- sequential quicksort implementation
+
+  * quicksort_correct.v -- proof it sorts
+
+  * quicksort_cost.v -- tail bound for number of comparisons for sequential quicksort.
+
+
+  * par_quicksort.v -- parallel quicksort implementation
+
+  * par_quicksort_correct.v -- proof it sorts
+
+  * par_quicksort_cost.v -- tail bound for span.
+
+
+  * bst.v -- construction of randomized BST
+
+  * bst_correct.v -- proof that output of random insertion is
+    equivalent to inserting some permutation
+
+  * bst_height.v -- tail bound for height
+
+
+  * leader.v -- randomized leader election
+
+  * leader_cost.v -- tail bound for number of rounds. 
+
+- idxval/ -- This directory is unrelated to the development discussed in the paper. It includes results about the monad of indexed valuations due to Varacca and Winskel.
