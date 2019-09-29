@@ -40,7 +40,7 @@ install: |
     export OPAMJOBS=2
     sudo apt-get update
     opam switch \${COMPILER_EDGE}; eval \$(opam env)
-    cat \${OPAM_SWITCH}/.opam-switch/switch-state
+    cat \${OPAM_SWITCH_PREFIX}/.opam-switch/switch-state
     opam config list
     opam repo list
     opam list
