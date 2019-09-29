@@ -1297,7 +1297,7 @@ Proof.
        * apply Rinv_pos; fourier.
      }
      assert (0 < m z).
-     { edestruct (mpos z); try fourier. congruence. }
+     { edestruct (mpos z); try fourier. }
      apply (Rmult_eq_compat_r (a z)) in Heq.
      rewrite /Rdiv Rmult_assoc Rinv_l in Heq; last apply Rgt_not_eq, a_pos; auto.
      rewrite Rmult_1_r Rmult_comm in Heq.

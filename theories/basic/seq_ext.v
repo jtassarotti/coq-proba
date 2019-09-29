@@ -242,8 +242,8 @@ Lemma allpairs_comp {A A' B B'} (f1: A → A') (f2: B → B') l1 l2:
   [seq (x1, x2) | x1 <- [seq f1 i | i <- l1], x2 <- [seq f2 i | i <- l2]].
 Proof.
   revert f1 f2 l2; induction l1 => //= f1 f2 l2.
-  rewrite ?IHl1.
-  rewrite -map_comp //=.
+  rewrite IHl1. rewrite -map_comp.
+  f_equal. rewrite map_comp //=.
 Qed.
 
 Lemma foldl_Rmin l:
@@ -439,16 +439,3 @@ Proof.
   - by left.
   - eapply IHNoDup. intros. eapply Hinj; try (by right). eauto.
 Qed.
-
-
-(*
-Require Import stdpp.base.
-Lemma NoDup_inj_in_map' {T1 T2: Type} (f: T1 → T2) (l: list T1) :
-  (∀ x y, x ∈ l → y ∈ l → f x = f y → x = y) →
-  NoDup l → NoDup (map f l).
-Proof.
-  intros Hinj. rewrite ?NoDup_ListNoDup => ?.
-  eapply NoDup_inj_in_map; eauto.
-  { intros. eapply Hinj; eauto; apply elem_of_list_In; eauto. }
-Qed.
-*)

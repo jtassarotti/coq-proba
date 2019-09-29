@@ -524,16 +524,16 @@ Lemma countable_series_rearrange_covering {Y X: countType}
   is_series (countable_sum (λ n, a (σ n))) (Series (countable_sum a)).
 Proof.
   set (a' := λ n, match n with | O => 0 | S n' => countable_sum a n' end).
-  set (σ' := λ n, match pickle_inv Y n with
+  set (σ' := λ n, match @pickle_inv Y n with
                   | Some x =>
                     S (pickle (σ x))
                   | None => O
                   end).
   intros His. edestruct (series_rearrange_covering a' σ') as (Habs&?).
   { intros n n'. rewrite /σ'/a'/countable_sum/oapp//=.
-    destruct (pickle_inv Y n) as [s|] eqn:Heqs.
+    destruct (@pickle_inv Y n) as [s|] eqn:Heqs.
     * rewrite pickleK_inv.
-      destruct (pickle_inv Y n') as [s'|] eqn:Heqs'.
+      destruct (@pickle_inv Y n') as [s'|] eqn:Heqs'.
       ** intros ? HeqS. inversion HeqS as [Heq]. apply pickle_inj in Heq.
          assert (s = s').
          { eapply INJ; eauto. }
@@ -544,7 +544,7 @@ Proof.
   { 
     intros n. rewrite /a'/countable_sum/σ'//=.
     destruct n as [|n]; first nra.
-    destruct (pickle_inv X n) as [s|] eqn:Heqs.
+    destruct (@pickle_inv X n) as [s|] eqn:Heqs.
     * rewrite //= => Hneq0.  edestruct (COV _ Hneq0) as (m&Heqm).
       exists (pickle m). rewrite pickleK_inv => //=. subst.
       f_equal.
@@ -562,7 +562,7 @@ Proof.
   split.
   * eapply is_series_ext; last eapply Habs.
     intros n. rewrite /a'/countable_sum/σ'//=.
-    destruct (pickle_inv Y n) as [s|] eqn:Heqs.
+    destruct (@pickle_inv Y n) as [s|] eqn:Heqs.
     ** rewrite pickleK_inv //=.
     ** rewrite //= Rabs_R0 //=.
   * assert (Series a' = Series (countable_sum a)) as Heq.
@@ -570,7 +570,7 @@ Proof.
     rewrite -Heq.
     eapply is_series_ext; last eassumption.
     intros n. rewrite /a'/countable_sum/σ'//=.
-    destruct (pickle_inv Y n) as [s|] eqn:Heqs.
+    destruct (@pickle_inv Y n) as [s|] eqn:Heqs.
     ** rewrite pickleK_inv //=.
     ** rewrite //=.
 Qed.
@@ -599,16 +599,16 @@ Lemma countable_series_oapp' {X: countType}
 Proof.
   intros His.
   set (a' := λ n, match n with | O => 0 | S n' => countable_sum a n' end).
-  set (σ' := λ n, match pickle_inv (option_countType X) n with
+  set (σ' := λ n, match @pickle_inv (option_countType X) n with
                   | Some (Some x) =>
                     S (pickle x)
                   | _ => O
                   end).
   edestruct (series_rearrange_covering a' σ') as (Habs&?).
   { intros n n'. rewrite /σ'/a'/countable_sum/oapp//=.
-    destruct (pickle_inv (option_countType X) n) as [[s|]|] eqn:Heqs.
+    destruct (@pickle_inv (option_countType X) n) as [[s|]|] eqn:Heqs.
     * rewrite pickleK_inv.
-      destruct (pickle_inv (option_countType X) n') as [[s'|]|] eqn:Heqs'.
+      destruct (@pickle_inv (option_countType X) n') as [[s'|]|] eqn:Heqs'.
       ** intros ? HeqS. inversion HeqS as [Heq]. apply pickle_inj in Heq.
          subst. eapply pickle_inv_some_inj; eauto; congruence.
       ** intros Hneq0 Hpickle. inversion Hpickle.
@@ -619,7 +619,7 @@ Proof.
   { 
     intros n. rewrite /a'/countable_sum/σ'//=.
     destruct n as [|n]; first nra.
-    destruct (pickle_inv X n) as [s|] eqn:Heqs => //=.
+    destruct (@pickle_inv X n) as [s|] eqn:Heqs => //=.
     * rewrite //= => Hneq0.
       exists (pickle (Some s)). rewrite pickleK_inv => //=. f_equal.
       eapply pickle_inv_some_inv; eauto.
@@ -635,7 +635,7 @@ Proof.
   split.
   * eapply is_series_ext; last eapply Habs.
     intros n. rewrite /a'/countable_sum/σ'//=.
-    destruct (pickle_inv (option_countType X) n) as [[s|]|] eqn:Heqs.
+    destruct (@pickle_inv (option_countType X) n) as [[s|]|] eqn:Heqs.
     ** rewrite pickleK_inv //=.
     ** rewrite //= Rabs_R0 //=.
     ** rewrite //= Rabs_R0 //=.
@@ -644,7 +644,7 @@ Proof.
     rewrite -Heq.
     eapply is_series_ext; last eassumption.
     intros n. rewrite /a'/countable_sum/σ'//=.
-    destruct (pickle_inv (option_countType X) n) as [[s|]|] eqn:Heqs.
+    destruct (@pickle_inv (option_countType X) n) as [[s|]|] eqn:Heqs.
     ** rewrite pickleK_inv //=.
     ** rewrite //=.
     ** rewrite //=.
@@ -710,7 +710,7 @@ Proof.
   }
   { edestruct (countable_series_oapp' a).
     { eapply is_series_ext; last eassumption.
-      rewrite /countable_sum => n. destruct (pickle_inv X n) => //=.
+      rewrite /countable_sum => n. destruct (@pickle_inv X n) => //=.
       rewrite Rabs_right; eauto.
     }
     eauto.
@@ -770,7 +770,7 @@ Proof.
   }
   { edestruct (countable_series_oapp' a).
     { eapply is_series_ext; last eassumption.
-      rewrite /countable_sum => n. destruct (pickle_inv X n) => //=.
+      rewrite /countable_sum => n. destruct (@pickle_inv X n) => //=.
     }
     eauto.
   }

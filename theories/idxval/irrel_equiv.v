@@ -259,7 +259,7 @@ Proof.
   rewrite /Pr/Ex_ival => Hin.
   eapply (Series_strict_pos_inv) in Hin as (n&?).
   {
-   destruct (pickle_inv (idx I) n) as [i|] eqn:Heq.
+   destruct (@pickle_inv (idx I) n) as [i|] eqn:Heq.
    - exists i. rewrite  //=/countable_sum//= Heq //= in H.
     destruct ClassicalEpsilon.excluded_middle_informative => //=; try nra.
     * rewrite //= in H. split; eauto. nra.

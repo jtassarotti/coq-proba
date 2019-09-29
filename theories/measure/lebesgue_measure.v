@@ -137,7 +137,7 @@ Section lebesgue_measure.
     unshelve (eapply sigma_proper; last eapply sigma_closed_unions).
     {
       intros n.
-      destruct (pickle_inv [countType of (nat * nat * nat)] n) as [((x&y)&N)|]; last exact ∅.
+      destruct (@pickle_inv [countType of (nat * nat * nat)] n) as [((x&y)&N)|]; last exact ∅.
       set (V := (λ z : Interval a b, a + (INR x / INR y) - (1/(INR N)) < z ∧
                                      z <= a + (INR x / INR y))).
       destruct (ClassicalEpsilon.excluded_middle_informative
@@ -173,7 +173,7 @@ Section lebesgue_measure.
         by apply Hsub.
     }
     intros i.
-    destruct (pickle_inv [countType of nat * nat * nat] i) as [((n&m)&K)|] eqn:Heq; rewrite Heq.
+    destruct (@pickle_inv [countType of nat * nat * nat] i) as [((n&m)&K)|] eqn:Heq; rewrite Heq.
     * set (V := λ z : Interval a b, a + INR n / INR m - 1 / INR K < z ∧ z <= a + INR n / INR m).
       destruct (Classical_Prop.classic (V ⊆ U)) as [Hsub|Hnsub].
       ** apply minimal_sigma_ub. do 2 eexists. rewrite /V.
@@ -384,7 +384,7 @@ Section lebesgue_measure.
     assert (Hpos_scale: ∀ n, 0 < eps/2 * (pow (1/2) n)).
     { intros n. cut (0 < (1 /2)^n); first by (intros; nra).
       apply pow_lt. nra. }
-    set (Us' := λ n : nat, match pickle_inv [countType of nat * nat] n with
+    set (Us' := λ n : nat, match @pickle_inv [countType of nat * nat] n with
                            | Some (n, i) =>
                              (sval (leb_outer_eps_close' (Us n) (eps/2 * (pow (1/2) n))
                                                          (Hpos_scale n)) i)
@@ -407,7 +407,7 @@ Section lebesgue_measure.
                        | (_, _) => (a, a)
                     end).
     set (aseq := λ mn, len (aseq0 mn)). 
-    set (σ := λ n, match pickle_inv [countType of nat * nat] n with
+    set (σ := λ n, match @pickle_inv [countType of nat * nat] n with
                    | Some (m, n) => (S m, S n)
                    | _ => (O, O)
                    end).
@@ -449,8 +449,8 @@ Section lebesgue_measure.
     }
     feed pose proof (series_double_covering' aseq σ) as His; auto.
     { intros n n'. rewrite /σ/aseq.
-      specialize (pickle_invK [countType of nat * nat] n).
-      specialize (pickle_invK [countType of nat * nat] n').
+      specialize (@pickle_invK [countType of nat * nat] n).
+      specialize (@pickle_invK [countType of nat * nat] n').
       destruct (pickle_inv) as [(?&?)|] => //=; destruct (pickle_inv) as [(?&?)|] => //=.
       intros <- ? ?. inversion 1. subst => //=.
       rewrite /len//= Rminus_eq_0 Rabs_R0 //=.

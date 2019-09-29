@@ -98,7 +98,7 @@ Section joint_pr.
   Definition σprod : nat → nat * nat.
   Proof.
     intros n.
-    destruct (pickle_inv [countType of (imgT (λ x, (X1 x, X2 x)))] n) as [ab|].
+    destruct (@pickle_inv [countType of (imgT (λ x, (X1 x, X2 x)))] n) as [ab|].
     - destruct ab as ((a,b)&Hpf).
       exact (S (@pickle [countType of imgT X1] (exist _ a (imgT_pr1 _ Hpf))),
              S (@pickle [countType of imgT X2] (exist _ b (imgT_pr2 _ Hpf)))).
@@ -108,8 +108,8 @@ Section joint_pr.
   Definition aprod := 
     λ mn, match mn with
           | (S m, S n) => 
-            match (pickle_inv [countType of (imgT X1)] m),
-                  (pickle_inv [countType of (imgT X2)] n) with
+            match (@pickle_inv [countType of (imgT X1)] m),
+                  (@pickle_inv [countType of (imgT X2)] n) with
             | Some a, Some b => 
               if P (sval a) && Q (sval b) then 
                 pr_eq X1 (sval a) * pr_eq X2 (sval b)
@@ -190,19 +190,19 @@ Qed.
 Lemma σprod_inj: ∀ n n', aprod (σprod n) <> 0 → σprod n = σprod n' → n = n'.
 Proof.
   intros n n'. rewrite /σprod/aprod.
-  case_eq (pickle_inv [countType of imgT (λ x, (X1 x, X2 x))] n); last by nra.
-  case_eq (pickle_inv [countType of imgT (λ x, (X1 x, X2 x))] n'); last first.
+  case_eq (@pickle_inv [countType of imgT (λ x, (X1 x, X2 x))] n); last by nra.
+  case_eq (@pickle_inv [countType of imgT (λ x, (X1 x, X2 x))] n'); last first.
   { intros Heq_none ((a&b)&Hpf) Heq_some => //=. }
   intros ((a'&b')&Hpf') Heq' ((a&b)&Hpf) Heq Hneq0 => //=. 
   inversion 1 as [[Hp1 Hp2]].
   assert (a = a').
   { 
-    apply (f_equal (pickle_inv [countType of imgT X1])) in Hp1. rewrite ?pickleK_inv in Hp1.
+    apply (f_equal (@pickle_inv [countType of imgT X1])) in Hp1. rewrite ?pickleK_inv in Hp1.
     inversion Hp1; done.
   }
   assert (b = b').
   { 
-    apply (f_equal (pickle_inv [countType of imgT X2])) in Hp2. rewrite ?pickleK_inv in Hp2.
+    apply (f_equal (@pickle_inv [countType of imgT X2])) in Hp2. rewrite ?pickleK_inv in Hp2.
     inversion Hp2; done.
   }
   subst.
@@ -218,10 +218,10 @@ Proof.
   intros (n1&n2).
   destruct n1, n2 => //=.
   rewrite /countable_sum.
-  case_eq (pickle_inv [countType of imgT X1] n1); last first.
+  case_eq (@pickle_inv [countType of imgT X1] n1); last first.
   { intros Heq. rewrite Heq => //=. }
   intros a Heq1. rewrite Heq1.
-  case_eq (pickle_inv [countType of imgT X2] n2); last first.
+  case_eq (@pickle_inv [countType of imgT X2] n2); last first.
   { intros Heq. rewrite Heq => //=. }
   intros b Heq2 => Hneq0.
   rewrite Heq2 in Hneq0.
@@ -302,11 +302,11 @@ Proof.
   {
     eapply Series_ext => n.
     rewrite /aprod.
-    eapply (Series_ext _ (λ n', (match pickle_inv [countType of imgT X1] n with
+    eapply (Series_ext _ (λ n', (match @pickle_inv [countType of imgT X1] n with
                                  | Some a => if P (sval a) then (pr_eq X1 (sval a)) else 0
                                  | _ => 0
                              end) *
-                            (match pickle_inv [countType of imgT X2] n' with
+                            (match @pickle_inv [countType of imgT X2] n' with
                                  | Some a => if Q (sval a) then (pr_eq X2 (sval a)) else 0
                                  | _ => 0
                              end))).
@@ -333,7 +333,7 @@ Section exp.
   Definition σprod_exp : nat → nat * nat.
   Proof.
     intros n.
-    destruct (pickle_inv [countType of (imgT (λ x, (X1 x, X2 x)))] n) as [ab|].
+    destruct (@pickle_inv [countType of (imgT (λ x, (X1 x, X2 x)))] n) as [ab|].
     - destruct ab as ((a,b)&Hpf).
       exact (S (@pickle [countType of imgT X1] (exist _ a (imgT_pr1 _ _ _ _ _ _ _ Hpf))),
              S (@pickle [countType of imgT X2] (exist _ b (imgT_pr2 _ _ _ _ _ _ _ Hpf)))).
@@ -343,8 +343,8 @@ Section exp.
   Definition aprod_exp := 
     λ mn, match mn with
           | (S m, S n) => 
-            match (pickle_inv [countType of (imgT X1)] m),
-                  (pickle_inv [countType of (imgT X2)] n) with
+            match (@pickle_inv [countType of (imgT X1)] m),
+                  (@pickle_inv [countType of (imgT X2)] n) with
             | Some a, Some b => 
                 (sval a * pr_eq X1 (sval a)) * (sval b * pr_eq X2 (sval b))
             | _, _ => 0
@@ -439,19 +439,19 @@ Qed.
 Lemma σprod_exp_inj: ∀ n n', aprod_exp (σprod_exp n) <> 0 → σprod_exp n = σprod_exp n' → n = n'.
 Proof.
   intros n n'. rewrite /σprod_exp/aprod_exp.
-  case_eq (pickle_inv [countType of imgT (λ x, (X1 x, X2 x))] n); last by nra.
-  case_eq (pickle_inv [countType of imgT (λ x, (X1 x, X2 x))] n'); last first.
+  case_eq (@pickle_inv [countType of imgT (λ x, (X1 x, X2 x))] n); last by nra.
+  case_eq (@pickle_inv [countType of imgT (λ x, (X1 x, X2 x))] n'); last first.
   { intros Heq_none ((a&b)&Hpf) Heq_some => //=. }
   intros ((a'&b')&Hpf') Heq' ((a&b)&Hpf) Heq Hneq0 => //=. 
   inversion 1 as [[Hp1 Hp2]].
   assert (a = a').
   { 
-    apply (f_equal (pickle_inv [countType of imgT X1])) in Hp1. rewrite ?pickleK_inv in Hp1.
+    apply (f_equal (@pickle_inv [countType of imgT X1])) in Hp1. rewrite ?pickleK_inv in Hp1.
     inversion Hp1; done.
   }
   assert (b = b').
   { 
-    apply (f_equal (pickle_inv [countType of imgT X2])) in Hp2. rewrite ?pickleK_inv in Hp2.
+    apply (f_equal (@pickle_inv [countType of imgT X2])) in Hp2. rewrite ?pickleK_inv in Hp2.
     inversion Hp2; done.
   }
   subst.
@@ -467,10 +467,10 @@ Proof.
   intros (n1&n2).
   destruct n1, n2 => //=.
   rewrite /countable_sum.
-  case_eq (pickle_inv [countType of imgT X1] n1); last first.
+  case_eq (@pickle_inv [countType of imgT X1] n1); last first.
   { intros Heq. rewrite Heq => //=. }
   intros a Heq1. rewrite Heq1.
-  case_eq (pickle_inv [countType of imgT X2] n2); last first.
+  case_eq (@pickle_inv [countType of imgT X2] n2); last first.
   { intros Heq. rewrite Heq => //=. }
   intros b Heq2 => Hneq0.
   rewrite Heq2 in Hneq0.
@@ -590,11 +590,11 @@ Proof.
     etransitivity.
     {
     eapply Series_ext => n.
-    eapply (Series_ext _ (λ n', (match pickle_inv [countType of imgT X1] n with
+    eapply (Series_ext _ (λ n', (match @pickle_inv [countType of imgT X1] n with
                                  | Some a => pr_eq X1 (sval a) * (sval a)
                                  | _ => 0
                              end) *
-                            (match pickle_inv [countType of imgT X2] n' with
+                            (match @pickle_inv [countType of imgT X2] n' with
                                  | Some a => pr_eq X2 (sval a) * (sval a)
                                  | _ => 0
                              end))).

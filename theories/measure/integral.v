@@ -1458,7 +1458,7 @@ Section integral.
         * apply wpt_fun_measurable.
         * apply open_ray_borel_gt.
       }
-      feed pose proof (Hnball n) as Hball; first omega.
+      feed pose proof (Hnball n) as Hball; first lia.
       replace eps0 with (eps0/2 + eps0/2) by field.
       assert (Hepsa: wpt_integral (wpt_scal (eps/2) (wpt_indicator _ (sigma_full _ _))) <= eps0 / 2).
       { rewrite wpt_integral_scal wpt_integral_indicator. rewrite /eps/μ'.
@@ -1493,7 +1493,7 @@ Section integral.
       destruct (excluded_middle_informative) as [?|Hn0].
       * intros.
         feed pose proof (wpt_mono_le _ Hmono x O n).
-        { omega. }
+        { lia. }
         rewrite /M. specialize (wpt_fun_ub_spec (wpt_plus wpt (wpt_scal (-1) (wpt_n O))) x).
         rewrite ?wpt_plus_spec ?wpt_scal_spec => Hle'.
         apply Rmax_case_strong; nra.
@@ -1608,13 +1608,13 @@ Section integral.
   Proof.
     cut (∀ n, (n <= 2^n) ∧ (1 <= 2^n))%nat.
     { intros H n. destruct (H n); eauto. }
-    intros n. induction n => //=; first omega.
-    split; omega.
+    intros n. induction n => //=; first lia.
+    split; lia.
   Qed.
 
   Lemma pow_2_pos: ∀ n, (0 < 2^n)%nat.
   Proof.
-    induction n => //=; omega.
+    induction n => //=; lia.
   Qed.
   
   Lemma wpt_approx_measurable1 f:
@@ -1677,7 +1677,7 @@ Section integral.
         { eapply INR_diff_lt_1_eq; split; try nra.
           apply lt_INR in Hlt. nra.
         }
-        omega.
+        lia.
     }
     assert (Hpown: ∀ n, 2^ n  > 0).
     { clear. induction n => //=; nra. }
@@ -1703,7 +1703,7 @@ Section integral.
             apply Rle_div_l; auto. specialize (Hpown n). field_simplify; last nra.
             rewrite /Rdiv Rinv_1 ?Rmult_1_r.
             rewrite -S_INR. apply le_INR.
-            omega.
+            lia.
           }
           rewrite mult_INR in Haux.
           replace (INR (2^n)) with (2^n) in Haux; last first.
@@ -1785,7 +1785,7 @@ Section integral.
              rewrite /Rdiv Rinv_1 ?Rmult_1_r in Hineq.
              replace 2 with (INR 2) in Hineq by auto.
              rewrite -pow_INR -mult_INR in Hineq.
-             apply le_INR. apply INR_lt in Hineq. omega.
+             apply le_INR. apply INR_lt in Hineq. lia.
       ** destruct Hc2 as (k&Hr1&(Hr2a&Hr2b)&Heq).
          rewrite Heq. specialize (Hpown n).
          apply (Rmult_le_reg_r (2^n)); first nra.
@@ -1794,7 +1794,7 @@ Section integral.
          replace 2 with (INR 2) by auto.
          rewrite -pow_INR -mult_INR.
          apply le_INR. rewrite mult_comm.
-         transitivity (n * 2^ n)%nat; first omega.
+         transitivity (n * 2^ n)%nat; first lia.
          apply mult_le_compat_r. auto.
       ** destruct Hc2 as (k&Hr1&(Hr2a&Hr2b)&Heq).
          destruct Hc2' as (k'&Hr1'&(Hr2a'&Hr2b')&Heq').
@@ -1814,7 +1814,7 @@ Section integral.
          field_simplify; try nra.
          rewrite /Rdiv Rinv_1 ?Rmult_1_r.
          replace 2 with (INR 2) by auto. rewrite -mult_INR.
-         apply le_INR. omega.
+         apply le_INR. lia.
     * intros x. intros P (eps&HP).
       destruct (archimed_pos (f x)) as (n1&?&?); eauto.
       destruct (archimed_cor1 eps) as (n2&?&?); try (destruct eps; eauto; done).
@@ -1825,15 +1825,15 @@ Section integral.
         { by apply pos_INR'. } 
         apply le_INR.
         transitivity (2 ^ n2)%nat; first apply pow_2_increasing.
-        apply Nat.pow_le_mono_r; first omega.
-        rewrite /N. etransitivity; last eapply Nat.le_max_r; omega.
+        apply Nat.pow_le_mono_r; first lia.
+        rewrite /N. etransitivity; last eapply Nat.le_max_r; lia.
       }
       exists N.
       intros n Hle. apply HP.
       edestruct (Hfgn_val x n) as [(Hfalse&Heq)|Hcase].
       { exfalso. assert (Hbad: INR n < INR (S n1)) by nra.
         apply INR_lt in Hbad. specialize (Nat.le_max_l (S n1) (S n2)).
-        intros. rewrite /N in Hbad Hle. omega.
+        intros. rewrite /N in Hbad Hle. lia.
       }
       destruct Hcase as (k&Hr1&(Hr2a&Hr2b)&Heq).
       rewrite /ball//=/AbsRing_ball/abs//=/minus/plus/opp//=.
@@ -1846,7 +1846,7 @@ Section integral.
         apply lt_INR, pow_2_pos.
       - replace 2 with (INR 2) by auto.
         rewrite -pow_INR. apply le_INR.
-        apply Nat.pow_le_mono_r; first omega.
+        apply Nat.pow_le_mono_r; first lia.
         auto.
     * intros n x. edestruct (Hfgn_val x n) as [(Hpos1&?)|Hc2]; eauto.
       ** specialize (pos_INR n). nra.
@@ -3142,13 +3142,13 @@ Section integral.
       rewrite -(is_integral_unique _ _ His).
       eapply (is_lim_seq_incr_compare (λ n, Integral (λ x, Rmin (f x) (INR n)))); eauto.
       intros n'. apply Integral_mono; eauto.
-      intros x. apply Rle_min_compat_l, le_INR; omega.
+      intros x. apply Rle_min_compat_l, le_INR; lia.
     - intros (v&Hex). exists v.
       rewrite -(is_integral_unique _ _ Hex).
       edestruct (is_integral_mct_ex (λ n, (λ x, Rmin (f x) (INR n))) f f); eauto.
       { intros x => //=.
         apply is_lim_seq_Rmin_pos; eauto. }
-      { intros. apply Rle_min_compat_l, le_INR; omega. }
+      { intros. apply Rle_min_compat_l, le_INR; lia. }
       { rewrite //= => ??. apply Rmin_case_strong; intros; rewrite Rabs_right; try nra; eauto.
         apply Rle_ge, pos_INR. }
       eexists; eauto.

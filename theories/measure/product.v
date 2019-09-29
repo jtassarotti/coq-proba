@@ -876,7 +876,7 @@ Section fubini_tonelli_lr.
         intros => //=. apply Rmin_l. }
       transitivity (v' / INR (S k)); last first.
       { rewrite /Rdiv. apply Rmult_le_compat_r; auto. left.
-        apply Rinv_0_lt_compat. apply pos_INR'. omega. }
+        apply Rinv_0_lt_compat. apply pos_INR'. lia. }
       apply is_integral_bound_measure_above; auto.
       - intros. apply Rge_le, Integral_ge0. intros; apply Rmin_case_strong; eauto using pos_INR.
       - rewrite -(is_integral_unique _ _ _ His').
@@ -887,7 +887,7 @@ Section fubini_tonelli_lr.
         * apply almost_everywhere_meas_everywhere. intros x.
           apply ex_integral_Rmin; eauto.
           eapply fun_left_measurable; eauto.
-      - apply pos_INR'; omega.
+      - apply pos_INR'; lia.
     }
     eapply (is_lim_seq_le _ _ (Finite _) (Finite _)); last eapply is_lim_seq_const.
     { intros n. apply Hlen. }

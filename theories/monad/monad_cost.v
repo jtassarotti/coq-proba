@@ -29,13 +29,13 @@ Qed.
 Lemma cost_right_id {A: eqType} (m: cost A) :
   mbind mret m = m.
 Proof.
-  destruct m => //=. rewrite /cost_bind; f_equal => //=.
+  destruct m => //=. rewrite /cost_bind; f_equal => //=. nify; lia.
 Qed.
 
 Lemma cost_assoc {A B C: eqType} (m: cost A) (f: A → cost B) (g: B → cost C) :
   mbind g (mbind f m) = mbind (λ x, mbind g (f x)) m.
 Proof.
-  destruct m => //=. rewrite /cost_bind; f_equal => //=. nify; ring.
+  destruct m => //=. rewrite /cost_bind; f_equal => //=. nify; lia.
 Qed.
 
 Notation MBind := stdpp.base.MBind.
@@ -61,7 +61,7 @@ Proof.
   specialize (@ldist_left_id).
   rewrite /mbind/ldist_cost_bind/ldist_cost//= => ->.
   rewrite -[a in _ = a]ldist_right_id /mbind.
-  apply ldist_bind_ext => a. 
+  apply ldist_bind_ext => a.
   destruct a as (c, a) => //=.
 Qed.
 
@@ -77,7 +77,7 @@ Proof.
   destruct m as [l pf1 pf2] => //=; clear pf1 pf2.
   induction l => //=. destruct a as (r, x) => //=.
   destruct x as (c, a) => //=. 
-  rewrite ?Rmult_1_r; repeat f_equal => //.
+  rewrite ?Rmult_1_r; repeat f_equal => //; nify; lia.
 Qed.
 
 Lemma ldist_cost_assoc {A B C: eqType} (m: ldist_cost A) 

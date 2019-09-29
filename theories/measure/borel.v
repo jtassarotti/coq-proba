@@ -135,7 +135,7 @@ Section borel_R.
     unshelve (eapply sigma_proper; last eapply sigma_closed_unions).
     {
       intros n.
-      destruct (pickle_inv [countType of (bool * (nat * nat * nat))] n) as [(b&(x&y)&N)|];
+      destruct (@pickle_inv [countType of (bool * (nat * nat * nat))] n) as [(b&(x&y)&N)|];
         last exact ∅.
       set (V := (λ z, match b with
                         | true => (INR x / INR y) - (1/(INR N)) < z ∧
@@ -192,7 +192,7 @@ Section borel_R.
         by apply Hsub.
     }
     intros i.
-    destruct (pickle_inv [countType of bool * (nat * nat * nat)] i) as
+    destruct (@pickle_inv [countType of bool * (nat * nat * nat)] i) as
         [(b&(n&m)&K)|] eqn:Heq; rewrite Heq; last by apply sigma_empty_set.
     destruct b.
     * set (V := λ z, INR n / INR m - 1 / INR K < z ∧ z <= INR n / INR m).
@@ -287,7 +287,7 @@ Section borel_R.
     eapply measurable_generating_sets.
     intros ? (t&->). rewrite /fun_inv.
     cut (eq_prop (λ a, t < f1 a + f2 a)
-                 (unionF (λ n, match pickle_inv [countType of (bool * (nat * nat))] n with
+                 (unionF (λ n, match @pickle_inv [countType of (bool * (nat * nat))] n with
                                | None => empty_set
                                | Some (b, (n, m)) =>
                                  let r := if b then INR n / INR m else - (INR n / INR m) in

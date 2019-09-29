@@ -1,0 +1,10 @@
+opam-version: "1.2"
+name: "coq-proba"
+build: [make "-j%{jobs}%"]
+install: [make "install"]
+depends: [
+  "coq" { (>= "8.9.1" & <= "8.10~") }
+  "coq-coquelicot" { (= "3.0.2") }
+  "coq-interval" { (= "3.4.0") }
+  "coq-stdpp" { (= "1.2.0") | (= "dev") }
+]

@@ -78,7 +78,7 @@ Qed.
 Lemma cost_right_id {A: eqType} (m: cost A) :
   mbind mret m = m.
 Proof.
-  destruct m => //=. rewrite /cost_bind//=; repeat f_equal => //=.
+  destruct m => //=. rewrite /cost_bind//=; repeat f_equal => //=; nify; lia.
 Qed.
 
 Lemma cost_assoc {A B C: eqType} (m: cost A) (f: A → cost B) (g: B → cost C) :
@@ -192,7 +192,7 @@ Proof.
   destruct m as [l pf1 pf2] => //=; clear pf1 pf2.
   induction l => //=. destruct a as (r, x) => //=.
   destruct x as [w s a] => //=. 
-  rewrite ?Rmult_1_r; repeat f_equal => //.
+  rewrite ?Rmult_1_r; repeat f_equal => //; nify; lia.
 Qed.
 
 Lemma ldist_cost_assoc {A B C: eqType} (m: ldist_cost A) 

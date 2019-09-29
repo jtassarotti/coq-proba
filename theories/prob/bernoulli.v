@@ -4,7 +4,7 @@ From discprob.prob Require Import prob countable finite stochastic_order.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 From Coquelicot Require Import Rcomplements Rbar Series Lim_seq Hierarchy Markov.
 
-Lemma bool_pickle_inv: ∀ x, (x >= 2)%nat → pickle_inv ([countType of bool]) x = None.
+Lemma bool_pickle_inv: ∀ x, (x >= 2)%nat → @pickle_inv ([countType of bool]) x = None.
 Proof.
   intros x Hgt.
   destruct x; first omega.
@@ -21,18 +21,6 @@ Proof.
   - apply Series_correct'.
     rewrite SeriesC_fin_big //= /index_enum.
     rewrite {1}[@Finite.enum]unlock //= ?big_cons ?big_nil //=; field.
-    (*
-    apply SeriesF_is_seriesC. SearchAbout is_series. "big". series big. apply filterlim_ext with
-        (λ n, sum_n (countable_sum (λ _ : [countType of bool], 1 / 2)) (min 1 n)). 
-    * destruct x => //=.
-      induction x => //=.
-      rewrite [a in _ = a]sum_Sn => //=.
-      rewrite IHx => //=.
-      rewrite -[a in a = _ ]Rplus_0_r.
-      rewrite /plus/=.
-      f_equal.
-      rewrite /countable_sum bool_pickle_inv => //=; omega.
-     *)
     * eexists; eapply SeriesF_is_seriesC. 
 Defined.
 
@@ -188,7 +176,6 @@ Section is_bernoulli_facts.
   Lemma is_bernoulli_eq_dist Hpf:
     eq_dist X (bernoulli p Hpf).
   Proof. destruct Hbern; by apply (eq_dist_bernoulli X p Hpf). Qed.
-    
 End is_bernoulli_facts.
 
 Arguments is_bernoulli_eq_dist {_ _}.

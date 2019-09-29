@@ -77,7 +77,7 @@ Section double.
 Variable P: pred (A * B).
 
 Definition σprod := 
-  λ n, match pickle_inv [countType of prod_type] n with
+  λ n, match @pickle_inv [countType of prod_type] n with
        | Some (existT a b) => (S (pickle a), S (pickle b))
        | None => (O, O)
        end.
@@ -85,9 +85,9 @@ Definition σprod :=
 Definition aprod := 
   λ mn, match mn with
         | (S m, S n) => 
-          match (pickle_inv (idx I) m) with
+          match (@pickle_inv (idx I) m) with
           | Some a =>
-            match pickle_inv (idx (f (ind I a))) n with
+            match @pickle_inv (idx (f (ind I a))) n with
             |  Some b => 
                 prod_pmf (existT a b)
             | None => 0
@@ -101,20 +101,20 @@ Definition aprod :=
 Lemma σprod_inj: ∀ n n', aprod (σprod n) <> 0 → σprod n = σprod n' → n = n'.
 Proof.
   intros n n'. rewrite /σprod/aprod.
-  case_eq (pickle_inv [countType of prod_type] n); last by nra.
-  case_eq (pickle_inv [countType of prod_type] n'); last first.
+  case_eq (@pickle_inv [countType of prod_type] n); last by nra.
+  case_eq (@pickle_inv [countType of prod_type] n'); last first.
   { intros Heq_none (a&b) Heq_some => //=. }
   intros (a'&b') Heq' (a&b) Heq Hneq0 => //=. 
   inversion 1 as [[Hp1 Hp2]].
   assert (a = a').
   { 
-    apply (f_equal (pickle_inv (idx I))) in Hp1. rewrite ?pickleK_inv in Hp1.
+    apply (f_equal (@pickle_inv (idx I))) in Hp1. rewrite ?pickleK_inv in Hp1.
     inversion Hp1; done.
   }
   subst.
   assert (b = b').
   { 
-    apply (f_equal (pickle_inv (idx (f (ind I a'))))) in Hp2. rewrite ?pickleK_inv in Hp2.
+    apply (f_equal (@pickle_inv (idx (f (ind I a'))))) in Hp2. rewrite ?pickleK_inv in Hp2.
     inversion Hp2; done.
   }
   subst.
@@ -128,9 +128,9 @@ Proof.
   intros (n1&n2).
   destruct n1, n2 => //=.
   rewrite /countable_sum.
-  case_eq (pickle_inv (idx I) n1) => //=; [].
+  case_eq (@pickle_inv (idx I) n1) => //=; [].
   intros a Heq1.
-  case_eq (pickle_inv (idx (f (ind I a))) n2) => //=; [].
+  case_eq (@pickle_inv (idx (f (ind I a))) n2) => //=; [].
   intros b Heq2 => Hneq0.
   exists (@pickle [countType of prod_type] (existT a b)).
   rewrite /σprod pickleK_inv. repeat f_equal.
@@ -172,7 +172,7 @@ Proof.
         right.  rewrite Rabs_R0. rewrite big1 //=. }
       rewrite sum_nS /plus//=Rabs_R0 Rplus_0_l.
       rewrite /countable_sum//=.
-      destruct (pickle_inv (idx I) i) as [a|]; last first.
+      destruct (@pickle_inv (idx I) i) as [a|]; last first.
       { rewrite Rabs_R0. rewrite sum_n_const Rmult_0_r.
         rewrite /countable_sum//=.
         nra. }
@@ -475,7 +475,7 @@ Proof.
     ** rewrite //=. setoid_rewrite Rabs_R0.
        eapply ex_series_eventually0. exists O; eauto.
     ** eapply ex_series_incr_1.
-       rewrite /aprod. destruct (pickle_inv (idx I) j) as [s|]; last 
+       rewrite /aprod. destruct (@pickle_inv (idx I) j) as [s|]; last 
        (by setoid_rewrite Rabs_R0; eapply ex_series_eventually0; exists O; eauto).
        destruct (val_nonneg I s) as [Hgt|Heq0]; last first.
        { eapply (ex_series_ext (λ _, 0)).

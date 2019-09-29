@@ -17,7 +17,7 @@ From Coquelicot Require Import Rcomplements Rbar Series Lim_seq Hierarchy Markov
 Definition support {X} (v: X → R) := { x : X | is_true (Rgt_dec (v x) 0) }.
 
 Definition countable_sum {A: countType} (f: A → R) :=
-  λ n: nat, oapp f R0 (pickle_inv A n).
+  λ n: nat, oapp f R0 (@pickle_inv A n).
 
 Lemma countable_sum_ext {A: countType} (f f': A → R) n :
   (∀ n, f n = f' n) → countable_sum f n = countable_sum f' n.
@@ -62,17 +62,17 @@ Proof.
 Qed.
 
 Lemma pickle_inv_some_inv {A: countType} n a':
-  pickle_inv A n = Some a' →
+  @pickle_inv A n = Some a' →
   pickle a' = n.
 Proof.
   intros Heq.
-  assert (H: @oapp _ _ (@pickle A) n (pickle_inv A n) = n) by rewrite pickle_invK //.
+  assert (H: @oapp _ _ (@pickle A) n (@pickle_inv A n) = n) by rewrite pickle_invK //.
   rewrite Heq in H. done.
 Qed.
 
 Lemma pickle_inv_some_inj {A: countType} n n' a':
-  pickle_inv A n = Some a' →
-  pickle_inv A n = pickle_inv A n' →
+  @pickle_inv A n = Some a' →
+  @pickle_inv A n = @pickle_inv A n' →
   n = n'.
 Proof.
   intros. transitivity (pickle a').
@@ -84,7 +84,7 @@ Lemma pickle_inj {A: countType} (a a': A):
   pickle a = pickle a' → a = a'.
 Proof.
   intros Hpickle.
-  apply (f_equal (pickle_inv A)) in Hpickle.
+  apply (f_equal (@pickle_inv A)) in Hpickle.
   rewrite ?pickleK_inv in Hpickle.
   congruence.
 Qed.
@@ -164,21 +164,21 @@ Qed.
 Lemma is_seriesC_0 a: (∀ n, a n = 0) → is_series (countable_sum a) 0.
 Proof.
   intros Heq0. apply is_series_0 => n. rewrite /countable_sum/oapp.
-  destruct (pickle_inv A n); auto.
+  destruct (@pickle_inv A n); auto.
 Qed.
 
 Lemma is_seriesC_ext a b l:
   (∀ n, a n = b n) → is_series (countable_sum a) l → is_series (countable_sum b) l.
 Proof.
   intros Heq. apply is_series_ext.
-  intros n. rewrite /countable_sum. destruct (pickle_inv A n); eauto.
+  intros n. rewrite /countable_sum. destruct (@pickle_inv A n); eauto.
 Qed.
 
 Lemma ex_seriesC_ext a b:
   (∀ n, a n = b n) → ex_series (countable_sum a) → ex_series (countable_sum b).
 Proof.
   intros Heq. apply ex_series_ext.
-  intros n. rewrite /countable_sum. destruct (pickle_inv A n); eauto.
+  intros n. rewrite /countable_sum. destruct (@pickle_inv A n); eauto.
 Qed.
 
 Global Instance is_series_Proper:
@@ -439,7 +439,7 @@ Proof.
   intros n => //=.
   destruct (eq_nat_dec n (pickle x')) as [Heq|Hneq].
   - by rewrite /countable_sum Heq pickleK_inv //= eq_refl.
-  - rewrite /countable_sum//=. case_eq (pickle_inv A n).
+  - rewrite /countable_sum//=. case_eq (@pickle_inv A n).
     * intros s Heq => //=. case: ifP.
       ** move /eqP; intros; subst. exfalso.
          apply Hneq. symmetry; apply pickle_inv_some_inv; eauto.

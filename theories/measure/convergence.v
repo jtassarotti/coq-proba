@@ -59,7 +59,7 @@ Section convergence.
     - intros n; split.
       * apply Rge_le, measure_nonneg. 
       * apply measure_mono; eauto.
-        rewrite /Bn/An. intros x ?. exists O. replace (n + O)%nat with n by omega.
+        rewrite /Bn/An. intros x ?. exists O. replace (n + O)%nat with n by lia.
         eauto.
     - apply is_lim_seq_const.
     - auto.

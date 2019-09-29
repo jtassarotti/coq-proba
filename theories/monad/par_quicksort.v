@@ -85,7 +85,7 @@ Proof.
 Qed.
 
 Lemma work_mret {A B} (m: cost A) (f: A → B): work (x ← m; mret (f x)) = work m.  
-Proof. rewrite //=. Qed.
+Proof. rewrite //=. nify; omega. Qed.
 
 Lemma work_par2 {A B} (m: cost A) (m': cost B): work (par2 m m') = work m + work m'.
 Proof. rewrite //=. Qed.
@@ -107,7 +107,7 @@ Proof.
 Qed.
 
 Lemma span_mret {A B} (m: cost A) (f: A → B): span (x ← m; mret (f x)) = span m.  
-Proof. rewrite //=. Qed.
+Proof. rewrite //=; nify; omega. Qed.
 
 Lemma span_par2 {A B} (m: cost A) (m': cost B): span (par2 m m') = max (span m) (span m').
 Proof. rewrite //=. Qed.
@@ -128,7 +128,7 @@ Proof.
   rewrite /parfilter/parmap//= in IHl.
   rewrite addn0 in IHl. rewrite IHl.
   - rewrite addn0 Hcost; last by (rewrite in_cons eq_refl //). 
-    rewrite Max.max_l => //=.
+    rewrite Max.max_l => //=; first by (nify; omega).
     destruct l; nify; omega.
   - intros ? Hin. eapply Hcost. rewrite in_cons. apply /orP; auto.
 Qed.

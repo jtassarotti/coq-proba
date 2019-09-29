@@ -507,7 +507,7 @@ Section eq_dist_Ex.
               | S n' => countable_sum (λ r : imgT X1, pr_eq X1 (sval r) * f (sval r)) n'
               end.
   Definition σ := λ n,
-            match pickle_inv [countType of imgT X2] n with
+            match @pickle_inv [countType of imgT X2] n with
             | None => O
             | Some yb =>
               match Rgt_dec (pr_eq X1 (sval yb)) 0 with
@@ -520,9 +520,9 @@ Section eq_dist_Ex.
   Proof.
     intros n n'.
     rewrite /σ.
-    case_eq (pickle_inv [countType of imgT X2] n); rewrite //=.
+    case_eq (@pickle_inv [countType of imgT X2] n); rewrite //=.
     intros s Heqs.
-    case_eq (pickle_inv [countType of imgT X2] n'); rewrite //=.
+    case_eq (@pickle_inv [countType of imgT X2] n'); rewrite //=.
     - intros s' Heqs'. rewrite Heqs'.
       do 2 destruct (Rgt_dec) => //=.
       * intros ? Heq. inversion Heq as [Heq']. apply pickle_inj in Heq'.
@@ -539,7 +539,7 @@ Section eq_dist_Ex.
   Proof.
     intros n. rewrite /a'. destruct n => //=.
     rewrite /countable_sum.
-    case_eq (pickle_inv (img_countType X1) n).
+    case_eq (@pickle_inv (img_countType X1) n).
     - intros s Heq => //= Hneq0.
       rewrite EQDIST in Hneq0.
       assert (Hneq0': pr_eq X2 (sval s) <> 0).

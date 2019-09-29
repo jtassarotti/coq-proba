@@ -65,15 +65,15 @@ Lemma SeriesF_is_seriesC a:
 Proof.
   edestruct (ex_seriesF_Rabs); eauto.
   edestruct (series_rearrange_covering (finite_sum a) 
-                                       (λ n, match pickle_inv A n with
+                                       (λ n, match @pickle_inv A n with
                                              | Some a => seq.index a (Finite.enum A) 
                                              | None => length (Finite.enum A)
                                              end)) as (?&Hconv); eauto.
   - intros n n'. rewrite /finite_sum => //=.
-    case_eq (pickle_inv A n) => //=; last first.
+    case_eq (@pickle_inv A n) => //=; last first.
     { rewrite (proj2 (nth_error_None _ _)); last by omega. rewrite //=. }
     intros s Hpickle1.
-    case_eq (pickle_inv A n') => //=; last first.
+    case_eq (@pickle_inv A n') => //=; last first.
     { intros ? ? Heq. exfalso.
       cut (length (Finite.enum A) < length (Finite.enum A))%nat;
                          first by (intros; nify; omega). 
@@ -112,7 +112,7 @@ Proof.
     * rewrite //=. 
   - eapply is_series_ext; last apply Hconv.
     intros n. rewrite /finite_sum/countable_sum.
-    destruct (pickle_inv A n) as [s|] => //=.
+    destruct (@pickle_inv A n) as [s|] => //=.
     * rewrite (nth_error_nth1 s); last first.
       { rewrite -size_legacy.
         apply SSR_leq. rewrite seq.index_mem. by rewrite -enumT mem_enum.
@@ -174,18 +174,6 @@ Lemma img_fin_uniq (f: A → B) : uniq (img_fin_enum f).
 Proof.
   rewrite /img_fin_enum. apply undup_uniq.
 Qed.
-
-
-(*
-Lemma img_fin_mem f : ∀ x, x \in img f ↔ x \in img_fin_enum f.
-Proof.
-  split.
-  - rewrite /img. move /exCP => [a Heq]. move /eqP in Heq. rewrite -Heq.
-    rewrite /img_fin_enum mem_undup map_f // mem_enum //.
-  - rewrite /img_fin_enum mem_undup. move /mapP => [? ? ?]. subst. 
-    rewrite /img. apply /exCP; eauto.
-Qed.
-*)
 
 Lemma img_fin_mem f x : x \in img_fin_enum f.
 Proof.
