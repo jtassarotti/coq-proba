@@ -31,7 +31,7 @@ install: |
     set -ex  # -e = exit on failure; -x = trace for debug
     sudo chown -R coq:coq .
     export OPAMYES=true
-    echo $OPAMYES
+    export OPAMVERBOSE=3
     sudo apt-get update
     opam switch \${COMPILER_EDGE}; eval \$(opam env)
     opam config list
