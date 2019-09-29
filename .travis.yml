@@ -1,0 +1,63 @@
+dist: bionic
+language: minimal
+
+notifications:
+  email:
+    - joseph.tassarotti@bc.edu
+
+branches:
+  only:
+    - master
+    - /^ci\//
+
+cache:
+  directories:
+    - $HOME/.stack
+
+services:
+  - docker
+
+matrix:
+  include:
+    - env: COQ_VERSION="8.9.1"
+
+#before_install:
+
+install: |
+  docker run -d -i --init --name=COQ -v ${TRAVIS_BUILD_DIR}:/home/coq/build -w /home/coq/build "coqorg/coq:${COQ_VERSION}"
+  docker exec COQ /bin/bash --login -c "
+    # This bash script is double-quoted to interpolate Travis CI env vars:
+    echo \"Build triggered by ${TRAVIS_EVENT_TYPE}\"
+    export PS4='+ \e[33;1m(\$0 @ line \$LINENO) \$\e[0m '
+    set -ex  # -e = exit on failure; -x = trace for debug
+    sudo apt-get update
+    opam switch \${COMPILER_EDGE}; eval \$(opam env)
+    opam config list
+    opam repo list
+    opam list
+    echo \"git log: https://github.com/coq/coq/commits/\$(opam info -f source-hash coq)\"
+    yes | make build-dep
+    opam list
+    "
+before_script:
+  - |
+    docker exec COQ /bin/bash --login -c "
+      export PS4='+ \e[33;1m(\$0 @ line \$LINENO) \$\e[0m '
+      sudo chown -R coq:coq /home/coq/build
+      "
+
+script:
+  - echo -e "${ANSI_YELLOW}Building ${TRAVIS_REPO_SLUG}...${ANSI_RESET}" && echo -en 'travis_fold:start:build\\r'
+  - |
+    docker exec COQ /bin/bash --login -c "
+      export PS4='+ \e[33;1m(\$0 @ line \$LINENO) \$\e[0m '
+      export LC_ALL=C.UTF-8
+      set -ex
+      make -j2
+      "
+  - stack --allow-different-user test
+  - echo -en 'travis_fold:end:build\\r'
+
+after_script:
+  - docker stop COQ
+
