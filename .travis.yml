@@ -26,13 +26,14 @@ matrix:
 install: |
   docker run -d -i --init --name=COQ -v ${TRAVIS_BUILD_DIR}:/home/coq/build -w /home/coq/build "coqorg/coq:${COQ_VERSION}"
   ls $HOME/.opam
-  docker cp $HOME/.opam COQ:/home/coq/.opam
+  docker cp $HOME/.opam COQ:/home/coq/
   docker exec COQ /bin/bash --login -c "
     # This bash script is double-quoted to interpolate Travis CI env vars:
     echo \"Build triggered by ${TRAVIS_EVENT_TYPE}\"
     export PS4='+ \e[33;1m(\$0 @ line \$LINENO) \$\e[0m '
     set -ex  # -e = exit on failure; -x = trace for debug
     pwd
+    cat \${OPAM_SWITCH}/.opam-switch/switch-state
     ls /home/coq/.opam
     sudo chown -R coq:coq .
     export OPAMYES=true
@@ -62,7 +63,7 @@ script:
       export LC_ALL=C.UTF-8
       set -ex
       "
-  - docker cp COQ:/home/coq/.opam $HOME/.opam/
+  - docker cp COQ:/home/coq/.opam $HOME/
   - ls $HOME/.opam/
   - echo -en 'travis_fold:end:build\\r'
 
