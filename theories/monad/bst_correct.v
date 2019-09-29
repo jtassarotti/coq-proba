@@ -29,6 +29,6 @@ Proof.
    }
    intros t' (l'&Heq'&Hperm).
    exists (x :: l'); split; auto.
-   eapply perm_eq_trans; first apply (perm_to_rem Hin); eauto.
+   eapply perm_trans; first apply (perm_to_rem Hin); eauto.
    rewrite perm_cons. done.
 Qed.

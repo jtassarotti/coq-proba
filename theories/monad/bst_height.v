@@ -87,7 +87,7 @@ Proof.
     rewrite undup_id; last first.
     { apply uniq_unif2. }
     edestruct (quicksort_cost.perm_eq_bij a) as (f&Hfspec&Hfsize&Hinv&Hinj).
-    { rewrite perm_eq_sym. apply (perm_eqlE (perm_sort leq (a :: l))). }
+    { rewrite perm_sym. apply (permEl (perm_sort leq (a :: l))). }
     eapply sum_reidx_map_le with
         (h := (λ (H : {x : nat | (x <= size l)%nat}),
                let (x, i) := H in
@@ -108,22 +108,22 @@ Proof.
          rewrite !Rmax_INR. apply le_INR.
          apply Nat.max_le_compat; rewrite /fst/snd.
          *** apply /leP. rewrite Hfspec.
-             specialize (perm_eqlE (perm_sort leq l0)) => Hperm.
-             rewrite //= -(perm_eq_size (quicksort_cost.perm_filter _ _ Hperm)).
+             specialize (permEl (perm_sort leq l0)) => Hperm.
+             rewrite //= -(perm_size (quicksort_cost.perm_filter _ _ Hperm)).
              apply quicksort_cost.lower_split_size_sorted_nth; auto.
              **** apply sort_sorted => ??. apply leq_total.
-             **** rewrite (perm_eq_size (perm_eqlE (perm_sort leq l0))) /=.
+             **** rewrite (perm_size (permEl (perm_sort leq l0))) /=.
                   apply Hfsize. rewrite Heql0. done.
              **** rewrite Heql0 //=.
          *** apply /leP. rewrite Hfspec.
              assert (Hsize': (size l).+1 = size l0) by rewrite Heql0 //.
              rewrite Hsize'.
-             specialize (perm_eqlE (perm_sort leq l0)) => Hperm.
-             rewrite -(perm_eq_size (perm_eqlE (perm_sort leq l0))).
-             rewrite -(perm_eq_size (quicksort_cost.perm_filter _ _ Hperm)).
+             specialize (permEl (perm_sort leq l0)) => Hperm.
+             rewrite -(perm_size (permEl (perm_sort leq l0))).
+             rewrite -(perm_size (quicksort_cost.perm_filter _ _ Hperm)).
              apply quicksort_cost.upper_split_size_sorted_nth; auto.
              **** apply sort_sorted => ??. apply leq_total.
-             **** rewrite (perm_eq_size (perm_eqlE (perm_sort leq l0))) /=.
+             **** rewrite (perm_size (permEl (perm_sort leq l0))) /=.
                   apply Hfsize. rewrite Heql0. done.
              **** rewrite Heql0 //=.
       ** apply unif_all.
@@ -248,7 +248,7 @@ Proof.
                                             pr_eq _ v
                                           else
                                             0)).
-    rewrite (eq_big_perm _ (img_pair_rv _ _ _ _)).
+    rewrite (perm_big _ (img_pair_rv _ _ _ _)).
     rewrite allpairs_comp.
     rewrite img_rvar_comp map_comp (map_comp height).
     specialize (img_rvar_of_ldist (rand_tree_rec [::])) => ->.
@@ -289,7 +289,7 @@ Proof.
                                             pr_eq _ v
                                           else
                                             0)).
-    rewrite (eq_big_perm _ (img_pair_rv _ _ _ _)).
+    rewrite (perm_big _ (img_pair_rv _ _ _ _)).
     rewrite allpairs_comp.
     rewrite img_rvar_comp map_comp (map_comp height).
     specialize (img_rvar_of_ldist (rand_tree_rec [::])) => -> //=.
@@ -374,11 +374,11 @@ Proof.
   induction l as [| a l] => n; first by (rewrite //=).
   rewrite //=. case (ltngtP a n) => Hcmp //=.
   - by rewrite perm_cons.
-  - eapply (perm_eq_trans).
+  - eapply (perm_trans).
     { erewrite perm_cat2l. rewrite perm_catC cat_cons. erewrite perm_cons. done. }
     rewrite -cat_cons perm_catCA cat_cons perm_cons.
     rewrite -perm_catCA.
-    eapply (perm_eq_trans); last apply (IHl n).
+    eapply (perm_trans); last apply (IHl n).
     rewrite perm_cat2l perm_catC //.
   - rewrite -cat_cons perm_catCA // cat_cons perm_cons.
     rewrite perm_catCA //.
@@ -418,7 +418,7 @@ Proof.
     {  rewrite size_filter //=. rewrite -has_count has_pred1 Heql0 in_cons //=. }
     rewrite -plus_INR. apply le_INR. move /ltP in Hlt.
     rewrite -?size_legacy.
-    specialize (partition_perm_eq' l0 pv). move /perm_eq_size. rewrite ?size_cat.
+    specialize (partition_perm_eq' l0 pv). move /perm_size. rewrite ?size_cat.
     intros Hsize. nify. rewrite //= in Hsize. rewrite //=. omega.
   - rewrite /quicksort_rec.recurrence_span2.size //=.
     intros l ? Hgt. rewrite //=.
@@ -444,7 +444,7 @@ Proof.
     {  rewrite size_filter //=. rewrite -has_count has_pred1 Heql0 in_cons //=. }
       move /ltP in Hlt.
     rewrite -?size_legacy.
-    specialize (partition_perm_eq' l0 pv). move /perm_eq_size => <-.
+    specialize (partition_perm_eq' l0 pv). move /perm_size => <-.
     rewrite ?size_cat ?plus_INR.
     specialize (pos_INR (size [seq i <- l0 | (i < pv)%nat])).
     specialize (pos_INR (size [seq i <- l0 | (pv < i)%nat])).

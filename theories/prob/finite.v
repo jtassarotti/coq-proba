@@ -318,7 +318,7 @@ Lemma img_pair_rv {A A': finType} {B B': eqType} (Ω: distrib A) (Ω' : distrib 
                           x2 <- Finite.enum [finType of (imgT r')]].
 Proof.
   rewrite /img/rvar_pair//= ?unlock /=/prod_enum ?enumT.
-  apply uniq_perm_eq.
+  apply uniq_perm.
   - rewrite img_fin_enum_sval. apply undup_uniq.
   - apply allpairs_uniq; try (rewrite /img_fin_enum;  apply undup_uniq).
     intros x y ?? Heq => //=.

@@ -335,7 +335,7 @@ Proof.
                                    0)).
 
   rewrite /index_enum.
-  rewrite (eq_big_perm _ (img_pair_rv _ _ _ _)).
+  rewrite (perm_big _ (img_pair_rv _ _ _ _)).
   rewrite  big_Rplus_allpair'.
   rewrite -(big_map _ (λ x, true) (λ i, \big[Rplus/0]_(i' <- _)
                                          (if (g (max (span (fst (i, _)))

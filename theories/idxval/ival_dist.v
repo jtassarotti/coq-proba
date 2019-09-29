@@ -838,8 +838,8 @@ Proof.
   rewrite [a in _ = a]bigop_cond_non0.
   rewrite -big_filter.
   rewrite -[a in _ = a]big_filter.
-  eapply eq_big_perm.
-  apply uniq_perm_eq.
+  eapply perm_big.
+  apply uniq_perm.
   { apply filter_uniq. rewrite map_inj_in_uniq; last first.
     - intros ? ? => //=. intros. by apply sval_inj_pred.
     - rewrite  {1}[@Finite.enum]unlock //=. apply img_fin_uniq.

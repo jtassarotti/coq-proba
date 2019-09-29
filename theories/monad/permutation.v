@@ -201,18 +201,18 @@ Definition gen_perm (n: nat) := rand_perm_list (Finite.enum [finType of 'I_n]).
 
 Lemma perm_eq_nil (A: eqType) (l: list A): perm_eq l [::] → l = [::].
 Proof.
-  move /perm_eq_size. destruct l => //=.
+  move /perm_size. destruct l => //=.
 Qed.
 
 Lemma perm_eq_singleton (A: eqType) (l: list A) (a: A): perm_eq l [::a] → l = [::a].
 Proof.
   destruct l => //=.
-  - rewrite perm_eq_sym. move /perm_eq_nil => //.
+  - rewrite perm_sym. move /perm_eq_nil => //.
   - destruct l as [| b l] => //=.
-    * move /perm_eqP. intros Heq. specialize (Heq (pred1 a)).
+    * move /permP. intros Heq. specialize (Heq (pred1 a)).
       rewrite //= in Heq. f_equal.
       move: Heq. case: eqP; auto. rewrite eq_refl //=.
-    * move /perm_eq_size => //=.
+    * move /perm_size => //=.
 Qed.
 
 Lemma perm_eq_rem {A: eqType} (l1 l2: list A) x:
@@ -221,12 +221,12 @@ Proof.
   intros Heq.
   case_eq (x \in l1).
   - rewrite -(perm_cons x).
-    intros Hin. eapply perm_eq_trans.
-    * rewrite perm_eq_sym. apply perm_to_rem. done.
-    * eapply perm_eq_trans; first apply Heq. apply perm_to_rem.
-      rewrite -(perm_eq_mem Heq) //.
+    intros Hin. eapply perm_trans.
+    * rewrite perm_sym. apply perm_to_rem. done.
+    * eapply perm_trans; first apply Heq. apply perm_to_rem.
+      rewrite -(perm_mem Heq) //.
   - intros Hnin. rewrite ?rem_id //.
-    * rewrite -(perm_eq_mem Heq). apply /negP. rewrite Hnin. done.
+    * rewrite -(perm_mem Heq). apply /negP. rewrite Hnin. done.
     * apply /negP. rewrite Hnin. done.
 Qed.
 
@@ -239,9 +239,9 @@ Proof.
   revert l1 l2 lt Heq.
   induction k as [k IH] using (well_founded_induction lt_wf) => l1 l2 lt Heq Hperm.
   destruct l1 as [| a1 l1]; last destruct l1 as [| b1 l1].
-  - rewrite perm_eq_sym in Hperm; apply perm_eq_nil in Hperm; subst.
+  - rewrite perm_sym in Hperm; apply perm_eq_nil in Hperm; subst.
     done.
-  - rewrite perm_eq_sym in Hperm; apply perm_eq_singleton in Hperm; subst.
+  - rewrite perm_sym in Hperm; apply perm_eq_singleton in Hperm; subst.
     done.
   - destruct l2 as [| a2 l2]; last destruct l2 as [| b2 l2].
     { apply perm_eq_nil in Hperm; subst. congruence. }
@@ -252,7 +252,7 @@ Proof.
     destruct (quicksort_cost.perm_eq_bij a1 _ _ Hperm) as (h&Hhspec&Hhsize&Hinv&Hinj).
     assert (Hbound: ∀ x, (x <= size (b1 :: l1))%nat → (h x <= size (b2 :: l2))%nat).
     { rewrite //= => x Hle.
-      apply (perm_eq_size) in Hperm.
+      apply (perm_size) in Hperm.
       rewrite //= in Hperm.
       assert (h x < S (S (size l1)))%nat as Hsize'.
       { apply Hhsize. rewrite //=. }
@@ -266,7 +266,7 @@ Proof.
     eapply (sum_reidx_map _ _ _ _ h').
     * intros (n&Hle) Hin. f_equal.
       { rewrite ?unif_pr //; rewrite /h'; try apply unif_all.
-        apply perm_eq_size in Hperm.  rewrite //= in Hperm. inversion Hperm as [Hsize].
+        apply perm_size in Hperm.  rewrite //= in Hperm. inversion Hperm as [Hsize].
         rewrite /size -/size Hsize. done. }
       rewrite 2!ldist_left_id /h'/sval.
       symmetry.
@@ -285,7 +285,7 @@ Proof.
       destruct (h' a); apply unif_all.
     * intros (x&Hx) Hin _ Hfalse. exfalso. apply Hfalse.
       edestruct (Hinv x) as (x'&Hlt&?); eauto.
-      { apply perm_eq_size in Hperm. clear -Hx Hperm.
+      { apply perm_size in Hperm. clear -Hx Hperm.
         rewrite //= in Hx, Hperm. nify. rewrite //=. omega. }
       exists (exist _ x' Hlt); repeat split.
       ** rewrite mem_undup. apply unif_all.
@@ -381,8 +381,8 @@ Proof.
   intros Huniq Hperm.
   rewrite (rand_perm_list_initial l1 l2) //.
   rewrite rand_perm_list_id; last first.
-  { rewrite -(perm_eq_uniq Hperm). done. }
-  apply perm_eq_size in Hperm. rewrite Hperm. done.
+  { rewrite -(perm_uniq Hperm). done. }
+  apply perm_size in Hperm. rewrite Hperm. done.
 Qed.
 
 Lemma rand_perm_list_id' {A: eqType} (l1 l2: seq A):
@@ -414,7 +414,7 @@ Proof.
    }
    intros l' Hperm.
    apply mspec_mret.
-   eapply perm_eq_trans; first apply (perm_to_rem Hin); eauto.
+   eapply perm_trans; first apply (perm_to_rem Hin); eauto.
    rewrite perm_cons. done.
 Qed.
 
@@ -496,8 +496,8 @@ Proof.
   }
   assert (size l = size l1 + size l2 + (a0 \in l))%nat as Hsize_combine.
   {
-    apply perm_eq_size in Hperm1.
-    apply perm_eq_size in Hperm2.
+    apply perm_size in Hperm1.
+    apply perm_size in Hperm2.
     rewrite -Hperm1.
     rewrite -Hperm2.
     rewrite ?size_filter.
@@ -521,16 +521,16 @@ Proof.
   - subst.
     rewrite ?rand_perm_list_unfold ?ldist_left_id ?pr_mret_simpl //=.
     rewrite //= in Hperm1 Hperm2.
-    rewrite perm_eq_sym in Hperm1. apply perm_eq_nil in Hperm1.
-    rewrite perm_eq_sym in Hperm2. apply perm_eq_nil in Hperm2.
+    rewrite perm_sym in Hperm1. apply perm_eq_nil in Hperm1.
+    rewrite perm_sym in Hperm2. apply perm_eq_nil in Hperm2.
     subst. rewrite eq_refl //=. field.
   - rewrite ?rand_perm_list_unfold ?ldist_left_id ?pr_mret_simpl //=.
     rewrite //= in Hperm1 Hperm2.
     move: Hperm1 Hperm2.
     case: (P a1);
     case: (Q a1);
-    intros Hperm1; rewrite perm_eq_sym in Hperm1;
-    intros Hperm2; rewrite perm_eq_sym in Hperm2;
+    intros Hperm1; rewrite perm_sym in Hperm1;
+    intros Hperm2; rewrite perm_sym in Hperm2;
     try (apply perm_eq_nil in Hperm1);
     try (apply perm_eq_singleton in Hperm1);
     try (apply perm_eq_nil in Hperm2);
@@ -556,10 +556,10 @@ Proof.
       {
         cut (is_true (a2_ \in (filter Q [:: a1, a2 & l]))).
         { rewrite mem_filter. move /andP. intuition. }
-        rewrite (perm_eq_mem Hperm2) in_cons eq_refl //.
+        rewrite (perm_mem Hperm2) in_cons eq_refl //.
       }
       assert (Hpf: a2_ \in (a1 :: a2 :: l)).
-      { apply perm_eq_mem in Hperm2.
+      { apply perm_mem in Hperm2.
         specialize (Hperm2 a2_). rewrite mem_filter in Hperm2.
         symmetry in Hperm2. rewrite in_cons eq_refl //= in Hperm2.
         symmetry in Hperm2. move /andP in Hperm2. destruct Hperm2; auto.
@@ -620,7 +620,7 @@ Proof.
         **** rewrite filter_rem. replace (a2_ :: l2) with (rem a0 (a2_ :: l2)); first
              by apply perm_eq_rem.
              rewrite rem_id //. apply /negP.
-             rewrite -(perm_eq_mem Hperm2) mem_filter. move /andP. intros (?&?); auto.
+             rewrite -(perm_mem Hperm2) mem_filter. move /andP. intros (?&?); auto.
         **** subst. rewrite //=.
         **** rewrite filter_rem. replace [::] with (rem a2_ [::]) by auto.
              apply perm_eq_rem. done.
@@ -701,10 +701,10 @@ Proof.
       {
         cut (is_true (a1_ \in (filter P [:: a1, a2 & l]))).
         { rewrite mem_filter. move /andP. intuition. }
-        rewrite (perm_eq_mem Hperm1) in_cons eq_refl //.
+        rewrite (perm_mem Hperm1) in_cons eq_refl //.
       }
       assert (Hpf: a1_ \in (a1 :: a2 :: l)).
-      { apply perm_eq_mem in Hperm1.
+      { apply perm_mem in Hperm1.
         specialize (Hperm1 a1_). rewrite mem_filter in Hperm1.
         symmetry in Hperm1. rewrite in_cons eq_refl //= in Hperm1.
         symmetry in Hperm1. move /andP in Hperm1. destruct Hperm1; auto.
@@ -763,7 +763,7 @@ Proof.
         **** rewrite filter_rem. replace (a1_ :: l1) with (rem a0 (a1_ :: l1)); first
              by apply perm_eq_rem.
              rewrite rem_id //. apply /negP.
-             rewrite -(perm_eq_mem Hperm1) mem_filter. move /andP. intros (?&?); auto.
+             rewrite -(perm_mem Hperm1) mem_filter. move /andP. intros (?&?); auto.
         **** rewrite filter_rem. replace [::] with (rem a0 [::]) by auto.
              apply perm_eq_rem. done.
         **** subst. rewrite //=.
@@ -846,16 +846,16 @@ Proof.
       {
         cut (is_true (a1_ \in (filter P [:: a1, a2 & l]))).
         { rewrite mem_filter. move /andP. intuition. }
-        rewrite (perm_eq_mem Hperm1) in_cons eq_refl //.
+        rewrite (perm_mem Hperm1) in_cons eq_refl //.
       }
       assert (Q a2_) as HQa2.
       {
         cut (is_true (a2_ \in (filter Q [:: a1, a2 & l]))).
         { rewrite mem_filter. move /andP. intuition. }
-        rewrite (perm_eq_mem Hperm2) in_cons eq_refl //.
+        rewrite (perm_mem Hperm2) in_cons eq_refl //.
       }
       assert (Hpf1: a1_ \in (a1 :: a2 :: l)).
-      { apply perm_eq_mem in Hperm1.
+      { apply perm_mem in Hperm1.
         specialize (Hperm1 a1_). rewrite mem_filter in Hperm1.
         symmetry in Hperm1. rewrite in_cons eq_refl //= in Hperm1.
         symmetry in Hperm1. move /andP in Hperm1. destruct Hperm1; auto.
@@ -863,7 +863,7 @@ Proof.
       rewrite (@big_rem _ _ _ _ (undup _) (exist _ (a1_) Hpf1)); last first.
       { rewrite mem_undup. apply draw_next_all. auto. }
       assert (Hpf2: a2_ \in ((a1 :: a2 :: l))).
-      { apply perm_eq_mem in Hperm2.
+      { apply perm_mem in Hperm2.
         specialize (Hperm2 a2_). rewrite mem_filter in Hperm2.
         symmetry in Hperm2. rewrite in_cons eq_refl //= in Hperm2.
         symmetry in Hperm2. move /andP in Hperm2. destruct Hperm2; auto.
@@ -947,16 +947,16 @@ Proof.
         **** rewrite filter_rem. replace (a1_ :: l1) with (rem a0 (a1_ :: l1)); first
              by apply perm_eq_rem.
              rewrite rem_id //. apply /negP.
-             rewrite -(perm_eq_mem Hperm1) mem_filter. move /andP. intros (?&?); auto.
+             rewrite -(perm_mem Hperm1) mem_filter. move /andP. intros (?&?); auto.
         **** rewrite filter_rem. replace (a2_ :: l2) with (rem a0 (a2_ :: l2)); first
              by apply perm_eq_rem.
              rewrite rem_id //. apply /negP.
-             rewrite -(perm_eq_mem Hperm2) mem_filter. move /andP. intros (?&?); auto.
+             rewrite -(perm_mem Hperm2) mem_filter. move /andP. intros (?&?); auto.
         **** subst. rewrite //=.
         **** rewrite filter_rem. replace (a1_ :: l1) with (rem a2_ (a1_ :: l1)); first
              by apply perm_eq_rem.
              rewrite rem_id //. apply /negP.
-             rewrite -(perm_eq_mem Hperm1) mem_filter. move /andP. intros (?&?); auto.
+             rewrite -(perm_mem Hperm1) mem_filter. move /andP. intros (?&?); auto.
              move /negP in HnP2. auto.
         **** rewrite filter_rem. replace (l2) with (rem a2_ (a2_ :: l2)); first
              by apply perm_eq_rem.
@@ -968,7 +968,7 @@ Proof.
         **** rewrite filter_rem. replace (a2_ :: l2) with (rem a1_ (a2_ :: l2)); first
              by apply perm_eq_rem.
              rewrite rem_id //. apply /negP.
-             rewrite -(perm_eq_mem Hperm2) mem_filter. move /andP. intros (?&?); auto.
+             rewrite -(perm_mem Hperm2) mem_filter. move /andP. intros (?&?); auto.
              move /negP in HnQ1. auto.
       }
       intros (i&?) Hin. apply Rmult_eq_0_compat_l.
@@ -1043,7 +1043,7 @@ Proof.
         **** rewrite filter_rem. replace (a1_ :: l1) with (rem a2_ (a1_ :: l1)); first
              by apply perm_eq_rem.
              rewrite rem_id //. apply /negP.
-             rewrite -(perm_eq_mem Hperm1) mem_filter. move /andP. intros (?&?); auto.
+             rewrite -(perm_mem Hperm1) mem_filter. move /andP. intros (?&?); auto.
              move /negP in HnP2. auto.
         **** rewrite filter_rem. replace (l2) with (rem a2_ (a2_ :: l2)); first
              by apply perm_eq_rem.
@@ -1055,7 +1055,7 @@ Proof.
         **** rewrite filter_rem. replace (a2_ :: l2) with (rem a1_ (a2_ :: l2)); first
              by apply perm_eq_rem.
              rewrite rem_id //. apply /negP.
-             rewrite -(perm_eq_mem Hperm2) mem_filter. move /andP. intros (?&?); auto.
+             rewrite -(perm_mem Hperm2) mem_filter. move /andP. intros (?&?); auto.
              move /negP in HnQ1. auto.
       }
       intros (i&Hin') Hin. apply Rmult_eq_0_compat_l.
@@ -1105,8 +1105,8 @@ Proof.
   rewrite (pr_shuffle_then_split _ _ _ _ _ x) //=.
   * intros. rewrite pr_eq_bind_pair.
     rewrite ?pr_rand_perm_list //.
-    ** apply perm_eq_size in Hperm1. rewrite Hperm1 //.
-       apply perm_eq_size in Hperm2. rewrite Hperm2 //.
+    ** apply perm_size in Hperm1. rewrite Hperm1 //.
+       apply perm_size in Hperm2. rewrite Hperm2 //.
     ** by apply filter_uniq.
     ** by apply filter_uniq.
   * intros a; split.

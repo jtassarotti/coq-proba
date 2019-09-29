@@ -184,7 +184,7 @@ Proof.
     { apply uniq_unif2. }
     rewrite -unif_cost3 big_map.
     edestruct (quicksort_cost.perm_eq_bij O) as (f&Hfspec&Hfsize&Hinv&Hinj).
-    { rewrite perm_eq_sym. apply (perm_eqlE (perm_sort leq (a :: l))). }
+    { rewrite perm_sym. apply (permEl (perm_sort leq (a :: l))). }
     eapply sum_reidx_map_le with
         (h := (λ (H : {x : nat | (x <= size l)%nat}),
                let (x, i) := H in
@@ -221,23 +221,23 @@ Proof.
          apply Nat.max_le_compat.
          *** rewrite //= in Heq. rewrite -Heq.
              apply /leP. rewrite Hfspec.
-             specialize (perm_eqlE (perm_sort leq l0)) => Hperm.
-             rewrite -(perm_eq_size (quicksort_cost.perm_filter _ _ Hperm)).
+             specialize (permEl (perm_sort leq l0)) => Hperm.
+             rewrite -(perm_size (quicksort_cost.perm_filter _ _ Hperm)).
              apply quicksort_cost.lower_split_size_sorted_nth; auto.
              **** apply sort_sorted => ??. apply leq_total.
-             **** rewrite (perm_eq_size (perm_eqlE (perm_sort leq l0))) /=.
+             **** rewrite (perm_size (permEl (perm_sort leq l0))) /=.
                   apply Hfsize. rewrite Heql0. done.
              **** rewrite Heql0 //=.
          *** rewrite //= in Heq. rewrite -Heq.
              apply /leP. rewrite Hfspec.
              assert (Hsize': (size l).+1 = size l0) by rewrite Heql0 //.
              rewrite Hsize'.
-             specialize (perm_eqlE (perm_sort leq l0)) => Hperm.
-             rewrite -(perm_eq_size (perm_eqlE (perm_sort leq l0))).
-             rewrite -(perm_eq_size (quicksort_cost.perm_filter _ _ Hperm)).
+             specialize (permEl (perm_sort leq l0)) => Hperm.
+             rewrite -(perm_size (permEl (perm_sort leq l0))).
+             rewrite -(perm_size (quicksort_cost.perm_filter _ _ Hperm)).
              apply quicksort_cost.upper_split_size_sorted_nth; auto.
              **** apply sort_sorted => ??. apply leq_total.
-             **** rewrite (perm_eq_size (perm_eqlE (perm_sort leq l0))) /=.
+             **** rewrite (perm_size (permEl (perm_sort leq l0))) /=.
                   apply Hfsize. rewrite Heql0. done.
              **** rewrite Heql0 //=.
       ** rewrite -unif_cost3 //. apply /mapP. eexists; eauto.
@@ -311,7 +311,7 @@ Proof.
                                             pr_eq _ v
                                           else
                                             0)).
-    rewrite (eq_big_perm _ (img_pair_rv _ _ _ _)).
+    rewrite (perm_big _ (img_pair_rv _ _ _ _)).
     rewrite allpairs_comp.
     rewrite img_rvar_comp map_comp (map_comp span).
     specialize (img_rvar_of_ldist (qs [::])) => ->.
@@ -360,7 +360,7 @@ Proof.
                                             pr_eq _ v
                                           else
                                             0)).
-    rewrite (eq_big_perm _ (img_pair_rv _ _ _ _)).
+    rewrite (perm_big _ (img_pair_rv _ _ _ _)).
     rewrite allpairs_comp.
     rewrite img_rvar_comp map_comp (map_comp span).
     specialize (img_rvar_of_ldist (qs [::])) => -> //=.
@@ -528,7 +528,7 @@ Proof.
     move /andP in Hin'.
     destruct Hin' as (pf1&pf2); move /implyP in pf2.
     replace (length l0) with (size l0) by auto.
-    rewrite -(perm_eq_size pf1) //= ?size_cat -?plusE //.
+    rewrite -(perm_size pf1) //= ?size_cat -?plusE //.
     assert (Hlt: (lt O (size (middle spl)))) by
             ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=).
     rewrite -plus_INR. apply le_INR. rewrite //=.
@@ -567,7 +567,7 @@ Proof.
     move /andP in Hin'.
     destruct Hin' as (pf1&pf2); move /implyP in pf2.
     replace (length l0) with (size l0) by auto.
-    rewrite -(perm_eq_size pf1) //= ?size_cat -?plusE //.
+    rewrite -(perm_size pf1) //= ?size_cat -?plusE //.
     assert (Hlt: (lt O (size (middle spl)))) by
             ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=).
     rewrite ?plus_INR.

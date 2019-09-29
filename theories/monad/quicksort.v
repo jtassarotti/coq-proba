@@ -52,11 +52,11 @@ Proof.
   induction l => n; first by (rewrite //=).
   rewrite //=. case (ltngtP a n) => Hcmp //=.
   - by rewrite perm_cons.
-  - eapply (perm_eq_trans).
+  - eapply (perm_trans).
     { erewrite perm_cat2l. rewrite perm_catC cat_cons. erewrite perm_cons. done. }
     rewrite -cat_cons perm_catCA cat_cons perm_cons.
     rewrite -perm_catCA.
-    eapply (perm_eq_trans); last apply (IHl n).
+    eapply (perm_trans); last apply (IHl n).
     rewrite perm_cat2l perm_catC //.
   - rewrite -cat_cons perm_catCA // cat_cons perm_cons.
     rewrite perm_catCA //.
@@ -157,12 +157,12 @@ Definition qs : list nat → ldist_cost (list nat).
   end (Init.Logic.eq_refl))); rewrite /MR; auto.
   - abstract (destruct spl as (spl&pf) => //=; move /andP in pf;
     destruct pf as (pf1&pf2); move /implyP in pf2;
-    rewrite -(perm_eq_size pf1) //= ?size_cat -?plusE;
+    rewrite -(perm_size pf1) //= ?size_cat -?plusE;
     assert (0 < size (middle spl))%coq_nat by
     ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=); omega).
   - abstract (destruct spl as (spl&pf) => //=; move /andP in pf;
     destruct pf as (pf1&pf2); move /implyP in pf2;
-    rewrite -(perm_eq_size pf1) //= ?size_cat -?plusE;
+    rewrite -(perm_size pf1) //= ?size_cat -?plusE;
     assert (0 < size (middle spl))%coq_nat by
     ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=); omega).
 Defined.

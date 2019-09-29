@@ -11,9 +11,9 @@ Lemma perm_eq_cat {A: eqType} (l1a l1b l2a l2b: seq A) :
   perm_eq l1b l2b →
   perm_eq (l1a ++ l1b) (l2a ++ l2b).
 Proof.
-  move /perm_eqP => Hpa.
-  move /perm_eqP => Hpb.
-  apply /perm_eqP.
+  move /permP => Hpa.
+  move /permP => Hpb.
+  apply /permP.
   intros x. rewrite ?count_cat. rewrite (Hpa x) (Hpb x). done.
 Qed.
 
@@ -64,7 +64,7 @@ Proof.
         rewrite Heq.
         move /andP in Hin'.
         destruct Hin' as (pf1&pf2); move /implyP in pf2.
-        rewrite -(perm_eq_size pf1) //= ?size_cat -?plusE //;
+        rewrite -(perm_size pf1) //= ?size_cat -?plusE //;
           assert (Hlt: (lt O (size (middle spl)))) by
             ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=).
         rewrite //= in Hlt. omega.
@@ -72,7 +72,7 @@ Proof.
         rewrite Heq.
         move /andP in Hin'.
         destruct Hin' as (pf1&pf2); move /implyP in pf2.
-        rewrite -(perm_eq_size pf1) //= ?size_cat -?plusE //;
+        rewrite -(perm_size pf1) //= ?size_cat -?plusE //;
           assert (Hlt: (lt O (size (middle spl)))) by
             ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=).
         rewrite //= in Hlt. omega.
@@ -91,20 +91,20 @@ Proof.
       ** rewrite Hm => a' b'; rewrite mem_filter.
          move /andP => [Heqpv Hin1 Hin2]. move /eqP in Heqpv.
          move: Hin2.
-         rewrite -(perm_eq_mem Hluperm) Hu mem_filter.
+         rewrite -(perm_mem Hluperm) Hu mem_filter.
          move /andP => [Hgtpv ?]. move /ltP in Hgtpv.
          rewrite Heqpv. apply /leP. omega.
-      ** intros a' b'. rewrite -(perm_eq_mem Hllperm) Hl mem_filter.
+      ** intros a' b'. rewrite -(perm_mem Hllperm) Hl mem_filter.
          move /andP => [Hgtpv ?]. move /ltP in Hgtpv.
          rewrite mem_cat. move /orP => [].
          *** rewrite Hm; rewrite mem_filter.
              move /andP => [Heqpv ?]. move /eqP in Heqpv.
              rewrite Heqpv. apply /leP. omega.
-         *** rewrite -(perm_eq_mem Hluperm) Hu mem_filter.
+         *** rewrite -(perm_mem Hluperm) Hu mem_filter.
              move /andP => [Hltpv ?]. move /ltP in Hltpv.
              apply /leP. omega.
     * move /andP in Hin'. destruct Hin' as (Hperm&_).
-      rewrite perm_eq_sym in Hperm.
-      rewrite (perm_eq_trans Hperm) //.
+      rewrite perm_sym in Hperm.
+      rewrite (perm_trans Hperm) //.
       repeat apply perm_eq_cat; auto.
 Qed.
