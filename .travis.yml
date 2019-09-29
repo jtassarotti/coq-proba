@@ -59,7 +59,6 @@ script:
       export PS4='+ \e[33;1m(\$0 @ line \$LINENO) \$\e[0m '
       export LC_ALL=C.UTF-8
       set -ex
-      make -j2
       "
   - docker cp COQ:/home/coq/.opam $HOME/.opam/
   - echo -en 'travis_fold:end:build\\r'
