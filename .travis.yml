@@ -12,7 +12,6 @@ branches:
 
 cache:
   directories:
-    - $HOME/.stack
 
 services:
   - docker
@@ -20,7 +19,6 @@ services:
 matrix:
   include:
     - env: COQ_VERSION="8.9.1"
-    - env: COQ_VERSION="dev"
 
 #before_install:
 
@@ -32,6 +30,7 @@ install: |
     export PS4='+ \e[33;1m(\$0 @ line \$LINENO) \$\e[0m '
     set -ex  # -e = exit on failure; -x = trace for debug
     sudo apt-get update
+    sudo mkdir build-dep
     opam switch \${COMPILER_EDGE}; eval \$(opam env)
     opam config list
     opam repo list
