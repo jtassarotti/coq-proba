@@ -30,6 +30,8 @@ install: |
     export PS4='+ \e[33;1m(\$0 @ line \$LINENO) \$\e[0m '
     set -ex  # -e = exit on failure; -x = trace for debug
     sudo chown -R coq:coq .
+    export OPAMYES=true
+    echo $OPAMYES
     sudo apt-get update
     opam switch \${COMPILER_EDGE}; eval \$(opam env)
     opam config list
