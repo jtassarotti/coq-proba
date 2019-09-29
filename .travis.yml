@@ -29,8 +29,8 @@ install: |
     echo \"Build triggered by ${TRAVIS_EVENT_TYPE}\"
     export PS4='+ \e[33;1m(\$0 @ line \$LINENO) \$\e[0m '
     set -ex  # -e = exit on failure; -x = trace for debug
+    sudo chown -R coq:coq .
     sudo apt-get update
-    sudo mkdir build-dep
     opam switch \${COMPILER_EDGE}; eval \$(opam env)
     opam config list
     opam repo list
