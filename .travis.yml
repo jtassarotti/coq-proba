@@ -25,6 +25,7 @@ matrix:
 
 install: |
   docker run -d -i --init --name=COQ -v ${TRAVIS_BUILD_DIR}:/home/coq/build -w /home/coq/build "coqorg/coq:${COQ_VERSION}"
+  ls $HOME/.opam
   docker cp $HOME/.opam COQ:/home/coq/.opam
   docker exec COQ /bin/bash --login -c "
     # This bash script is double-quoted to interpolate Travis CI env vars:
@@ -32,6 +33,7 @@ install: |
     export PS4='+ \e[33;1m(\$0 @ line \$LINENO) \$\e[0m '
     set -ex  # -e = exit on failure; -x = trace for debug
     pwd
+    ls /home/coq/.opam
     sudo chown -R coq:coq .
     export OPAMYES=true
     export OPAMVERBOSE=3
@@ -61,6 +63,7 @@ script:
       set -ex
       "
   - docker cp COQ:/home/coq/.opam $HOME/.opam/
+  - ls $HOME/.opam/
   - echo -en 'travis_fold:end:build\\r'
 
 after_script:
