@@ -24,13 +24,13 @@ Section pushforward.
                 apply measure_additivity;
                   by [ intros; eapply Hmeas | apply fun_inv_disjointF; auto]).
   Defined.
-  
+
   Lemma wpt_hom_aux (wpt: weighted_partition F2):
     ∀ (r : R) (U : A1 → Prop),
       In (r, U) (map (λ rU : R * (A2 → Prop), (rU.1, fun_inv f rU.2)) wpt) → F1 U.
   Proof.
     intros r U Hin. apply in_map_iff in Hin as ((r'&U')&Heq&Hin).
-    inversion Heq; subst. eapply Hmeas. 
+    inversion Heq; subst. eapply Hmeas.
     by apply In_wpt_snd_measurable in Hin.
   Qed.
 
@@ -69,7 +69,7 @@ Section pushforward.
     (∀ x, wpt_fun wpt2 (f x) = wpt_fun wpt1 x) →
     wpt_integral μ wpt1 = wpt_integral pushforward wpt2.
   Proof.
-    revert wpt2 wpt1. 
+    revert wpt2 wpt1.
     eapply (@wpt_induction _ F2 (λ wpt2, ∀ wpt1, (∀ x, wpt_fun wpt2 (f x) = wpt_fun wpt1 x) →
                                 wpt_integral μ wpt1 = wpt_integral pushforward wpt2)).
     - intros wpt1 wpt1' Heq Hres1 wpt2 Heq2.
@@ -96,7 +96,7 @@ Section pushforward.
     - intros k wpt Hspec kwpt Heq.
       destruct (wpt_hom_spec wpt) as (wpt'&?).
       transitivity (wpt_integral μ (wpt_scal k wpt')).
-      { 
+      {
         apply wpt_integral_proper => z. rewrite -Heq. rewrite ?wpt_scal_spec; congruence.
       }
       rewrite ?wpt_integral_scal; f_equal; eauto.
@@ -126,8 +126,8 @@ Section pushforward.
       * intros x. eapply is_lim_seq_ext; last eapply Hlim'.
         intros n => //=. apply wpt_hom_fun_spec.
       * intros x n. rewrite -?wpt_hom_fun_spec; eauto.
-      * 
-      eapply (is_lim_seq_ext (λ n, wpt_integral pushforward (wpt n))). 
+      *
+      eapply (is_lim_seq_ext (λ n, wpt_integral pushforward (wpt n))).
       { intros n. symmetry. apply wpt_change_of_variables. intros x.
         rewrite /wpt_hom_fun. destruct constructive_indefinite_description; eauto.
       }
@@ -168,7 +168,7 @@ Section pushforward.
     }
     transitivity 0.
     * apply measurable_non_ex_pos_integral_0.
-      ** eapply measurable_comp; eauto. 
+      ** eapply measurable_comp; eauto.
       ** intros (v&Hex).  eapply Hnex. exists v. apply is_pos_integral_change_of_variables; eauto.
     * symmetry; apply measurable_non_ex_pos_integral_0; eauto.
   Qed.
@@ -182,7 +182,7 @@ Section pushforward.
     * eapply (Pos_integral_change_of_variables (λ x, Rmax (- g x) 0)); eauto; first measurable.
       intros; apply Rmax_case_strong; nra.
   Qed.
-    
+
 End pushforward.
 
 Definition measure_restrict {A: Type} (F F': sigma_algebra A) (μ: measure F') (Hle: le_sigma F F'):

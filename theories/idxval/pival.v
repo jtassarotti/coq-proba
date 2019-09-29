@@ -18,10 +18,10 @@ Arguments nonempty {_} _.
 Definition In_psupport {X: Type} (x: X) (Is : pival X) :=
   ∃ I i, Is I ∧ ind I i = x ∧ val I i > 0.
 Definition psupport {X : Type} (Is: pival X) :=
-  { x: X | In_psupport x Is }. 
+  { x: X | In_psupport x Is }.
 
 Notation ISet := (λ X, ival X → Prop).
-                      
+
 
 Definition pplus_aux {X} (Is1 Is2: ISet X) :=
   λ I', ∃ I1 I2, Is1 I1 ∧ Is2 I2 ∧ I' = (iplus I1 I2).
@@ -45,9 +45,9 @@ Definition pplus {X} (Is1 Is2: pival X) : pival X.
 Defined.
 
 Lemma pplus_in {X} I1 I2 (Is1 Is2: pival X):
-  In I1 Is1 → In I2 Is2 → In (iplus I1 I2) (pplus Is1 Is2). 
+  In I1 Is1 → In I2 Is2 → In (iplus I1 I2) (pplus Is1 Is2).
 Proof. apply pplus_aux_in. Qed.
-  
+
 Lemma pplus_in_inv {X} (Is1 Is2: pival X):
   ∀ I, In I (pplus Is1 Is2) → ∃ I1 I2, In I1 Is1 ∧ In I2 Is2 ∧ eq_ival I (iplus I1 I2).
 Proof. intros I; rewrite /In //= /pplus_aux. intros (?&?&?&?&->). do 2 eexists; eauto. Qed.
@@ -64,7 +64,7 @@ Defined.
 Lemma pscale_in {X} p I (Is: pival X):
   In I Is → In (iscale p I) (pscale p Is).
 Proof. intros Hin. exists I; split; auto; reflexivity. Qed.
-  
+
 Lemma pscale_in_inv {X} p (Is: pival X):
   ∀ I, In I (pscale p Is) → ∃ I', In I' Is ∧ eq_ival I (iscale p I').
 Proof. intros I; rewrite /pscale/pscale_aux//=. intros (?&?&->). eexists; eauto. Qed.
@@ -77,7 +77,7 @@ Defined.
 
 Lemma punion_in_inv {A} (I: ival A) (m1 m2: pival A):
   In I (punion m1 m2) → (In I m1 ∨ In I m2).
-Proof. rewrite //=. Qed. 
+Proof. rewrite //=. Qed.
 
 Lemma punion_in_l {A} (I: ival A) (m1 m2: pival A):
   In I m1 → In I (punion m1 m2).
@@ -106,7 +106,7 @@ Proof.
   edestruct (Hs23a I' Hin') as (I''&Heq''&Hin'').
   exists I''; split; auto; etransitivity; eauto.
 Qed.
-  
+
 Definition eq_pival {X} (Is1 Is2: pival X) :=
   le_pival Is1 Is2 ∧ le_pival Is2 Is1.
 
@@ -132,7 +132,7 @@ Qed.
 
 Definition zero_pival {X: Type} : pival X.
   refine {| choices := (λ I, I = (@zero_ival X)); nonempty := _ |}.
-  abstract (exists zero_ival; reflexivity). 
+  abstract (exists zero_ival; reflexivity).
 Defined.
 
 Section pival_props.
@@ -152,7 +152,7 @@ Proof.
   edestruct (Hs2 I2 Hin2) as (I2'&Heq2&?).
   exists (iplus I1' I2').
   split.
-  * setoid_rewrite <-Heq1. setoid_rewrite <-Heq2. done. 
+  * setoid_rewrite <-Heq1. setoid_rewrite <-Heq2. done.
   * apply pplus_in; auto.
 Qed.
 
@@ -177,7 +177,7 @@ Proof.
   - rewrite /In/zero_pival//=. intros I Heql; subst.
     destruct Is as (Is&(I'&Hin)).
     exists (iscale 0 I'); split; auto.
-    * by rewrite iscale_0_l. 
+    * by rewrite iscale_0_l.
     * eexists; split; eauto.
 Qed.
 
@@ -292,7 +292,7 @@ Proof.
     apply pplus_in; eauto.
 Qed.
 
-Lemma pplus_0 Is: eq_pival (pplus Is zero_pival) Is. 
+Lemma pplus_0 Is: eq_pival (pplus Is zero_pival) Is.
 Proof.
   split.
   - intros I (I1&I2&?&Hin2&Heq)%pplus_in_inv.
@@ -342,7 +342,7 @@ Proof.
 Qed.
 
 Lemma pscale_assoc p q Is:
-  eq_pival (pscale p (pscale q Is)) (pscale (p * q) Is). 
+  eq_pival (pscale p (pscale q Is)) (pscale (p * q) Is).
 Proof.
   split.
   - intros I (?&(I'&?&->)%pscale_in_inv&Heq)%pscale_in_inv; subst.
@@ -358,7 +358,7 @@ Lemma punion_comm Is1 Is2: eq_pival (punion Is1 Is2) (punion Is2 Is1).
 Proof.
   split; (intros I [|]; exists I; split; auto; [right|left]; done).
 Qed.
-    
+
 Lemma punion_assoc Is1 Is2 Is3: eq_pival (punion Is1 (punion Is2 Is3)) (punion (punion Is1 Is2) Is3).
 Proof.
   split.
@@ -386,13 +386,13 @@ Lemma punion_le_id Is1 Is2: le_pival Is1 Is2 → eq_pival (punion Is1 Is2) Is2.
 Proof.
   intros Hle.
   split.
-  - intros I. rewrite ?in_app_iff. intros [Hin|Hin]. 
+  - intros I. rewrite ?in_app_iff. intros [Hin|Hin].
     * eapply Hle; done.
     * exists I; split; eauto.
-  - setoid_rewrite punion_comm. apply punion_le. 
+  - setoid_rewrite punion_comm. apply punion_le.
 Qed.
 
-Lemma punion_idemp Is: eq_pival (punion Is Is) Is. 
+Lemma punion_idemp Is: eq_pival (punion Is Is) Is.
 Proof.
   apply punion_le_id; reflexivity.
 Qed.
@@ -410,7 +410,7 @@ Proof.
     * exists (iscale p I'); split => //.
       apply pscale_in; by right.
 Qed.
-      
+
 Lemma pplus_punion_distrib Is Is1 Is2:
   eq_pival (pplus Is (punion Is1 Is2)) (punion (pplus Is Is1) (pplus Is Is2)).
 Proof.
@@ -422,7 +422,7 @@ Proof.
   - intros I. rewrite ?in_app_iff.
     intros [(Hin&Hin1&?&?&?)%pplus_in_inv|(Hin&Hin2&?&?&?)%pplus_in_inv]; subst.
     * eexists; split; first by eassumption.
-      apply pplus_in; auto. left; done. 
+      apply pplus_in; auto. left; done.
     * eexists; split; first by eassumption.
       apply pplus_in; auto. right; done.
 Qed.
@@ -448,11 +448,11 @@ Qed.
 Lemma pset_left_id {A B: Type} (x: A) (f: A → list B):
   (mbind f (mret x)) = f x.
 Proof.
-  rewrite //=. rewrite app_nil_r. done. 
+  rewrite //=. rewrite app_nil_r. done.
 Qed.
 
 Fixpoint distrib_aux {I : eqType} {X} (l: Pred I) (f: I → Pred X) :=
-  λ y, ∃ x, 
+  λ y, ∃ x,
   match l with
   | [::] => [::]
   | [::i] =>
@@ -470,7 +470,7 @@ Lemma distrib_aux_unfold {I : eqType} {X} i i' (l: list I) (f: I → list X) :
     h' ← distrib_aux (i' :: l) f;
     mret (λ i', if i' == i then x else h' i').
 Proof. done. Qed.
-  
+
 Lemma distrib_aux_nonempty {I: eqType} {X} (l: list I) (f: I → list X):
   l <> [::] →
   (∀ i, f i <> [::]) → distrib_aux l f <> [::].
@@ -481,7 +481,7 @@ Proof.
   - rewrite distrib_aux_unfold.
     destruct (distrib_aux (i' :: l) f).
     { exfalso. apply IHl; eauto. }
-    specialize (Hnonempty i); destruct (f i); first done. 
+    specialize (Hnonempty i); destruct (f i); first done.
     rewrite //=.
 Qed.
 
@@ -492,7 +492,7 @@ Proof.
 Qed.
 *)
 
-   
+
 Lemma val_prod {X Y} (I1: ival X) (I2: ival Y) i1 i2:
   val I1 i1 * val I2 i2 >= 0.
 Proof.
@@ -508,11 +508,11 @@ Definition distrib_aux {X} (Ip : ival (pival X)) : (ival X) → Prop :=
                                                         * val (h (projT1 i)) (projT2 i);
                                             val_nonneg := λ i, val_prod _ _ (projT1 i) (projT2 i) |}).
 
-      
+
 Lemma distrib_aux_nonempty {X} (Ip: ival (pival X)) : (∃ I, In I (distrib_aux Ip)).
 Proof.
   assert (∃ h : idx Ip → ival X, (∀ i, val Ip i > 0 → In (h i) (ind Ip i))) as (h&Hspec).
-  { 
+  {
     unshelve (eexists).
     { intros i. set (Is := ind Ip i).
       generalize (nonempty Is) => H.
@@ -531,10 +531,10 @@ Proof.
                      val_nonneg := _ |}.
     * intros (?&?); apply val_prod.
   }
-  rewrite //=. rewrite /distrib_aux/In. exists h. 
+  rewrite //=. rewrite /distrib_aux/In. exists h.
   split; auto using eq_ival_quasi_refl.
 Qed.
-                                                     
+
 Definition distrib {X} (Ip : ival (pival X)) : pival X :=
   {| choices := distrib_aux Ip; nonempty := distrib_aux_nonempty Ip|}.
 
@@ -546,7 +546,7 @@ Proof.
   intros Hin.
   evar (h': I → ival X).
   Unshelve. all: swap 1 2.
-  { 
+  {
     intros i.
     destruct (Rgt_dec (val0 i) 0).
     -  exact (h i).
@@ -554,7 +554,7 @@ Proof.
       apply ClassicalEpsilon.constructive_indefinite_description in Hne as (I'&?).
       exact I'.
   }
-  exists h'. 
+  exists h'.
   split.
   -  intros. rewrite /h'. destruct Rgt_dec; auto. exfalso; auto.
   -  intros. rewrite /h'. destruct Rgt_dec; auto.
@@ -651,10 +651,10 @@ Proof.
       repeat split => //=.
       ** intros (?&?) => //=. nra.
       ** intros ((?&?)&?) => //=. nra.
-      ** intros (?&?) => //=. 
+      ** intros (?&?) => //=.
       ** intros ((?&?)&?) => //= ?.
          destruct u. done.
-      ** intros (?&?) => //=. 
+      ** intros (?&?) => //=.
       ** intros (?&?) => //=.  nra.
 Qed.
 
@@ -672,7 +672,7 @@ Proof.
   intros Ix h Hin Hin2.
   assert (∃ h' : idx Ix → ival Y, (∀ i, val Ix i > 0 → In (h' i) (f (ind Ix i))) ∧
                                   (∀ i, eq_ival (h i) (h' i))) as (h'&Hh'1&Hh'2).
-  { 
+  {
     eexists. Unshelve.
     all: swap 1 2.
     {
@@ -680,7 +680,7 @@ Proof.
     - specialize (Hin2 i r).
       apply ClassicalEpsilon.constructive_indefinite_description in Hin2
         as (I'&?&?). exact I'.
-    - exact (h i). 
+    - exact (h i).
     }
     split.
     - intros i Hgt.  destruct (Rgt_dec) => //=.
@@ -731,7 +731,7 @@ Proof.
                val Ix (projT1 i) * val (h (projT1 i)) (projT2 i) >= 0).
     { intros i.
       specialize (val_nonneg Ix (projT1 i)).
-      specialize (val_nonneg (h (projT1 i)) (projT2 i)). 
+      specialize (val_nonneg (h (projT1 i)) (projT2 i)).
       nra.
     }
     exists Hpf''.
@@ -746,7 +746,7 @@ Proof.
     { apply ival_bind_congr; first by reflexivity.
       intros ix. setoid_rewrite ival_left_id. reflexivity.
     }
-    
+
     transitivity (x ← idxOf Ix';
                   match h1 x with
                   | Some x => h x
@@ -766,7 +766,7 @@ Proof.
 
     setoid_rewrite <-ival_assoc.
     apply ival_bind_congr; last by (intros; reflexivity).
-                    
+
     eapply eq_ival_nondep_option_suffice.
     exists (λ x, match h2 (projT1 x) with
                  | Some x' => Some (existT x' tt)
@@ -787,16 +787,16 @@ Proof.
       rewrite Rmult_1_r //= => Hgt.
       specialize (Hh21 ix Hgt).
       destruct (h2 ix) as [ix'|] => //=.
-      rewrite Hh21 => //=. 
+      rewrite Hh21 => //=.
     * intros (ix&[]).
       rewrite Rmult_1_r //= => Hgt.
       specialize (Hh12 ix Hgt).
       destruct (h1 ix) as [ix'|] => //=.
-      rewrite Hh12 => //=. 
+      rewrite Hh12 => //=.
     * intros (ix&[]) => //=.
       rewrite Rmult_1_r //= => Hgt.
       specialize (Hh21 ix Hgt).
-      destruct (h2 ix) => //=. rewrite Hh21 //. 
+      destruct (h2 ix) => //=. rewrite Hh21 //.
     * intros (ix&[]) => //=.
       rewrite Rmult_1_r //= => Hgt.
       specialize (Hr ix Hgt).
@@ -874,11 +874,11 @@ Proof.
   repeat split; auto.
   { intros. eapply Hinh => //=. by rewrite Rmult_1_r. }
   rewrite Heq.
-  apply eq_ival_nondep_suffice. 
-  unshelve (eexists).  
+  apply eq_ival_nondep_suffice.
+  unshelve (eexists).
   {  simpl. intros (x&s). exists (existT x tt). exact s. }
-  unshelve (eexists).  
-  { simpl. intros ((x&[])&s). exact (existT x s). } 
+  unshelve (eexists).
+  { simpl. intros ((x&[])&s). exact (existT x s). }
     repeat split; auto.
     - intros (?&?) => //=. by rewrite Rmult_1_r.
     - intros ((?&[])&?) => //=. by rewrite Rmult_1_r.
@@ -912,16 +912,16 @@ Proof.
     exists (λ x, match x with
                  | existT tt y => y
                  end).
-    exists (λ x, existT tt x). 
+    exists (λ x, existT tt x).
     repeat split => //=.
     * intros ([]&?) => //=. nra.
     * intros; nra.
-    * intros ([]&?) => //=. 
-    * intros ([]&?) => //=. 
+    * intros ([]&?) => //=.
+    * intros ([]&?) => //=.
     * intros ([]&?) => //=.  nra.
   - intros I Hin. edestruct (pival_mbind_in (mret x) f (mret x) (λ x, I)) as (Ix&Hpf&?&?).
     * rewrite /mret/base.mret/ival_ret/pival_ret/In//=. f_equal; eapply classical_proof_irrelevance.
-    * rewrite //=. 
+    * rewrite //=.
     *  exists Ix. split; auto.
        etransitivity; last eauto.
        apply eq_ival_nondep_suffice.
@@ -946,7 +946,7 @@ Proof.
     unshelve (eexists).
     { intros (x&i). exact (Some x). }
     unshelve (eexists).
-    { 
+    {
       intros x. destruct (Rgt_dec (val Ix x) 0).
       * rewrite //=. apply Some. exists x.
         rewrite Hin2 //.
@@ -989,11 +989,11 @@ Proof.
     exists Ib. split; auto.
     etransitivity; last eauto.
     apply eq_ival_nondep_suffice.
-    exists (λ x, existT x tt). 
+    exists (λ x, existT x tt).
     exists (λ x, projT1 x).
     repeat split => //=.
-    * intros; nra. 
-    * intros (?&?); nra. 
+    * intros; nra.
+    * intros (?&?); nra.
     * intros (?&[]) ?. f_equal.
     * intros; nra.
 Qed.
@@ -1015,7 +1015,7 @@ Lemma idxOf_join_spec {A B C} {I: ival A} {h: idx I → ival B} {I': ival B} (h'
       (Heq: eq_ival (i ← idxOf I; h i) I'):
   eq_ival (i ← idxOf I; i' ← idxOf (h i); idxOf_join h' Heq i i') (i ← idxOf I'; h' i).
 Proof.
-  rewrite /idxOf_join. 
+  rewrite /idxOf_join.
   destruct ClassicalEpsilon.constructive_indefinite_description
    as (h1&h2&Hrange&Hh12&Hh21&Hind&Hval).
   transitivity ((oi' ← (i ← idxOf I; i' ← idxOf (h i); mret (h1 (existT i i')));
@@ -1045,18 +1045,18 @@ Proof.
   }
   apply ival_bind_congr; last by reflexivity.
   apply eq_ival_nondep_option_suffice.
-  eexists. 
+  eexists.
   Unshelve. all: swap 1 2.
-  { 
+  {
     intros (ii&ih&[]).
     simpl in *.
     destruct (h1 (existT ii ih)) as [i'|].
     * exact (Some (existT i' tt)).
     * exact None.
   }
-  eexists. 
+  eexists.
   Unshelve. all: swap 1 2.
-  { 
+  {
     intros (ii'&[]).
     simpl in *.
     destruct (h2 (ii')) as [(ii&ih)|].
@@ -1074,7 +1074,7 @@ Proof.
     specialize (Hh12 (existT ii ih) Hgt).
     destruct (h1 _).
     ** rewrite Hh12; done.
-    ** done. 
+    ** done.
   * intros (b&[]) => //=.
     rewrite Rmult_1_r => Hgt.
     specialize (Hh21 b Hgt).
@@ -1100,7 +1100,7 @@ Proof.
   - specialize (Hchoice r).  apply pival_mbind_in_inv in Hchoice.
     apply ClassicalEpsilon.constructive_indefinite_description in Hchoice as (Ib&Hrest).
     apply ClassicalEpsilon.constructive_indefinite_description in Hrest as (h&Hrest).
-    exists Ib. exact h. 
+    exists Ib. exact h.
   - exists zero_ival.
     intros [].
 Defined.
@@ -1166,7 +1166,7 @@ Proof.
         nra.
     }
     assert (HeqIc: eq_ival (i ← idxOf Im; hmfg' i) Ic).
-    { 
+    {
       etransitivity; last eauto.
       rewrite //=/ival_bind. apply eq_ival_quasi_refl.
     }
@@ -1213,15 +1213,15 @@ Proof.
       ** exfalso. rewrite //= in Hgt.
     }
     exists I'; split; auto.
-    assert (eq_ival (x ← idxOf Im; x' ← idxOf (hm x); hmf x x') I'). 
+    assert (eq_ival (x ← idxOf Im; x' ← idxOf (hm x); hmf x x') I').
     {
       etransitivity; last eauto.
       transitivity (x ← (x ← idxOf Im; x' ← idxOf (hm x); mret (existT x x'));
                     hmf (projT1 x) (projT2 x)).
-      { setoid_rewrite ival_assoc. 
+      { setoid_rewrite ival_assoc.
         apply ival_bind_congr; first reflexivity.
         intros im.
-        setoid_rewrite ival_assoc. 
+        setoid_rewrite ival_assoc.
         apply ival_bind_congr; first reflexivity.
         intros ?.
         setoid_rewrite ival_left_id => //=.
@@ -1231,7 +1231,7 @@ Proof.
       clear.
       apply eq_ival_nondep_suffice.
       exists (λ x, existT (projT1 x) (projT1 (projT2 x))).
-      exists (λ x, existT (projT1 x) (existT (projT2 x) tt)). 
+      exists (λ x, existT (projT1 x) (existT (projT2 x) tt)).
       repeat split => //=.
       - intros (?&?) => //=. nra.
       - intros (?&?) => //=. nra.
@@ -1246,22 +1246,22 @@ Proof.
     rewrite /idxOf_split1.
     destruct Rgt_dec as [|n]; last first.
     { destruct Hdom as [(im'&Hieq&Higt0)|(im'&Hieq&Higt0)];
-      exfalso; subst; rewrite //= in n. } 
+      exfalso; subst; rewrite //= in n. }
       destruct H as (?&?). rewrite //= in H.
     destruct ClassicalEpsilon.constructive_indefinite_description as (Imf'&?).
     destruct ClassicalEpsilon.constructive_indefinite_description as (h&?&?&?&Heq').
     etransitivity; first by (symmetry; eauto).
     apply eq_ival_quasi_refl.
 Qed.
-    
-    
+
+
 (* Could be cleaned up by proving a lemma about pival equiv in the case where there's no re-ordering *)
 Lemma pival_fmap_id {X} (x: pival X): eq_pival (fmap id x) x.
 Proof.
   rewrite /fmap/pival_fmap.
   split; rewrite /le_pival.
   - rewrite //=. destruct x as (Is&?&?) => //=.
-    clear -Is. 
+    clear -Is.
     inversion 1 as [? (Hin&Heq)].
     eexists; split; try apply Hin.
     rewrite Heq. apply ival_right_id.
@@ -1273,7 +1273,7 @@ Qed.
 
 Lemma pival_union_bind {A B} (m1 m2: pival A) (f: A → pival B) :
   eq_pival (x ← punion m1 m2; f x) (punion (x ← m1; f x) (x ← m2; f x)).
-Proof. 
+Proof.
   split; rewrite /le_pival.
   - intros I Hin.
     apply pival_mbind_in_inv in Hin as (Ix&h&Hpf&Hin&Hhspec&Heq).
@@ -1315,9 +1315,9 @@ Lemma pival_bind_congr_aux {A B} (m1 m2: pival A) (f1 f2: A → pival B) :
   (∀ a, In_psupport a m1 → le_pival (f1 a) (f2 a)) →
   (∀ I : ival B, In I (choices (x ← m1; f1 x : pival B)) →
                  ∃ I' : ival B, eq_ival I I' ∧ In I' (choices (x ← m2; f2 x : pival B))).
-Proof. 
+Proof.
   intros Heqm Heqf.
-  intros I Hin. 
+  intros I Hin.
   apply pival_mbind_in_inv in Hin as (Im1&h&Hin&Hinm1&Hhspec&Heq).
   edestruct (Heqm) as (Im2&HeqIm12&Hinm2); eauto.
   symmetry in HeqIm12.
@@ -1344,7 +1344,7 @@ Proof.
      eapply Hhspec.
      rewrite Hval; eauto.
   }
-  exists I'. split; eauto. 
+  exists I'. split; eauto.
   etransitivity; first by (symmetry; eauto).
   etransitivity; last eauto.
   transitivity (i ← idxOf Im1; h i); first by (apply eq_ival_quasi_refl).
@@ -1406,7 +1406,7 @@ Lemma pival_bind_congr_le_supp {A B} (m1 m2: pival A) (f1 f2: A → pival B) :
   le_pival m1 m2 →
   (∀ a, In_psupport a m1 → le_pival (f1 a) (f2 a)) →
   le_pival (x ← m1; f1 x) (x ← m2; f2 x).
-Proof. 
+Proof.
   intros Hlem Hlef.
   rewrite /le_pival.
   apply pival_bind_congr_aux; eauto.
@@ -1416,7 +1416,7 @@ Lemma pival_bind_congr_le {A B} (m1 m2: pival A) (f1 f2: A → pival B) :
   le_pival m1 m2 →
   (∀ a, le_pival (f1 a) (f2 a)) →
   le_pival (x ← m1; f1 x) (x ← m2; f2 x).
-Proof. 
+Proof.
   intros Hlem Hlef.
   rewrite /le_pival.
   apply pival_bind_congr_aux; eauto.
@@ -1426,8 +1426,8 @@ Lemma pival_bind_congr {A B} (m1 m2: pival A) (f1 f2: A → pival B) :
   eq_pival m1 m2 →
   (∀ a, eq_pival (f1 a) (f2 a)) →
   eq_pival (x ← m1; f1 x) (x ← m2; f2 x).
-Proof. 
-  intros Heqm Heqf; split. 
+Proof.
+  intros Heqm Heqf; split.
   - apply pival_bind_congr_le.
     * destruct Heqm; auto.
     * intros a. destruct (Heqf a); auto.
@@ -1438,15 +1438,15 @@ Qed.
 
 Global Instance pival_bind_mono X Y :
   Proper (pointwise_relation X (@le_pival Y) ==> @le_pival X ==> @le_pival Y) (pival_mbind X Y).
-Proof. intros ?? ? ?? ?. apply @pival_bind_congr_le; auto. Qed. 
+Proof. intros ?? ? ?? ?. apply @pival_bind_congr_le; auto. Qed.
 
 Global Instance pival_bind_proper X Y :
   Proper (pointwise_relation X (@eq_pival Y) ==> @eq_pival X ==> @eq_pival Y) (pival_mbind X Y).
-Proof. intros ?? ? ?? ?. apply @pival_bind_congr; auto. Qed. 
+Proof. intros ?? ? ?? ?. apply @pival_bind_congr; auto. Qed.
 
 Lemma pival_plus_bind {A B} (m1 m2: pival A) (f: A → pival B) :
   eq_pival (x ← pplus m1 m2; f x) (pplus (x ← m1; f x) (x ← m2; f x)).
-Proof. 
+Proof.
   split; rewrite /le_pival.
   - intros I Hin.
     apply pival_mbind_in_inv in Hin as (Ix&h&Hpf&Hin&Hhspec&Heq).
@@ -1517,7 +1517,7 @@ Qed.
 
 Lemma pival_zero_bind {A B} (f: A → pival B) :
   eq_pival (x ← zero_pival; f x) zero_pival.
-Proof. 
+Proof.
   split; rewrite /le_pival.
   - intros I Hin.
     apply pival_mbind_in_inv in Hin as (Ix&h&Hpf&Hin&Hhspec&Heq).
@@ -1530,7 +1530,7 @@ Proof.
     { intros ([]&?). }
     repeat split => //=.
     * intros (([]&?)&?).
-    * intros ([]&?). 
+    * intros ([]&?).
     * intros (([]&?)&?).
     * intros (([]&?)&?).
   - intros I Hin.
@@ -1548,14 +1548,14 @@ Proof.
     { intros ([]&?). }
     repeat split => //=.
     * intros (([]&?)&?).
-    * intros ([]&?). 
+    * intros ([]&?).
     * intros (([]&?)&?).
     * intros (([]&?)&?).
 Qed.
 
 Lemma pival_scale_bind {A B} r (m: pival A) (f: A → pival B) :
-  eq_pival (x ← pscale r m; f x) (pscale r (x ← m; f x)). 
-Proof. 
+  eq_pival (x ← pscale r m; f x) (pscale r (x ← m; f x)).
+Proof.
   destruct (Req_dec r 0) as [Heq0|Hneq0%Rabs_no_R0].
   { subst. setoid_rewrite pscale_0_l. apply pival_zero_bind. }
   specialize (Rabs_pos r) => Rpos.
@@ -1565,7 +1565,7 @@ Proof.
     destruct Hin as (I1&Hin&Heqscale). subst.
     edestruct (pival_mbind_in m f I1 h) as (I'&Hpf'&Heq'&Hin'); auto.
     { intros i Hgt0. eapply Hhspec. rewrite //=. nra. }
-    exists (iscale r I'); split; auto; last first. 
+    exists (iscale r I'); split; auto; last first.
     { apply pscale_in; auto. }
     etransitivity; first by (symmetry; eauto).
     setoid_rewrite <-Heq'.
@@ -1646,12 +1646,12 @@ Lemma pival_join_equiv {X A: Type} (INH: X) (Iss: X → pival A) (Is: pival A):
 Proof.
   intros Hequiv.
   split.
-  - intros I Hin.  
+  - intros I Hin.
     destruct Hin as (x&Hin).
     destruct (Hequiv x) as (Hle1&Hle2).
     destruct (Hle1 _ Hin) as (I'&?).
     exists I'; intuition.
-  - intros I Hin.  
+  - intros I Hin.
     destruct (Hequiv INH) as (Hle1&Hle2).
     destruct (Hle2 _ Hin) as (I'&?).
     exists I'; intuition. eexists; eauto.
@@ -1700,7 +1700,7 @@ Proof.
   edestruct (Hs23a I' Hin') as (I''&Heq''&Hin'').
   exists I''; split; auto; etransitivity; eauto.
 Qed.
-  
+
 Definition eq_pival_prob {X} (Is1 Is2: pival X) :=
   le_pival_prob Is1 Is2 ∧ le_pival_prob Is2 Is1.
 

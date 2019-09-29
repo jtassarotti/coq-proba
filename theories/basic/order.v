@@ -30,13 +30,13 @@ Proof. intros ???. auto with *. Qed.
 Instance le_Transitive: Transitive le.
 Proof. intros ???. auto with *. Qed.
 Instance ge_Reflexive: Reflexive ge.
-Proof. intros ?. auto with *. Qed. 
+Proof. intros ?. auto with *. Qed.
 Instance le_Reflexive: Reflexive le.
-Proof. intros ?. auto with *. Qed. 
+Proof. intros ?. auto with *. Qed.
 Instance gt_Transitive: Transitive gt.
-Proof. intros ???. auto with *. Qed. 
+Proof. intros ???. auto with *. Qed.
 Instance lt_Transitive: Transitive lt.
-Proof. intros ???. auto with *. Qed. 
+Proof. intros ???. auto with *. Qed.
 
 (* To be compatible with ssreflect in various ways it's nice to make R
    into an eqType *)
@@ -45,7 +45,7 @@ Definition R_eqP : Equality.axiom (fun x y: R => Req_EM_T x y).
 Proof. move => x y. apply sumboolP. Qed.
 
 Canonical R_eqMixin := EqMixin R_eqP.
-Canonical R_eqType := Eval hnf in EqType R R_eqMixin. 
+Canonical R_eqType := Eval hnf in EqType R R_eqMixin.
 
 Require Import Psatz.
 Instance Rlt_plus_proper: Proper (Rlt ==> Rlt ==> Rlt) Rplus.

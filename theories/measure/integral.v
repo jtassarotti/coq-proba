@@ -49,7 +49,7 @@ Section integral.
   Proof.
     induction l as [| U l] => //=.
     destruct 1 as [Hinhd|Hintl].
-    * exists U. intuition. 
+    * exists U. intuition.
     * edestruct IHl as (?&?&?); eauto.
   Qed.
 
@@ -59,7 +59,7 @@ Section integral.
     intros Hin HU.
     induction l as [| U' l] => //=.
     inversion Hin; subst.
-    * by left. 
+    * by left.
     * right. eauto.
   Qed.
 
@@ -74,7 +74,7 @@ Section integral.
       intros Hinter. rewrite //=. constructor.
       * intros a (Hin1&(U'&Hin&HU')%union_list_inv).
         apply in_app_or in Hin as [Hin1'|Hin2'].
-        ** eapply Hdisj1. split; eauto. eapply union_list_intro; eauto. 
+        ** eapply Hdisj1. split; eauto. eapply union_list_intro; eauto.
         ** eapply (Hinter U0 U'); eauto. by left.
       * eapply IHHNoDup1; eauto. intros. eapply Hinter; auto.
           by right.
@@ -112,7 +112,7 @@ Section integral.
                rewrite //= in H. eapply (disjoint_list_inv' a); first eapply HNoDup2; eauto;
                firstorder.
            *** eapply IHl2; eauto. inversion HNoDup2; eauto.
-        ** eapply IHHNoDup. 
+        ** eapply IHHNoDup.
         ** destruct P2 as [l2 ? HNoDup2 Hmeas2] => //=.
            intros U1 U2 Hin1 Hin2.
            apply in_map_iff in Hin1 as (?&Heq&Hin1).
@@ -120,7 +120,7 @@ Section integral.
 
            apply in_map_iff in Hin2 as ((U2a&U2b)&Heq2&Hin2).
            apply in_prod_iff in Hin2 as (?&?).
-           subst => //=. 
+           subst => //=.
            intros a (?&?). eapply (Hdisj a); split; eauto.
            *** firstorder.
            *** eapply union_list_intro; eauto. firstorder.
@@ -138,7 +138,7 @@ Section integral.
       apply in_map_iff.
       exists (U1, U2); split; auto.
       apply in_prod_iff; intuition.
-    - apply disjoint_list_prod. 
+    - apply disjoint_list_prod.
     - intros U ((U1&U2)&Heq&Hin)%in_map_iff; subst.
       apply in_prod_iff in Hin as (?&?).
       rewrite //=. apply sigma_closed_pair_intersect; eapply partition_measurable; eauto.
@@ -160,7 +160,7 @@ Section integral.
     }.
 
   Definition wpt_fun (wpt: weighted_partition) : A → R :=
-    λ x, 
+    λ x,
     \big[Rplus/0]_(aU <- wpt)
      (if excluded_middle_informative (aU.2 x) then
         (aU.1)
@@ -173,7 +173,7 @@ Section integral.
   Definition wpt_refinement (wpt: weighted_partition) (P : partition) :
     le_partition P (wpt_part wpt) → weighted_partition.
   Proof.
-    rewrite /le_partition => Hle. 
+    rewrite /le_partition => Hle.
     unshelve (refine {| wpt_part := P |}).
       * destruct P as [l ? ? ?]. rewrite //= in Hle. clear -Hle.
         induction l as [|U l].
@@ -247,7 +247,7 @@ Section integral.
     assert (Hdisj: ## (map snd l)).
     { rewrite Heq. apply partition_disjoint. }
     rewrite /wpt_fun //=.
-    clear p Heq. 
+    clear p Heq.
     induction l as [| rU' l].
     * inversion 1.
     * inversion 1 as [Hhd1|Htl1]; subst.
@@ -354,7 +354,7 @@ Section integral.
     intros Hnex. rewrite /set_fun_map.
     destruct excluded_middle_informative as [Hex|Hnex'] => //=.
   Qed.
-    
+
   Lemma set_fun_map_proper (U : A → Prop) f f':
     eq_fun f f' → set_fun_map f U = set_fun_map f' U.
   Proof.
@@ -372,7 +372,7 @@ Section integral.
     revert Hle. rewrite /le_partition//= => Hle.
     clear H1 H2 H3 => //=.
     induction l => x U Hin Hex.
-    * inversion Hin. 
+    * inversion Hin.
     * inversion Hin as [Hhd|tl]; last first.
       { eapply IHl => //=. eauto. }
       destruct constructive_indefinite_description as (?&?&Hsub).
@@ -393,7 +393,7 @@ Section integral.
     revert Hle. rewrite /le_partition//= => Hle.
     clear H1 H2 H3 => //=.
     induction l => x U Hin Hnex.
-    * inversion Hin. 
+    * inversion Hin.
     * inversion Hin as [Hhd|tl]; last first.
       { eapply IHl => //=. eauto. }
       destruct constructive_indefinite_description as (?&?&Hsub).
@@ -411,7 +411,7 @@ Section integral.
   Proof.
     rewrite /wpt_refinement//=.
     destruct P as [l H1 H2 H3].
-    rewrite //=. revert Hle. rewrite /le_partition//= => Hle. 
+    rewrite //=. revert Hle. rewrite /le_partition//= => Hle.
     clear H1 H2 H3.
     induction l as [| a l].
     * rewrite //=.
@@ -426,7 +426,7 @@ Section integral.
          { symmetry. eapply wpt_fun_eq2; eauto. apply Hsub1. done. }
          destruct constructive_indefinite_description as (?&?).
          eapply (wpt_fun_eq3 wpt P); eauto; eapply Hsub1; eauto.
-      ** eauto. 
+      ** eauto.
   Qed.
 
   Opaque set_fun_map.
@@ -501,7 +501,7 @@ Section integral.
       intros a. destruct excluded_middle_informative; split; auto.
       ** intros. contradiction; eauto.
       ** intros. contradiction; eauto.
-    * eapply sigma_proper; last eapply sigma_closed_complements, HU. 
+    * eapply sigma_proper; last eapply sigma_closed_complements, HU.
       intros a. destruct excluded_middle_informative; split; auto.
       ** intros. contradiction; eauto.
       ** intros. contradiction; eauto.
@@ -537,8 +537,8 @@ Section integral.
       { reflexivity. }
       apply measurable_plus; last first.
       { eapply IHl. intros. eapply Hmeas. right. eauto.  }
-      apply measurable_scal. 
-      apply measurable_indicator. 
+      apply measurable_scal.
+      apply measurable_indicator.
       eapply Hmeas. left; eauto.
   Qed.
 
@@ -568,7 +568,7 @@ Section integral.
     eapply fold_left_Rmin_lb.
     apply in_map_iff; eexists; split; eauto. done.
   Qed.
-  
+
   Lemma wpt_fun_ub_spec wpt:
     ∀ x, wpt_fun wpt x <= wpt_fun_ub wpt.
   Proof.
@@ -589,7 +589,7 @@ Section integral.
         apply in_map_iff in Hin' as (?&?&?); subst. destruct Ha; eauto.
       * intros Ha.
         destruct (partition_union (wpt_part wpt) a) as (U'&Hin'&HU') => //=.
-        rewrite -wpt_partition_spec1 in Hin'.  
+        rewrite -wpt_partition_spec1 in Hin'.
         apply in_map_iff in Hin' as (xU'&?&Hin'); subst.
         apply (union_list_intro _ _ (U ∩ snd xU')).
         ** apply in_map_iff. eexists; split; eauto.
@@ -617,7 +617,7 @@ Section integral.
     rewrite /wpt_integral.
     transitivity (\big[Rplus/0]_(aU <- wpt)
                    (\big[Rplus/0]_(aU' <- wpt_refinement _ _ Hle) (aU.1 * μ (aU.2 ∩ aU'.2)))).
-    { 
+    {
       apply eq_bigr_In => i _ Hin => //=.
       rewrite -big_distrr //=. f_equal.
       apply measure_intersect_wpt.
@@ -629,7 +629,7 @@ Section integral.
     { apply eq_bigr_In => i' -_ Hin'.
       destruct i as (r&U).
       destruct i' as (r'&U').
-      rewrite //=. 
+      rewrite //=.
       destruct (Classical_Prop.classic (∃ x, (U' ∩ U) x)) as [Hex|Hemp]; last first.
       { assert (U' ∩ U ≡ ∅) as Hnull.
         { split.
@@ -643,7 +643,7 @@ Section integral.
       eapply wpt_inhabited_fst_eq; eauto.
     }
     rewrite -big_distrr. f_equal.
-    symmetry. 
+    symmetry.
     rewrite (measure_intersect_wpt _ wpt); last
       eapply In_wpt_snd_measurable; eauto.
     apply eq_bigr. intros. rewrite [a in μ (a) = _]comm. done.
@@ -651,8 +651,8 @@ Section integral.
 
 
   Lemma wpt_integral_proper (wpt wpt': weighted_partition):
-    eq_fun (wpt_fun wpt) (wpt_fun wpt') → 
-    wpt_integral wpt = wpt_integral wpt'. 
+    eq_fun (wpt_fun wpt) (wpt_fun wpt') →
+    wpt_integral wpt = wpt_integral wpt'.
   Proof.
     intros Heq.
     edestruct (common_refinement (wpt_part wpt) (wpt_part wpt')) as (P&Hle&Hle').
@@ -725,7 +725,7 @@ Section integral.
   Lemma wpt_bin_op_spec f wpt1 wpt2:
     ∀ x, wpt_fun (wpt_bin_op f wpt1 wpt2) x = f (wpt_fun wpt1 x) (wpt_fun wpt2 x).
   Proof.
-    intros x. 
+    intros x.
     rewrite /wpt_bin_op. destruct (constructive_indefinite_description) as (P&Hle1&Hle2).
     destruct (partition_union P x) as (U&Hin&HU) => //=.
     eapply wpt_fun_eq2; eauto. rewrite /wpt_comp//=. apply in_map_iff.
@@ -737,7 +737,7 @@ Section integral.
     - edestruct (Hle2 U) as (U1&?&Hsub1); auto.
       eapply (wpt_fun_eq3' wpt2 U1); eauto.
   Qed.
-  
+
 
   Definition wpt_plus := wpt_bin_op Rplus.
 
@@ -777,7 +777,7 @@ Section integral.
 
   Definition wpt_indicator_scal_list l (Hmeas: ∀ r U, In (r: R, U) l → F U) : weighted_partition.
     induction l as [| (r, U) l].
-    - exact (wpt_indicator empty_set (sigma_empty_set F)). 
+    - exact (wpt_indicator empty_set (sigma_empty_set F)).
     - eapply wpt_plus.
       * refine (wpt_scal r (wpt_indicator U _)).
         abstract (eapply Hmeas; by left).
@@ -811,7 +811,7 @@ Section integral.
 
   Lemma wpt_integral_ge0 wpt:
     (∀ x, wpt_fun wpt x >= 0) →
-    wpt_integral wpt >= 0. 
+    wpt_integral wpt >= 0.
   Proof.
     intros Hge. rewrite /wpt_integral.
     apply Rle_ge, Rle_big0_In.
@@ -840,7 +840,7 @@ Section integral.
     rewrite (wpt_integral_refinement wpt2 _ Hle2).
     rewrite /wpt_integral//=. rewrite ?wpt_refinement_list.
     rewrite ?big_map -big_split //=.
-    apply eq_bigr_In. 
+    apply eq_bigr_In.
     intros i _ Hin. destruct (measure_nonneg μ i) as [Hgt0|Heq0].
     * edestruct measure_pos_inhabited as (a&Hina); eauto.
       rewrite ?(set_fun_map_spec1 _ _ a) //=; first nra.
@@ -866,7 +866,7 @@ Section integral.
   Qed.
 
   Lemma wpt_integral_indicator U Hmeas:
-    wpt_integral (wpt_indicator U Hmeas) = μ U. 
+    wpt_integral (wpt_indicator U Hmeas) = μ U.
   Proof.
     rewrite /wpt_integral/wpt_indicator. rewrite ?big_cons big_nil //=.
     field.
@@ -910,7 +910,7 @@ Section integral.
   Proof.
     induction l as [|(r, U) l].
     - rewrite //=.  intros. left. rewrite wpt_indicator_spec; split.
-      * auto. 
+      * auto.
       * destruct excluded_middle_informative as [[]|]; auto.
     - intros Hdisj x. destruct (Classical_Prop.classic (U x)).
       * assert (Hnin: (∀ (r0 : R) (U0 : A → Prop), In (r0, U0) l → ¬ U0 x)).
@@ -992,7 +992,7 @@ Section integral.
     apply Lim_seq_correct'; eauto.
     apply Rbar_le_antisym.
     { rewrite -Lim_seq_const. apply Lim_seq_le_loc. exists O => ??.
-      apply wpt_integral_mono; intros. 
+      apply wpt_integral_mono; intros.
       eapply is_lim_seq_incr_compare in Hlim; eauto.
     }
     apply is_finite_correct in Hfin as (y&Heq). rewrite Heq.
@@ -1011,7 +1011,7 @@ Section integral.
     rewrite /Rbar_le. apply le_epsilon => eps0 Hpos0.
     set (eps := eps0 / wpt_integral wpt).
     assert (Hpos: 0 < eps).
-    { rewrite /eps. rewrite /Rdiv. 
+    { rewrite /eps. rewrite /Rdiv.
       apply Rmult_lt_0_compat; auto. apply Rinv_0_lt_compat; auto. }
 
     set (An := λ n r U, U ∩ fun_inv (wpt_fun (wpt_n n)) (λ x, (1 - eps) * r <= x)).
@@ -1021,7 +1021,7 @@ Section integral.
       apply wpt_fun_measurable, closed_ray_borel_ge.
     }
     assert (HdisjAn: ∀ n l, ## (map snd l) → ## (map (λ x, An n (fst x) (snd x))) l).
-    { 
+    {
       clear. intros m l Hdisj. induction l as [| (r, U) l] => //=.
       econstructor.
       * intros x [[Ha _] HU]. rewrite //= in Hdisj.
@@ -1041,12 +1041,12 @@ Section integral.
     }
     set (gn := λ n, wpt_indicator_scal_list (gn_list n) (Hmeas_gn _)).
     assert (∀ n x, wpt_fun (gn n) x <= wpt_fun (wpt_n n) x).
-    { 
+    {
       intros n x. rewrite /gn.
       edestruct (wpt_indicator_scal_list_spec2 (gn_list n)) as [(?&Hzero)|Halt]; eauto.
       { rewrite /gn_list. rewrite map_map//=. eapply HdisjAn. eapply wpt_map_snd_disjoint. }
       * rewrite Hzero. eauto.
-      * destruct Halt as (r&U&Hin&HU&->). 
+      * destruct Halt as (r&U&Hin&HU&->).
         rewrite /gn_list in Hin. apply in_map_iff in Hin.
         destruct Hin as ((r'&?)&Heq'&Hin).
         inversion Heq'; subst.
@@ -1058,7 +1058,7 @@ Section integral.
       intros r U (x&HUx) Hin. rewrite -(wpt_fun_eq2 wpt U x r); eauto.
     }
     assert (Hunion: ∀ r U, In (r, U) wpt → U ≡ unionF (λ n, An n r U)).
-    { 
+    {
       intros r U a; split.
       - intros HU. rewrite /An.
         destruct (Hrpos r U) as [Hrpos'|Hr0]; last first; eauto.
@@ -1076,7 +1076,7 @@ Section integral.
       - intros (n&(?&?)). auto.
     }
     assert (is_lim_seq (λ n, wpt_integral (gn n)) ((1 - eps) * wpt_integral wpt)).
-    { 
+    {
       rewrite {2}/wpt_integral.
       eapply is_lim_seq_ext.
       { intros n.  rewrite /gn. rewrite wpt_integral_indicator_scal_list/gn_list.
@@ -1108,7 +1108,7 @@ Section integral.
     (∀ x, ∀ n, wpt_fun (wpt_n n) x <= wpt_fun (wpt_n (S n)) x) →
     is_lim_seq (λ n, wpt_integral (wpt_n n)) (wpt_integral wpt).
   Proof.
-    intros. 
+    intros.
     set (wpt_n' := λ n, wpt_plus (wpt_n n) (wpt_const (-wpt_fun_lb (wpt_n O)))).
     set (wpt' := wpt_plus wpt (wpt_const (-wpt_fun_lb (wpt_n O)))).
     assert (Hlim: is_lim_seq (λ n, wpt_integral (wpt_n' n)) (wpt_integral wpt')).
@@ -1150,7 +1150,7 @@ Section integral.
     { done. }
     feed pose proof (wpt_fun_eq1 wpt x U); eauto.
     feed pose proof (wpt_indicator_scal_list_spec2 wpt (wpt_rep_aux1 wpt)) as Hspec; eauto.
-    { rewrite wpt_partition_spec1. apply partition_disjoint. } 
+    { rewrite wpt_partition_spec1. apply partition_disjoint. }
     destruct (Hspec x) as [(Hnin&?)|(r&U'&Hin'&HU'&Heq)].
     - exfalso. eapply Hnin; eauto.
     - rewrite Heq.
@@ -1178,7 +1178,7 @@ Section integral.
       apply Hsum; eauto.
   Qed.
 
-    
+
   Lemma wpt_pos_induction (P : weighted_partition → Prop):
     (∀ wpt1 wpt2, eq_fun (wpt_fun wpt1) (wpt_fun wpt2) → P wpt1 → P wpt2) →
     (∀ U Hmeas, P (wpt_indicator U Hmeas)) →
@@ -1305,7 +1305,7 @@ Section integral.
     ((¬ ∃ v, is_pos_integral f v) ∧ Pos_integral f = 0).
   Proof.
     destruct (Classical_Prop.classic (∃ v, is_pos_integral f v)) as [(v&?)|Hne].
-    - left. exists v; split; auto. apply is_pos_integral_unique; eauto.   
+    - left. exists v; split; auto. apply is_pos_integral_unique; eauto.
     - right. split; auto.
       rewrite /Pos_integral.
       destruct excluded_middle_informative as [Hb|Hnb]; auto.
@@ -1417,7 +1417,7 @@ Section integral.
     Pos_integral f <= y.
   Proof.
     intros Hex Hub.
-    destruct Hex as (v&His). 
+    destruct Hex as (v&His).
     erewrite is_pos_integral_unique; eauto.
     destruct His as (?&Hlub). apply Hlub.
     intros ? (?&?&<-). eauto.
@@ -1443,7 +1443,7 @@ Section integral.
 
       set (M := Rmax 1 (wpt_fun_ub (wpt_plus wpt (wpt_scal (-1) (wpt_n O))))).
       feed pose proof (convergence_pointwise_measure μ (λ n, wpt_fun (wpt_n n)) f) as Hconv; auto.
-      { intros n. apply wpt_fun_measurable. } 
+      { intros n. apply wpt_fun_measurable. }
 
       specialize (Hconv {| cond_pos := Hpos'|}).
       destruct (Hconv (ball 0 (eps / (2 * M)))) as (n&Hnball).
@@ -1507,8 +1507,8 @@ Section integral.
     (∀ x, is_lim_seq (λ n, wpt_fun (wpt_n n) x) (f x : R)) →
     (∀ x, ∀ n, wpt_fun (wpt_n n) x <= wpt_fun (wpt_n (S n)) x) →
     bound (λ r, ∃ n, wpt_integral (wpt_n n) = r) →
-    ex_pos_integral f ∧ 
-    is_lim_seq (λ n, wpt_integral (wpt_n n)) (Pos_integral f). 
+    ex_pos_integral f ∧
+    is_lim_seq (λ n, wpt_integral (wpt_n n)) (Pos_integral f).
   Proof.
     intros Hmeas Hlim Hmono Hbounded.
     destruct Hbounded as (r&Hbounded).
@@ -1525,7 +1525,7 @@ Section integral.
         apply le_epsilon => eps0 Hpos0.
         edestruct Hex_eps.
         { eauto. }
-        { eauto. } 
+        { eauto. }
         etransitivity; first eauto.
         apply Rplus_le_compat; eauto.
         reflexivity.
@@ -1578,7 +1578,7 @@ Section integral.
     is_pos_integral f v.
   Proof.
     intros Hmeas Hlim1 ? Hlim2.
-    assert (Hbound: ∀ n, wpt_integral (wpt_n n) <= v). 
+    assert (Hbound: ∀ n, wpt_integral (wpt_n n) <= v).
     { intros n.
       eapply (is_lim_seq_incr_compare (λ n, wpt_integral (wpt_n n)) v); eauto.
       intros. apply wpt_integral_mono; eauto. }
@@ -1616,7 +1616,7 @@ Section integral.
   Proof.
     induction n => //=; lia.
   Qed.
-  
+
   Lemma wpt_approx_measurable1 f:
     (∀ x, 0 <= f x) →
     measurable f F (borel _) →
@@ -1629,7 +1629,7 @@ Section integral.
     assert (∀ n k, F (Ank n k)).
     { intros n k. apply sigma_closed_pair_intersect.
       - apply Hmeas. apply closed_ray_borel_ge.
-      - apply Hmeas. apply open_ray_borel_lt. 
+      - apply Hmeas. apply open_ray_borel_lt.
     }
     set (ln := λ n n', nat_rect (λ _, list (R * (A → Prop)))
                              (nil (* (INR O / 2^n, Ank n O) :: nil) *))
@@ -1651,12 +1651,12 @@ Section integral.
                                 ∃ k, P = Ank n k ∧ r = (INR  k / 2^n) ∧ (k < n')%nat).
     { induction n' => //=.
       * intros r P. inversion 1 as [Heq|]; eauto.
-        ** inversion Heq; subst. eexists; split_and!; auto. 
+        ** inversion Heq; subst. eexists; split_and!; auto.
         ** edestruct (IHn') as (k&?&?&?); first eauto.
            exists k; split_and!; eauto.
     }
     assert (Hln_intro: ∀ n n' k, (k < n')%nat → In (Ank n k) (map snd (ln n n'))).
-    { 
+    {
       intros n n'. induction 1.
       - rewrite //=. by left.
       - rewrite //=.  by right.
@@ -1681,7 +1681,7 @@ Section integral.
     }
     assert (Hpown: ∀ n, 2^ n  > 0).
     { clear. induction n => //=; nra. }
-    set (fgn := λ n, wpt_plus (fn n) (gn n)). 
+    set (fgn := λ n, wpt_plus (fn n) (gn n)).
     assert (Hfgn_val :
               ∀ x (n: nat), ((f x >= INR n) ∧ wpt_fun (fgn n) x = INR n) ∨
                    (∃ k, (k < n * 2^n)%nat ∧ INR k / 2^n <= f x < INR (S k) / 2^n ∧
@@ -1707,7 +1707,7 @@ Section integral.
           }
           rewrite mult_INR in Haux.
           replace (INR (2^n)) with (2^n) in Haux; last first.
-          { rewrite pow_INR; f_equal. } 
+          { rewrite pow_INR; f_equal. }
           specialize (Hpown n).
           field_simplify in Haux; nra.
       - right.
@@ -1715,24 +1715,24 @@ Section integral.
         { apply Rmult_le_0_compat; auto. specialize (Hpown n). nra. }
         exists k. specialize (Hpown n).
         split_and!.
-        * apply INR_lt. eapply Rle_lt_trans; eauto. 
+        * apply INR_lt. eapply Rle_lt_trans; eauto.
           rewrite mult_INR pow_INR. replace (INR 2) with 2 by auto.
           apply Rmult_lt_compat_r; nra.
-        * apply (Rmult_le_reg_r (2^n)); try nra. 
+        * apply (Rmult_le_reg_r (2^n)); try nra.
           field_simplify; nra.
-        * apply (Rmult_lt_reg_r (2^n)); try nra. 
+        * apply (Rmult_lt_reg_r (2^n)); try nra.
           field_simplify; nra.
         * rewrite wpt_plus_spec wpt_scal_spec wpt_indicator_spec.
           assert (Ank n k x).
-          { 
+          {
             rewrite /Ank/fun_inv; split.
-            ** apply (Rmult_le_reg_r (2^n)); try nra. 
+            ** apply (Rmult_le_reg_r (2^n)); try nra.
                field_simplify; nra.
-            ** apply (Rmult_lt_reg_r (2^n)); try nra. 
+            ** apply (Rmult_lt_reg_r (2^n)); try nra.
                field_simplify; nra.
           }
           assert (In (Ank n k) (map snd (ln n (n * 2 ^ n)%nat))).
-          { 
+          {
             apply Hln_intro.
             apply INR_lt. rewrite mult_INR pow_INR.
             replace (INR 2) with 2; auto.
@@ -1742,9 +1742,9 @@ Section integral.
           { exfalso. apply Hcompl. apply (union_list_intro _ _ (Ank n k)).
             ** auto.
             ** rewrite /Ank/fun_inv; split.
-               *** apply (Rmult_le_reg_r (2^n)); try nra. 
+               *** apply (Rmult_le_reg_r (2^n)); try nra.
                    field_simplify; nra.
-               *** apply (Rmult_lt_reg_r (2^n)); try nra. 
+               *** apply (Rmult_lt_reg_r (2^n)); try nra.
                    field_simplify; nra.
           }
           rewrite Rmult_0_r Rplus_0_r.
@@ -1754,8 +1754,8 @@ Section integral.
              auto.
           ** rewrite Heq. apply Hln_in in Hin as (k'&?&?&?). subst.
              destruct HU as [Hrange1 Hrange2]. rewrite /fun_inv in Hrange1 Hrange2.
-             apply (Rmult_le_compat_r (2^n)) in Hrange1; try nra. 
-             apply (Rmult_lt_compat_r (2^n)) in Hrange2; try nra. 
+             apply (Rmult_le_compat_r (2^n)) in Hrange1; try nra.
+             apply (Rmult_lt_compat_r (2^n)) in Hrange2; try nra.
              rewrite S_INR in H1.
              rewrite S_INR in Hrange2.
              field_simplify in Hrange1; try nra.
@@ -1822,7 +1822,7 @@ Section integral.
       assert (/ INR (2^N) < eps).
       { eapply Rle_lt_trans; last eauto.
         apply Rinv_le_contravar.
-        { by apply pos_INR'. } 
+        { by apply pos_INR'. }
         apply le_INR.
         transitivity (2 ^ n2)%nat; first apply pow_2_increasing.
         apply Nat.pow_le_mono_r; first lia.
@@ -1914,7 +1914,7 @@ Section integral.
     }
     apply is_pos_integral_unique; eauto.
   Qed.
-  
+
   Lemma is_pos_integral_scal k f v:
     0 <= k →
     (∀ x, 0 <= f x) →
@@ -1930,7 +1930,7 @@ Section integral.
     { setoid_rewrite wpt_integral_scal.
       apply: is_lim_seq_scal_l'. eapply is_pos_integral_mct_wpt'; eauto. }
   Qed.
-      
+
   Lemma is_pos_integral_plus f1 v1 f2 v2:
     (∀ x, 0 <= f1 x) →
     (∀ x, 0 <= f2 x) →
@@ -2052,7 +2052,7 @@ Section integral.
     is_integral f v → is_integral (λ x, k * f x) (k * v).
   Proof.
     destruct (Rle_dec 0 k).
-    - intros (Hmeas&v1&v2&Hpos1&Hpos2&Hdiff). 
+    - intros (Hmeas&v1&v2&Hpos1&Hpos2&Hdiff).
       split.
       { by apply measurable_scal. }
       exists (k * v1), (k * v2).
@@ -2071,8 +2071,8 @@ Section integral.
         replace 0 with (k * 0) at 2 by field.
         rewrite Rmult_comm Rmax_mult; auto.
         f_equal; nra.
-      * nra. 
-    - intros (Hmeas&v1&v2&Hpos1&Hpos2&Hdiff). 
+      * nra.
+    - intros (Hmeas&v1&v2&Hpos1&Hpos2&Hdiff).
       split.
       { by apply measurable_scal. }
       exists (-k * v2), (-k * v1).
@@ -2096,7 +2096,7 @@ Section integral.
 
   Lemma ex_integral_scal k f:
     ex_integral f →
-    ex_integral (λ x, k * f x). 
+    ex_integral (λ x, k * f x).
   Proof.
     intros (v1&?); eexists; eapply is_integral_scal; eauto.
   Qed.
@@ -2119,11 +2119,11 @@ Section integral.
     destruct Hi1 as (Hmeas1&v1p&v1n&Hi1p&Hi1n&Hdiff1).
     destruct Hi2 as (Hmeas2&v2p&v2n&Hi2p&Hi2n&Hdiff2).
     split.
-    - apply measurable_plus; auto. 
+    - apply measurable_plus; auto.
     - exists (Pos_integral (λ x, (Rmax (f1 x + f2 x) 0))).
       exists (Pos_integral (λ x, (Rmax (-(f1 x + f2 x)) 0))).
       assert (ex_pos_integral (λ x, (Rmax (f1 x + f2 x) 0))).
-      { 
+      {
         edestruct (is_pos_integral_mono_ex
                      (λ x, Rmax (f1 x + f2 x) 0)
                      (λ x, Rmax (f1 x) 0 + Rmax (f2 x) 0)) as (Hex&?); eauto.
@@ -2131,7 +2131,7 @@ Section integral.
         ** intros x => //=. repeat apply Rmax_case_strong; nra.
         ** apply measurable_Rmax.
            *** apply measurable_plus; auto.
-           *** eapply measurable_const. 
+           *** eapply measurable_const.
         ** apply is_pos_integral_plus; eauto using Rmax_r.
       }
       assert (ex_pos_integral (λ x, (Rmax (- (f1 x + f2 x)) 0))).
@@ -2143,7 +2143,7 @@ Section integral.
         ** intros x => //=. repeat apply Rmax_case_strong; nra.
         ** apply measurable_Rmax.
            *** eapply measurable_opp. apply measurable_plus; auto.
-           *** eapply measurable_const. 
+           *** eapply measurable_const.
         ** apply is_pos_integral_plus; eauto using Rmax_r.
       }
       split_and!.
@@ -2164,7 +2164,7 @@ Section integral.
   Lemma ex_integral_plus f1 f2:
     ex_integral f1 →
     ex_integral f2 →
-    ex_integral (λ x, f1 x + f2 x). 
+    ex_integral (λ x, f1 x + f2 x).
   Proof.
     intros (v1&?) (v2&?).
     eexists; eauto using is_integral_plus.
@@ -2289,7 +2289,7 @@ Section integral.
     is_integral f v ↔ is_pos_integral f v.
   Proof.
     intros Hpos; split.
-    - intros (Hmeas&v1&v2&?&Hp2&?). 
+    - intros (Hmeas&v1&v2&?&Hp2&?).
       cut (v2 = 0).
       { intros. replace v with v1 by nra.
         eapply is_pos_integral_ext; try eassumption.
@@ -2371,9 +2371,9 @@ Section integral.
     (∀ x, 0 <= wpt_fun wpt x) →
     is_pos_integral (wpt_fun wpt) (wpt_integral wpt).
   Proof.
-    intros Hpos. 
+    intros Hpos.
     eapply (is_pos_integral_mct_wpt (λ n, wpt)).
-    - apply wpt_fun_measurable. 
+    - apply wpt_fun_measurable.
     - intros; apply is_lim_seq_const.
     - intros; reflexivity.
     - apply is_lim_seq_const.
@@ -2399,7 +2399,7 @@ Section integral.
       { intros x; by rewrite wpt_scal_spec. }
       apply is_integral_scal; eauto.
   Qed.
-      
+
   Lemma ex_integral_wpt wpt:
     ex_integral (wpt_fun wpt).
   Proof.
@@ -2447,7 +2447,7 @@ Section integral.
     intros Hpos His.
     apply Rle_ge.
     eapply is_integral_mono.
-    - eapply Hpos. 
+    - eapply Hpos.
     - apply is_integral_0.
     - eauto.
   Qed.
@@ -2460,7 +2460,7 @@ Section integral.
     destruct excluded_middle_informative; last nra.
     destruct excluded_middle_informative; last nra.
     apply Rle_ge. eapply (Rle_trans _ (wpt_integral (wpt_indicator empty_set (sigma_empty_set F)))).
-    { rewrite wpt_integral_indicator measure_empty. nra. } 
+    { rewrite wpt_integral_indicator measure_empty. nra. }
     destruct (completeness _) as (?&Hlub).
     apply Hlub. eexists. split; eauto.
     intros x'. rewrite wpt_indicator_spec. destruct (excluded_middle_informative) as [[]|]; auto.
@@ -2498,7 +2498,7 @@ Section integral.
 
     edestruct (is_pos_integral_mono_ex (λ x, Rmax (- f1 x) 0) (λ x, Rmax (f2 x) 0)) as ((xn&?)&?).
     { intros ?; apply Rmax_case_strong; nra. }
-    { intros x' => //=. generalize (Hb x'). 
+    { intros x' => //=. generalize (Hb x').
       apply Rabs_case; do 2 apply Rmax_case_strong; nra. }
     { apply measurable_Rmax; eauto; measurable. }
     { eauto.  }
@@ -2546,7 +2546,7 @@ Section integral.
     is_integral (wpt_fun wpt) 0.
   Proof.
     intros Hpos.
-    eapply (wpt_pos_induction 
+    eapply (wpt_pos_induction
         (λ wpt, almost_everywhere_meas μ (λ x : A, wpt_fun wpt x = 0) → is_integral (wpt_fun wpt) 0)).
     - intros wpt1 wpt2 Heq IH Hae.
       eapply is_integral_ext; last eapply IH; eauto.
@@ -2709,7 +2709,7 @@ Section integral.
     (∀ x, ∀ n, fn n x <= fn (S n) x) →
     (∀ n, ex_integral (fn n)) →
     bound (λ r, ∃ n, is_integral (fn n) r) →
-    ex_integral f ∧ is_lim_seq (λ n, Integral (fn n)) (Integral f). 
+    ex_integral f ∧ is_lim_seq (λ n, Integral (fn n)) (Integral f).
   Proof.
     intros Hmeas Hlim Hpos Hmono Hint_fn Hbounded_int.
     assert (Hfpos: ∀ x, 0 <= f x).
@@ -2734,18 +2734,18 @@ Section integral.
     set (hnk := λ n k, nat_rect (λ _, weighted_partition)
                                 (wpt_const 0)
                                 (λ m w, wpt_max w (gnk m n)) (S k)).
-    set (hn := λ n, hnk n n).  
+    set (hn := λ n, hnk n n).
     assert (Hhnk_mono1: ∀ n k, ∀ x, wpt_fun (hnk n k) x <= wpt_fun (hnk (S n) k) x).
-    { 
+    {
       intros n k x. revert n. rewrite /hnk. generalize (wpt_const 0).  generalize (S k); clear k.
       intros k. induction k => //= w n.
       - reflexivity.
-      - rewrite ?wpt_max_spec. apply Rmax_le_compat. 
+      - rewrite ?wpt_max_spec. apply Rmax_le_compat.
         * eapply IHk.
         * rewrite /gnk/gnk_wit. destruct constructive_indefinite_description as (?&?&?&?); eauto.
     }
     assert (Hhnk_mono2: ∀ n k, ∀ x, wpt_fun (hnk n k) x <= wpt_fun (hnk n (S k)) x).
-    { 
+    {
       intros n k x. revert n. rewrite /hnk. generalize (wpt_const 0).  generalize (S k); clear k.
       intros k. induction k => //= w n.
       - rewrite wpt_max_spec. apply Rmax_l.
@@ -2761,7 +2761,7 @@ Section integral.
       * intros. etransitivity; first eapply IHHle1; eauto.
     }
     assert (Hhnk_gnk: ∀ n k, ∀ x, wpt_fun (gnk k n) x <= wpt_fun (hnk n k) x).
-    { intros. rewrite wpt_max_spec. apply Rmax_r. } 
+    { intros. rewrite wpt_max_spec. apply Rmax_r. }
     assert (Hhnk_ub: ∀ n k, (∀ n' k', (n' <= n)%nat → (k' <= k)%nat →
                                    ∀ x, wpt_fun (gnk k' n') x <= wpt_fun (hnk n k) x)).
     { intros ???? Hle1 Hle2 x. etransitivity; first eapply Hhnk_gnk.
@@ -2780,7 +2780,7 @@ Section integral.
       apply Rmax_lub; last by eauto.
       revert Hle. generalize (wpt_const 0).
       induction k => //=.
-      - intros w Hle. 
+      - intros w Hle.
         rewrite wpt_max_spec. apply Rmax_lub; eauto.
         etransitivity; first eapply IHk; eauto.
         transitivity (fn k x); eauto.
@@ -2808,13 +2808,13 @@ Section integral.
       { rewrite /hn. specialize (Hhnk_bounded_f n n x); eauto. nra. }
 
       feed pose proof (Hn1 n1) as Hn1'.
-      { etransitivity; last eauto. reflexivity. } 
+      { etransitivity; last eauto. reflexivity. }
       rewrite /ball//=/AbsRing_ball/abs/minus/plus/opp//= in Hn1'.
       rewrite Rabs_left1 in Hn1'; last first.
       { specialize (Hfn_bounded_fpos n1 x). nra. }
 
       feed pose proof (Hn2 n) as Hn2'.
-      { etransitivity; last eauto. apply Nat.le_max_r. } 
+      { etransitivity; last eauto. apply Nat.le_max_r. }
       rewrite /ball//=/AbsRing_ball/abs/minus/plus/opp//= in Hn2'.
       rewrite Rabs_left1 in Hn2'; last first.
       { specialize (Hbounded_gnk n x). nra.  }
@@ -2825,8 +2825,8 @@ Section integral.
       rewrite /gnk in Hgnk_bounded_f.
       specialize (Hhnk_bounded_f n n x).
       feed pose proof (Hhnk_ub n n n n1) as Hhn_ub.
-      { reflexivity. } 
-      { etransitivity; last eauto. apply Nat.le_max_l. } 
+      { reflexivity. }
+      { etransitivity; last eauto. apply Nat.le_max_l. }
       specialize (Hhn_ub x). rewrite /hn. rewrite /gnk in Hhn_ub.
       destruct eps as (eps&hgt0) => //=.
       rewrite //= in Hn1' Hn2'.
@@ -2844,7 +2844,7 @@ Section integral.
       - eapply Hspec. exists n; eauto using Integral_correct.
     }
     split.
-    * apply ex_integral_equiv_pos_integral; eauto. 
+    * apply ex_integral_equiv_pos_integral; eauto.
     * rewrite Integral_equiv_Pos_integral; eauto.
       apply (is_lim_seq_le_le (λ n, wpt_integral (hn n)) _ (λ n, Pos_integral f)); first split; eauto.
       { eapply (is_integral_mono (wpt_fun (hn n)) _ (fn n) _).
@@ -2867,7 +2867,7 @@ Section integral.
     (∀ x, ∀ n, fn n x <= fn (S n) x) →
     (∀ n, ex_integral (fn n)) →
     bound (λ r, ∃ n, is_integral (fn n) r) →
-    ex_integral f ∧ is_lim_seq (λ n, Integral (fn n)) (Integral f). 
+    ex_integral f ∧ is_lim_seq (λ n, Integral (fn n)) (Integral f).
   Proof.
     intros Hmeas Hlim Hmono Hex Hbounded_int.
     set (fn' := λ n x, fn n x - fn O x).
@@ -2882,7 +2882,7 @@ Section integral.
     - intros x n. rewrite /fn'.
       cut (fn O x <= fn n x); first nra.
       clear -Hmono; induction n.
-      * nra. 
+      * nra.
       * etransitivity; eauto.
     - rewrite /fn'; intros; apply Rplus_le_compat; eauto. reflexivity.
     - intros n. rewrite /fn'. apply ex_integral_minus; eauto.
@@ -2921,7 +2921,7 @@ Section integral.
     intros g U Hmeas Hmeasg Heq0.
     eapply almost_everywhere_meas_mono; last first.
     { split; eauto.  }
-    { intros x. rewrite wpt_indicator_spec. 
+    { intros x. rewrite wpt_indicator_spec.
       intros. destruct excluded_middle_informative.
       * rewrite Rmult_1_r. done.
       * contradiction.
@@ -2937,14 +2937,14 @@ Section integral.
     eapply almost_everywhere_meas_ext; last eapply ae_equal_mult_indicator_compl_0; try eassumption.
     intros x. split; by symmetry; eauto.
   Qed.
-    
+
   Lemma is_integral_levi_ae_ex fn f:
     measurable f F (borel _) →
     almost_everywhere_meas μ (λ x, is_lim_seq (λ n, fn n x) (f x : R)) →
     almost_everywhere_meas μ (λ x, ∀ n, fn n x <= fn (S n) x) →
     (∀ n, ex_integral (fn n)) →
     bound (λ r, ∃ n, is_integral (fn n) r) →
-    ex_integral f ∧ is_lim_seq (λ n, Integral (fn n)) (Integral f). 
+    ex_integral f ∧ is_lim_seq (λ n, Integral (fn n)) (Integral f).
   Proof.
     generalize ae_equal_mult_indicator_compl_0 => Hae.
     intros Hmeas Hlim Hmono Hex Hbound.
@@ -3006,7 +3006,7 @@ Section integral.
     (∀ x, ∀ n, Rabs (fn n x) <= g x) →
     (∀ n, ex_integral (fn n)) →
     ex_integral g →
-    ex_integral f ∧ is_lim_seq (λ n, Integral (fn n)) (Integral f). 
+    ex_integral f ∧ is_lim_seq (λ n, Integral (fn n)) (Integral f).
   Proof.
     intros Hmeas Hlim Hmono Hbounded Hex Hexg.
     edestruct (is_integral_levi_ex fn f); eauto.
@@ -3080,7 +3080,7 @@ Section integral.
       assert (∀ x, 0 <= f x).
       { intros x. eapply is_lim_seq_pos; eauto. eauto. }
 
-      rewrite Integral_equiv_Pos_integral //. 
+      rewrite Integral_equiv_Pos_integral //.
 
       assert (Hneg: ¬ ex_integral f).
       { intros (v&Hexf). apply Hunbounded.
@@ -3103,8 +3103,8 @@ Section integral.
     exists (S k) => n Hle'.
     rewrite Rmin_left.
     - rewrite /Rbar_locally/locally in Hloc.
-      destruct Hloc as (eps&HP). apply HP. apply ball_center. 
-    - transitivity (INR (S k)); first nra. 
+      destruct Hloc as (eps&HP). apply HP. apply ball_center.
+    - transitivity (INR (S k)); first nra.
       apply le_INR. done.
   Qed.
 
@@ -3184,7 +3184,7 @@ Section integral.
     (∀ x, 0 <= f x) →
     is_integral f v →
     0 < t →
-    μ (λ x, t <= f x) <= v / t. 
+    μ (λ x, t <= f x) <= v / t.
   Proof.
     intros Hpos His Htpos.
     apply Rnot_gt_le.
@@ -3288,7 +3288,7 @@ Section integral.
       assert (Hex': ex_integral (λ x, f1 x * wpt_fun (wpt_indicator _ H') x)).
       { eapply ex_integral_mono_ex; last eapply Hex_indic.
         * intros x => //=.
-          rewrite ?wpt_indicator_spec. 
+          rewrite ?wpt_indicator_spec.
           destruct excluded_middle_informative; rewrite ?Rmult_1_r ?Rmult_0_r; try nra.
           rewrite Rabs_right; nra.
         * measurable.
@@ -3300,7 +3300,7 @@ Section integral.
     { eapply ae_equal_mult_indicator_compl_0'; eauto. }
     measurable.
   Qed.
-    
+
 End integral.
 
 Hint Resolve is_integral_measurable ex_integral_measurable ex_integral_wpt ex_integral_const.

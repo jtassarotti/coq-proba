@@ -37,7 +37,7 @@ Lemma irrel_ivd_support_coerce {X} (I1 I2: ivdist X) :
   ∀ x, (∃ i2, ind I2 i2 = x ∧ val I2 i2 > 0) ↔ (∃ i1, ind I1 i1 = x ∧ val I1 i1 > 0).
 Proof.
   induction 1.
-  - split; intros; auto. 
+  - split; intros; auto.
   - intros. by rewrite (IHirrel_ivd x).
   - intros. by rewrite (IHirrel_ivd2 x).
   - intros.
@@ -92,7 +92,7 @@ Proof.
   destruct (Hle {| ivd_ival := I2; val_sum1 := all_sum1 Is2 _ Hin2|}) as (I1&Heq&Hin1); eauto.
   exists I1. edestruct (irrel_ivd_support_coerce _ _ Heq) as (i1&?&?).
   { eauto. }
-  eexists; split; eauto. 
+  eexists; split; eauto.
 Qed.
 
 Global Instance irrel_ivd_proper_instance : Proper (@eq_ivd X ==> @eq_ivd X ==> iff) (@irrel_ivd X).
@@ -125,7 +125,7 @@ Proof.
   { eapply is_Ex_ival_ex. eauto. }
   rewrite Ex_ival_bind_post //=.
   assert (ex_Ex_ival f (ivd_bind _ _ f2 I2)).
-  { 
+  {
     apply ex_Ex_ival_from_Rabs, ex_Ex_ival_bind_post_inv; eauto using Rabs_pos, Rle_ge.
     ** intros.
        apply is_Ex_ival_ex, ex_Ex_ival_to_Rabs in His.
@@ -174,7 +174,7 @@ Proof.
     { split; apply is_Ex_ival_proper; eauto. by symmetry. }
     { split; apply is_Ex_ival_proper; eauto. by symmetry. }
   - split. apply is_Ex_ival_bind_irrel, val_sum1.
-    intros His. cut (ex_Ex_ival f I1).  
+    intros His. cut (ex_Ex_ival f I1).
     { intros Hex. apply Ex_ival_correct in Hex.
       cut (Ex_ival f I1 = v); intros; subst; eauto.
       eapply is_Ex_ival_unique'; last eassumption.
@@ -242,7 +242,7 @@ Proof.
     rewrite Rmult_1_l. apply val_nonneg.
   }
   { intros.  rewrite /countable_sum/oapp.
-    rewrite pickleK_inv. 
+    rewrite pickleK_inv.
     destruct ClassicalEpsilon.excluded_middle_informative => //=; try nra.
   }
   feed pose proof (ex_Pr (eq^~ x) I).
@@ -279,10 +279,10 @@ Lemma ival_slice_proof1 (X : Type) (I : ivdist X) (x : X):
                  Pr (eq^~ x) I
                 else val I i) ≥ 0.
 Proof.
-  intros i. 
+  intros i.
   destruct ClassicalEpsilon.excluded_middle_informative; eauto; last apply val_nonneg.
   apply Rle_ge, Rdiv_le_0_compat.
-  { destruct ClassicalEpsilon.excluded_middle_informative; eauto; try nra. 
+  { destruct ClassicalEpsilon.excluded_middle_informative; eauto; try nra.
     apply Rge_le, val_nonneg. }
   { apply In_isupport_pr_gt_0; eauto. }
 Qed.
@@ -332,7 +332,7 @@ Defined.
 Lemma eq_ivd_prob_Pr_eq {X} (I1 I2: ivdist X) x:
   eq_ivd_prob I1 I2 →
   Pr (eq^~ x) I1 = Pr (eq^~ x) I2.
-Proof. 
+Proof.
   rewrite /Pr/Ex_ival => Heq.
   unshelve (eapply eq_ivd_prob_alt in Heq); first exact x.
   rewrite /idx_eq_ind in Heq.
@@ -352,7 +352,7 @@ Proof.
   erewrite <-eq_ivd_prob_Pr_eq; last eassumption.
   eauto.
 Qed.
-      
+
 Lemma eq_ivd_prob_to_irrel_ivd {X} (I1 I2: ivdist X):
   eq_ivd_prob I1 I2 →
   irrel_ivd I1 I2.
@@ -360,14 +360,14 @@ Proof.
   intros Heq.
   transitivity (x ← I1; _ ← ivdist_slice I2 x; mret x).
   { transitivity (x ← I1; mret x).
-    { rewrite ivd_right_id. reflexivity. } 
+    { rewrite ivd_right_id. reflexivity. }
     apply irrel_ivd_bind; first reflexivity.
     intros x. apply irrel_ivd_irrel.
   }
   transitivity (x ← I2; _ ← ivdist_slice I1 x; mret x); last first.
   { symmetry.
     transitivity (x ← I2; mret x).
-    { rewrite ivd_right_id. reflexivity. } 
+    { rewrite ivd_right_id. reflexivity. }
     apply irrel_ivd_bind; first reflexivity.
     intros x. apply irrel_ivd_irrel.
   }
@@ -383,7 +383,7 @@ Proof.
   split_and!.
   * intros (i1&i2&[]) (i1'&i2'&[]) _ _ => //=.
     inversion 1; subst. auto.
-  * intros (i2&i1&[]). 
+  * intros (i2&i1&[]).
     unshelve (eexists).
     { exists i1.  exists i2. exact tt. }
     split_and!; eauto => //=.
@@ -401,7 +401,7 @@ Proof.
     ** cut (val I2 i2 = 0).
        { intros ->. nra. }
        destruct (val_nonneg I2 i2); last auto.
-       exfalso. eapply n. 
+       exfalso. eapply n.
        eapply eq_ivd_prob_In_isupport; eauto.
        { by symmetry. }
        eexists; eauto.
@@ -410,7 +410,7 @@ Proof.
     cut (val I1 i1 = 0).
     { intros ->.  nra. }
     destruct (val_nonneg I1 i1); last auto.
-    exfalso. eapply n. 
+    exfalso. eapply n.
     eapply eq_ivd_prob_In_isupport; eauto.
     eexists; eauto.
   * intros (i1&i2&[]) => //=.
@@ -427,7 +427,7 @@ Proof.
     ** cut (val I1 i1 = 0).
        { intros ->. nra. }
        destruct (val_nonneg I1 i1); last auto.
-       exfalso. eapply n. 
+       exfalso. eapply n.
        eapply eq_ivd_prob_In_isupport; eauto.
        eexists; eauto.
 Qed.
@@ -486,8 +486,8 @@ Lemma irrel_pidist_trans {X} :
    ∀ I1 I2 I3, @irrel_pidist X I1 I2 → @irrel_pidist X I2 I3 → @irrel_pidist X I1 I3.
 Proof.
   intros I1 I2 I3 Hi1 Hi2 f Hb.
-  specialize (Hi1 f Hb). 
-  specialize (Hi2 f Hb). 
+  specialize (Hi1 f Hb).
+  specialize (Hi2 f Hb).
   etransitivity; eauto.
 Qed.
 
@@ -537,7 +537,7 @@ Proof.
   etransitivity.
   { apply Ex_min_le_pidist_irrel; eauto. }
   etransitivity.
-  { eapply Hirrel12; eauto. } 
+  { eapply Hirrel12; eauto. }
   { apply Ex_min_le_pidist_irrel; eauto. }
 Qed.
 
@@ -634,10 +634,10 @@ Lemma ic_prop_to_wit {A1 A2} (I1 : ivdist A1) (Is2: pidist A2) P :
 Proof.
   intros (?&_)%ClassicalEpsilon.constructive_indefinite_description; auto.
 Qed.
-  
+
 Lemma irrel_pidist_support_coerce {X} (I1 I2: pidist X) :
   irrel_pidist I2 I1 →
-  ∀ x, In_psupport x I2 → In_psupport x I1. 
+  ∀ x, In_psupport x I2 → In_psupport x I1.
 Proof.
   intros Hirrel x Hin.
   destruct Hin as (I&i&Hin&Hind&Hval).
@@ -645,7 +645,7 @@ Proof.
   {  eapply In_isupport_pr_gt_0.
      eexists; eauto. }
   assert (Rbar_lt 0 (Pr_max (eq^~ x) I1)) as Hmax.
-  { 
+  {
     apply (Rbar_lt_le_trans _ (Pr_max (eq^~ x) I2)); last first.
     { eapply irrel_pidist_Ex_max; eauto.
       exists 1. intros. destruct (is_left); rewrite Rabs_right; nra.
@@ -670,7 +670,7 @@ Proof.
   exists I'. apply pr_gt_0_In_isupport in Hpr'.
   destruct Hpr' as (?&?&?). eexists; split_and!; eauto.
 Qed.
-    
+
 Lemma irrel_pidist_choice {X} (I1 I1' I2 I2': pidist X) p Hpf Hpf':
       irrel_pidist I1 I2 →
       irrel_pidist I1' I2' →
@@ -701,9 +701,9 @@ Proof.
 Qed.
 
 Lemma irrel_coupling_proper {A1 A2} (I1 I2 : ivdist A1) (Is1 Is2: pidist A2) P:
-  eq_ivd I1 I2 → 
-  eq_pidist Is1 Is2 → 
-  irrel_couplingP I1 Is1 P → 
+  eq_ivd I1 I2 →
+  eq_pidist Is1 Is2 →
+  irrel_couplingP I1 Is1 P →
   irrel_couplingP I2 Is2 P.
 Proof.
   intros HeqI HeqIs [I1' Is1' HeqI1 HeqIs1 Hcouple].
@@ -714,9 +714,9 @@ Proof.
 Qed.
 
 Lemma irrel_coupling_mono {A1 A2} (I1 I2 : ivdist A1) (Is1 Is2: pidist A2) P:
-  eq_ivd I1 I2 → 
-  le_pidist Is1 Is2 → 
-  irrel_couplingP I1 Is1 P → 
+  eq_ivd I1 I2 →
+  le_pidist Is1 Is2 →
+  irrel_couplingP I1 Is1 P →
   irrel_couplingP I2 Is2 P.
 Proof.
   intros HeqI HeqIs [I1' Is1' HeqI1 HeqIs1 Hcouple].
@@ -727,9 +727,9 @@ Proof.
 Qed.
 
 Lemma irrel_coupling_mono_irrel {A1 A2} (I1 I2 : ivdist A1) (Is1 Is2: pidist A2) P:
-  eq_ivd I1 I2 → 
-  irrel_pidist Is1 Is2 → 
-  irrel_couplingP I1 Is1 P → 
+  eq_ivd I1 I2 →
+  irrel_pidist Is1 Is2 →
+  irrel_couplingP I1 Is1 P →
   irrel_couplingP I2 Is2 P.
 Proof.
   intros HeqI HeqIs [I1' Is1' HeqI1 HeqIs1 Hcouple].
@@ -740,9 +740,9 @@ Proof.
 Qed.
 
 Lemma irrel_coupling_mono_irrel' {A1 A2} (I1 I2 : ivdist A1) (Is1 Is2: pidist A2) P:
-  irrel_ivd I1 I2 → 
-  irrel_pidist Is1 Is2 → 
-  irrel_couplingP I1 Is1 P → 
+  irrel_ivd I1 I2 →
+  irrel_pidist Is1 Is2 →
+  irrel_couplingP I1 Is1 P →
   irrel_couplingP I2 Is2 P.
 Proof.
   intros HeqI HeqIs [I1' Is1' HeqI1 HeqIs1 Hcouple].
@@ -755,7 +755,7 @@ Qed.
 Global Instance irrel_coupling_prop_Proper {A1 A2}:
   Proper (@eq_ivd A1 ==> @le_pidist A2 ==> eq ==> impl) irrel_coupling_propP.
 Proof.
-  intros ?? Heq ?? Hle ?? ->. 
+  intros ?? Heq ?? Hle ?? ->.
   intros H%ic_prop_to_wit.
   apply ic_wit_to_prop.
   eapply irrel_coupling_mono; eauto.
@@ -764,7 +764,7 @@ Qed.
 Global Instance irrel_coupling_prop_irrel_Proper {A1 A2}:
   Proper (@eq_ivd A1 ==> @irrel_pidist A2 ==> eq ==> impl) irrel_coupling_propP.
 Proof.
-  intros ?? Heq ?? Hle ?? ->. 
+  intros ?? Heq ?? Hle ?? ->.
   intros H%ic_prop_to_wit.
   apply ic_wit_to_prop.
   eapply irrel_coupling_mono_irrel; eauto.
@@ -784,7 +784,7 @@ Lemma irrel_coupling_prop_mret {A1 A2} (P: A1 → A2 → Prop) x y:
 Proof.
   intros; apply ic_wit_to_prop, irrel_coupling_mret; auto.
 Qed.
-  
+
 Lemma irrel_coupling_bind {A1 A2 B1 B2} P (f1: A1 → ivdist B1) (f2: A2 → pidist B2)
       I1 Is2 Q (Ic: irrel_couplingP I1 Is2 P):
   (∀ x y, P x y → irrel_couplingP (f1 x) (f2 y) Q) →
@@ -828,8 +828,8 @@ Proof.
     * intros ((?&?)&HP1) ((x&y)&HP2).
       inversion 1; subst.
       rewrite //=.
-      assert (HP1 = HP2). { apply classical_proof_irrelevance. } 
-      subst. 
+      assert (HP1 = HP2). { apply classical_proof_irrelevance. }
+      subst.
       destruct (Hfc x y HP2). eauto.
 Qed.
 
@@ -887,7 +887,7 @@ Lemma irrel_coupling_conseq {A1 A2} (P1 P2: A1 → A2 → Prop) (I: ivdist A1) (
   irrel_couplingP I Is P2.
 Proof.
   intros HP Hirrel.
-  destruct Hirrel as [I0 Is0 ? ? ?]. 
+  destruct Hirrel as [I0 Is0 ? ? ?].
   exists I0 Is0; auto.
   eapply ip_coupling_conseq; eauto.
 Qed.
@@ -913,7 +913,7 @@ Lemma irrel_coupling_bind_condition {A1 B1 B2} (f1: A1 → ivdist B1) (f2: A1 �
   (le_pidist (singleton I) Is ) →
   (irrel_couplingP (f1 x) (f2 x) Q) →
   irrel_couplingP (x ← I; y ← f1 x; mret (x, y))
-                  (x ← Is; y ← f2 x; mret (x, y)) 
+                  (x ← Is; y ← f2 x; mret (x, y))
                   (λ xy1 xy2, fst xy1 = x → fst xy2 = x → Q (snd xy1) (snd xy2)).
 Proof.
   intros Hle Hc.
@@ -924,14 +924,14 @@ Proof.
   intros ? y ?; subst.
   destruct (ClassicalEpsilon.excluded_middle_informative (x = y)).
   - intros; subst. eapply irrel_coupling_bind; eauto.
-    intros. apply irrel_coupling_mret => ? //=. 
+    intros. apply irrel_coupling_mret => ? //=.
   - intros. eapply irrel_coupling_bind.
-    * apply irrel_coupling_trivial. 
+    * apply irrel_coupling_trivial.
     * intros. apply irrel_coupling_mret => ? //=. intros. congruence.
 Qed.
 
 Lemma irrel_coupling_support {X Y} I1 I2 (P: X → Y → Prop):
-  ∀ (Ic: irrel_couplingP I1 I2 P), 
+  ∀ (Ic: irrel_couplingP I1 I2 P),
   irrel_couplingP I1 I2 (λ x y, ∃ Hpf: P x y,  In_isupport x I1 ∧ In_psupport y I2 ∧
                         In_isupport (exist _ (x, y) Hpf) Ic).
 Proof.
@@ -943,17 +943,17 @@ Proof.
   -  edestruct Hin1 as (i&?&?).
      edestruct (irrel_ivd_support_coerce _ _ Heq1) as (Hcoerce&_).
      apply Hcoerce; eauto.
-  - eapply irrel_pidist_support_coerce; eauto. 
+  - eapply irrel_pidist_support_coerce; eauto.
 Qed.
 
 Lemma irrel_coupling_support_wit {X Y} I1 I2 (P: X → Y → Prop):
-  ∀ (Ic: irrel_couplingP I1 I2 P), 
+  ∀ (Ic: irrel_couplingP I1 I2 P),
     { xy : X * Y | ∃ Hpf : P (fst xy) (snd xy),
         In_isupport (fst xy) I1 ∧ In_psupport (snd xy) I2 ∧ In_isupport (exist _ xy Hpf) Ic }.
 Proof.
   intros [? ? Heq1 Heq2 Ic].
   specialize (ip_coupling_support_wit _ _ _ Ic).
-  rewrite //=. 
+  rewrite //=.
   intros ((x&y)&Hpf).
   exists (x, y).
   destruct Hpf as (Hpf&Hin1&Hin2&?).
@@ -961,7 +961,7 @@ Proof.
   -  edestruct Hin1 as (i&?&?).
      edestruct (irrel_ivd_support_coerce _ _ Heq1) as (Hcoerce&_).
      apply Hcoerce; eauto.
-  - eapply irrel_pidist_support_coerce; eauto. 
+  - eapply irrel_pidist_support_coerce; eauto.
 Qed.
 
 Lemma rsupport_support_right {X Y} (Ix: ivdist X) (x: X) Is (P: X → Y → Prop)
@@ -1007,7 +1007,7 @@ Proof.
   destruct c as (y&I&i&Hind&?).
   rewrite //=.
 Qed.
-  
+
 Transparent pidist_ret.
 Lemma rsupport_mret_right {X Y} (Ix: ivdist X) (x: X) (y: Y) (P: X → Y → Prop)
       (Ic: irrel_couplingP Ix (mret y) P)  (c: rsupport Ic x) :
@@ -1056,7 +1056,7 @@ Proof.
   clear Hb1. clear Hb2.
   edestruct (bounded_fun_on_to_bounded f) as (g'&Hb'&Heq); eauto.
   feed pose proof (irrel_pidist_Ex_max Is Is' Hi g' Hb'); eauto.
-  erewrite (Ex_max_eq_ext_supp f g' Is'); eauto. 
+  erewrite (Ex_max_eq_ext_supp f g' Is'); eauto.
   etransitivity; eauto.
   erewrite (Ex_max_eq_ext_supp f g' Is); eauto; first reflexivity.
 Qed.
@@ -1078,7 +1078,7 @@ Proof.
                                  (λ x y, x = y)) as Ic'.
   { eapply ip_coupling_bind; eauto => ???.
     apply ip_coupling_mret; auto. }
-                                    
+
   destruct Ic' as [I2 Hmem Ic'].
   apply ival_coupling_eq in Ic'.
   eapply ex_Ex_ival_irrel_proper.
@@ -1107,7 +1107,7 @@ Proof.
                                  (λ x y, x = y)) as Ic'.
   { eapply ip_coupling_bind; eauto => ???.
     apply ip_coupling_mret; auto. }
-                                    
+
   destruct Ic' as [I2 Hmem Ic'].
   apply ival_coupling_eq in Ic'.
 
@@ -1115,7 +1115,7 @@ Proof.
   erewrite Ex_ival_irrel_proper; eauto.
 
   transitivity (Ex_min (λ x, Ex_min id (mret (g x))) Is2_irrel).
-  { apply Ex_min_le_ext. 
+  { apply Ex_min_le_ext.
     * intros. rewrite Ex_min_mret. reflexivity.
     * eapply ex_Ex_extrema_bounded_fun; eauto.
   }
@@ -1125,7 +1125,7 @@ Proof.
   - transitivity (Ex_ival (λ x, Ex_ival id (mret (f x))) Is1_irrel); last first.
     { apply Ex_ival_mono.
       * intros. rewrite Ex_ival_mret. reflexivity.
-      * setoid_rewrite Ex_ival_mret. 
+      * setoid_rewrite Ex_ival_mret.
         eapply ex_Ex_ival_irrel_proper; eauto.
       * eapply ex_Ex_ival_irrel_proper; eauto.
     }
@@ -1134,7 +1134,7 @@ Proof.
     transitivity (Ex_ival id I2); last first.
     { refl_right. f_equal. symmetry. eapply Ex_ival_proper; eauto.
       rewrite -ex_Ex_ival_fmap. eauto. }
-    
+
     apply In_pidist_le_singleton in Hmem.
     destruct Hmem as (I2'&Heq22'&?).
     transitivity (Ex_ival id I2'); last first.

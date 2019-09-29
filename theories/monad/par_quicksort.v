@@ -57,7 +57,7 @@ Definition partition (n: nat) (l: list nat) :=
   mret {| lower := l1; middle := l2; upper := l3 |}.
 
 Lemma partition_perm_eq l:
-  ∀ n, perm_eq (lower (result (partition n l)) ++ 
+  ∀ n, perm_eq (lower (result (partition n l)) ++
                  middle (result (partition n l)) ++
                  upper (result (partition n l))) l.
 Proof.
@@ -84,7 +84,7 @@ Proof.
   move /eqP in HeqP; subst; rewrite ltnn in Hcmp; done.
 Qed.
 
-Lemma work_mret {A B} (m: cost A) (f: A → B): work (x ← m; mret (f x)) = work m.  
+Lemma work_mret {A B} (m: cost A) (f: A → B): work (x ← m; mret (f x)) = work m.
 Proof. rewrite //=. nify; omega. Qed.
 
 Lemma work_par2 {A B} (m: cost A) (m': cost B): work (par2 m m') = work m + work m'.
@@ -98,15 +98,15 @@ Lemma work_parfilter {A: eqType} (P: A → cost bool) (l: seq A) k:
   (∀ x, x \in l → work (P x) = k) →
   work (parfilter P l) = size l * k.
 Proof.
-  intros Hcost. induction l => //=. 
-  rewrite /parfilter/parmap//= in IHl. rewrite -addnA IHl => //=. 
+  intros Hcost. induction l => //=.
+  rewrite /parfilter/parmap//= in IHl. rewrite -addnA IHl => //=.
   rewrite Hcost => //=.
-  - nify => //=. omega. 
+  - nify => //=. omega.
   - rewrite in_cons eq_refl //.
   - intros ? Hin. eapply Hcost. rewrite in_cons. apply /orP; auto.
 Qed.
 
-Lemma span_mret {A B} (m: cost A) (f: A → B): span (x ← m; mret (f x)) = span m.  
+Lemma span_mret {A B} (m: cost A) (f: A → B): span (x ← m; mret (f x)) = span m.
 Proof. rewrite //=; nify; omega. Qed.
 
 Lemma span_par2 {A B} (m: cost A) (m': cost B): span (par2 m m') = max (span m) (span m').
@@ -124,16 +124,16 @@ Lemma span_parfilter {A: eqType} (P: A → cost bool) (l: seq A) k:
       | _ => k
       end.
 Proof.
-  intros Hcost. induction l => //=. 
+  intros Hcost. induction l => //=.
   rewrite /parfilter/parmap//= in IHl.
   rewrite addn0 in IHl. rewrite IHl.
-  - rewrite addn0 Hcost; last by (rewrite in_cons eq_refl //). 
+  - rewrite addn0 Hcost; last by (rewrite in_cons eq_refl //).
     rewrite Max.max_l => //=; first by (nify; omega).
     destruct l; nify; omega.
   - intros ? Hin. eapply Hcost. rewrite in_cons. apply /orP; auto.
 Qed.
 
-Definition partition' (n: nat) (l: list nat) : 
+Definition partition' (n: nat) (l: list nat) :
   cost { x : splitting nat | perm_eq (lower x ++ middle x ++ upper x) l &&
                              ((n \in l) ==> (0 < size (middle x)))}.
 Proof.
@@ -148,7 +148,7 @@ Defined.
 Lemma partition_work l: ∀ n, work (partition n l) = 3 * (size l).
 Proof.
   intros n.
-  rewrite /partition. 
+  rewrite /partition.
   rewrite (work_mret _ ( λ x, let '(l1, l2, l3) := x in {| lower := l1;
                                                            middle := l2;
                                                            upper := l3 |})).
@@ -160,7 +160,7 @@ Qed.
 
 Lemma partition_span a l: ∀ n, span (partition n (a :: l)) = 1.
 Proof.
-  intros n. rewrite /partition. 
+  intros n. rewrite /partition.
   rewrite (span_mret _ ( λ x, let '(l1, l2, l3) := x in {| lower := l1;
                                                            middle := l2;
                                                            upper := l3 |})).
@@ -175,18 +175,18 @@ Require Import Reals Fourier FunctionalExtensionality.
 
 Program Definition unif n : ldist_cost { x : nat | (leq x n) } :=
   mklDist [ seq (1/(INR (n.+1)),
-                {| work := 0; 
+                {| work := 0;
                    span := 0;
                    result := exist _ (nat_of_ord i) _|}) | i <- enum 'I_(n.+1) ] _ _.
 Next Obligation. intros n (?&?). rewrite -ltnS. done. Qed.
-Next Obligation. 
+Next Obligation.
   intros ?.
   apply /allP => r.
   rewrite -map_comp //= (@eq_map _ _ _ (λ x, 1 / INR (S n))); last by done.
   rewrite (nat_of_ord_map_iota (S n) (λ x, 1 / INR (S n))).
   rewrite //=. induction (iota 1 n) => //=.
   - rewrite in_cons. move /orP => [Heq|Hin]; eauto.
-    move /eqP in Heq. rewrite Heq. 
+    move /eqP in Heq. rewrite Heq.
     destruct (Rle_dec) as [|Hn]; [ by auto | exfalso; apply Hn].
     left. apply Rdiv_lt_0_compat; first fourier.
     destruct n; first fourier.
@@ -194,7 +194,7 @@ Next Obligation.
     cut (INR 0 < INR (S n)); intros; first by fourier.
     apply lt_INR. omega.
   - rewrite in_cons. move /orP => [Heq|Hin]; eauto.
-    move /eqP in Heq. rewrite Heq. 
+    move /eqP in Heq. rewrite Heq.
     destruct (Rle_dec 0 (1 / _)) as [|Hn]; [ by auto | exfalso; apply Hn].
     left. apply Rdiv_lt_0_compat; first fourier.
     destruct n; first by fourier.
@@ -206,11 +206,11 @@ Next Obligation.
   intros n.
   rewrite -map_comp //= (@eq_map _ _ _ (λ x, 1 / INR (S n))); last by done.
   rewrite (nat_of_ord_map_iota (S n) (λ x, 1 / INR (S n))).
-  cut (∀ o k, \big[Rplus/0]_(a<-[seq (1 / INR n.+1) | i <- iota k o]) a 
+  cut (∀ o k, \big[Rplus/0]_(a<-[seq (1 / INR n.+1) | i <- iota k o]) a
             = INR (o) / INR (n.+1)).
-  { 
+  {
     intros Hcut. specialize (Hcut (n.+1) O). rewrite //= in Hcut.
-    rewrite Hcut. apply /eqP => //=. field. 
+    rewrite Hcut. apply /eqP => //=. field.
     apply Rgt_not_eq.
     destruct n; first fourier.
     replace 0 with (INR O) by auto.
@@ -218,9 +218,9 @@ Next Obligation.
     apply lt_INR; omega.
   }
   induction o => k.
-  - rewrite big_nil. replace (INR 0) with 0 by auto. rewrite /Rdiv Rmult_0_l //. 
+  - rewrite big_nil. replace (INR 0) with 0 by auto. rewrite /Rdiv Rmult_0_l //.
   - rewrite big_cons. rewrite (S_INR o).
-    rewrite Rdiv_plus_distr IHo. ring. 
+    rewrite Rdiv_plus_distr IHo. ring.
 Qed.
 
 Program Definition draw_pivot (a : nat) (l: list nat) : ldist_cost { x : nat | x \in (a :: l) } :=
@@ -230,22 +230,22 @@ Next Obligation. intros a l (?&?). rewrite mem_nth //. Qed.
 
 Definition qs : list nat → ldist_cost (list nat).
   refine(Fix (measure_wf lt_wf size) (fun _ => ldist_cost (list nat))
-  (fun l qs => 
+  (fun l qs =>
   match l as l' return (l = l' → ldist_cost (list nat)) with
     | [::] => λ eq, mret ([::])
     | [::a] => λ eq, mret ([::a])
-    | (a :: b :: l') => λ eq, 
+    | (a :: b :: l') => λ eq,
       p ← draw_pivot a (b :: l');
       spl ← dist_ret _ (partition' (sval p) l);
       '(lls, lus) ← rpar2 (qs (lower (sval spl)) _) (qs (upper (sval spl)) _);
       mret (lls ++ (middle (sval spl)) ++ lus)
   end (Init.Logic.eq_refl))); rewrite /MR; auto.
-  - abstract (destruct spl as (spl&pf) => //=; move /andP in pf; 
+  - abstract (destruct spl as (spl&pf) => //=; move /andP in pf;
     destruct pf as (pf1&pf2); move /implyP in pf2;
     rewrite -(perm_eq_size pf1) //= ?size_cat -?plusE;
     assert (0 < size (middle spl))%coq_nat by
     ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=); omega).
-  - abstract (destruct spl as (spl&pf) => //=; move /andP in pf; 
+  - abstract (destruct spl as (spl&pf) => //=; move /andP in pf;
     destruct pf as (pf1&pf2); move /implyP in pf2;
     rewrite -(perm_eq_size pf1) //= ?size_cat -?plusE;
     assert (0 < size (middle spl))%coq_nat by
@@ -258,7 +258,7 @@ Lemma easy_fix_eq:
     ∀ x : A, Fix Rwf P F x = F x (λ (y : A) (_ : R y x), Fix Rwf P F y).
 Proof.
   intros. apply Init.Wf.Fix_eq.
-  intros. assert (f = g) as ->; last done. 
+  intros. assert (f = g) as ->; last done.
   apply functional_extensionality_dep => ?.
   apply functional_extensionality_dep => ?. done.
 Qed.
@@ -268,7 +268,7 @@ Lemma qs_unfold_aux l:
   match l as l' return (l = l' → ldist_cost (list nat)) with
     | [::] => λ eq, mret ([::])
     | [:: a] => λ eq, mret ([:: a])
-    | (a :: b :: l') => λ eq, 
+    | (a :: b :: l') => λ eq,
       p ← draw_pivot a (b :: l');
       spl ← dist_ret _ (partition' (sval p) l);
       '(lls, lus) ← rpar2 (qs (lower (sval spl))) (qs (upper (sval spl)));
@@ -277,7 +277,7 @@ Lemma qs_unfold_aux l:
 Proof. rewrite /qs easy_fix_eq; done. Qed.
 
 Lemma qs_unfold l:
-  qs l = 
+  qs l =
   (match l as l
   with
     | [::] => mret ([::])
@@ -288,6 +288,6 @@ Lemma qs_unfold l:
       '(lls, lus) ← rpar2 (qs (lower (sval spl))) (qs (upper (sval spl)));
       mret (lls ++ (middle (sval spl)) ++ lus)
   end).
-Proof. 
+Proof.
   rewrite qs_unfold_aux. destruct l => //. destruct l => //.
 Qed.

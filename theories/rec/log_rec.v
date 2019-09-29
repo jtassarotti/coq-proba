@@ -23,7 +23,7 @@ Module recurrence_log (ALPHA: rec_factor).
   Definition d := 1.
   Definition umin := 1.
 
-  Definition a x := 
+  Definition a x :=
     match Rle_dec x 1 with
       | left _ => 0
       | _ =>
@@ -41,8 +41,8 @@ Module recurrence_log (ALPHA: rec_factor).
 
   Definition k := -/ ln(alpha).
 
-  Definition u x := 
-    match Rle_dec x 1 with 
+  Definition u x :=
+    match Rle_dec x 1 with
       | left _ => 1
       | _ => ((k * ln x + 1))
     end.
@@ -71,27 +71,27 @@ Module recurrence_log (ALPHA: rec_factor).
   Lemma kgt1: 1 < k.
   Proof.
     generalize (alpha_range), ln_alpha; intros.
-    rewrite /k. 
+    rewrite /k.
     transitivity (/ alpha); last auto; try nra.
     apply one_lt_inv_alpha.
   Qed.
-  
+
 
   Lemma kgt0: 0 < k.
   Proof.
     etransitivity; last apply kgt1. fourier.
   Qed.
-  
+
   Lemma u_mono x y: x ≤ y → u x ≤ u y.
   Proof.
     rewrite /u/a/m/d => Hle.
     destruct (Rle_dec) as [Hle'|Hnle']; try nra;
     destruct (Rle_dec) as [Hle''|Hnle'']; try nra.
-    - 
+    -
       cut (0 ≤ ln y).
-      { 
+      {
         intros. generalize kgt1 => ?.
-        assert (k * ln y ≥ 0). 
+        assert (k * ln y ≥ 0).
         { transitivity (1 * ln y); last fourier.
           apply Rle_ge, Rmult_le_compat; try fourier.
         }
@@ -101,7 +101,7 @@ Module recurrence_log (ALPHA: rec_factor).
     - specialize (kgt0) => Hk.
       apply Rplus_le_compat; last nra.
       cut (ln x ≤ ln y).
-      { 
+      {
         specialize (kgt0); cut (0 ≤ ln x); intros; first apply Rmult_le_compat; auto; try fourier.
         rewrite -(ln_1). left; apply ln_increasing; nra.
       }
@@ -116,7 +116,7 @@ Module recurrence_log (ALPHA: rec_factor).
     destruct (Rle_dec) as [Hle''|Hnle'']; try nra.
     - specialize (kgt0) => Hk.
       assert (0 < k * ln y).
-      { 
+      {
         apply Rmult_lt_0_compat; first nra.
         apply Rlt_0_ln; fourier.
       }
@@ -124,7 +124,7 @@ Module recurrence_log (ALPHA: rec_factor).
     - specialize (kgt0) => Hk.
       apply Rplus_lt_compat_r.
       cut (ln x < ln y).
-      { 
+      {
         specialize (kgt0); cut (0 < ln x); intros; first apply Rmult_lt_compat_l; auto; try fourier.
         rewrite -(ln_1). apply ln_increasing; nra.
       }
@@ -143,16 +143,16 @@ Module recurrence_log (ALPHA: rec_factor).
       generalize (kgt0) => Hk.
       apply Rdiv_le_compat_contra; nra.
   Qed.
-  
+
   Lemma u'_pos x: u' x > 0.
-  Proof.                      
+  Proof.
     rewrite /u'/a/m/d.
     destruct (Rle_dec _); try nra.
     apply exp_pos.
   Qed.
 
   Lemma u'_inv_above x: d < x → u' (u x) = x.
-  Proof.     
+  Proof.
     rewrite /u/u'/d.
     destruct (Rle_dec) as [Hc1|Hc1] => //=; try nra;
     destruct (Rle_dec) as [Hc2|Hc2] => //=; try nra.
@@ -162,7 +162,7 @@ Module recurrence_log (ALPHA: rec_factor).
       assert (0 < (k * ln x) * (k * ln x)) by (repeat apply Rmult_lt_0_compat; auto using kgt0).
       nra.
     - rewrite -[a in _ = a]exp_ln; last nra.
-      intros; do 1 f_equal. 
+      intros; do 1 f_equal.
       assert (0 < ln x) by (apply Rlt_0_ln; auto).
       assert (0 < k * ln x) by (apply Rmult_lt_0_compat; auto using kgt0).
       field. apply Rgt_not_eq, kgt0.
@@ -177,20 +177,20 @@ Module recurrence_log (ALPHA: rec_factor).
       destruct (Rle_dec) => //=; try nra.
       destruct (Rle_dec) => //=; try nra.
   Qed.
-  
+
   Lemma u_inv_above x: umin < x → u (u' x) = x.
   Proof.
     rewrite /u/u'/umin.
     destruct (Rle_dec) as [Hc1|?] => //=; try nra;
     destruct (Rle_dec) as [?|?] => //=; try nra.
     - exfalso. rewrite -{2}exp_0 in Hc1.
-      apply exp_le_embedding in Hc1. 
+      apply exp_le_embedding in Hc1.
       specialize (kgt1) => Hk.
-      cut (0 < (x - 1) / k). 
+      cut (0 < (x - 1) / k).
       { by intros ?%Rlt_not_le. }
       apply Rdiv_lt_0_compat; nra.
     - rewrite ln_exp. rewrite /Rdiv. intros.
-      field. apply Rgt_not_eq, kgt0. 
+      field. apply Rgt_not_eq, kgt0.
   Qed.
 
   Lemma ud_umin: u d = umin.
@@ -198,7 +198,7 @@ Module recurrence_log (ALPHA: rec_factor).
     rewrite /u/d/umin//=.
     destruct (Rle_dec); nra.
   Qed.
-  
+
   Lemma u_cont: continuity u.
   Proof.
     apply piecewise_continuity' with (g := λ x, (k * ln x + 1))
@@ -220,9 +220,9 @@ Module recurrence_log (ALPHA: rec_factor).
 
   Lemma a_cont_pt: ∀ x, d < x → continuity_pt a x.
   Proof.
-    rewrite /d. intros. 
+    rewrite /d. intros.
     apply piecewise_continuity_pt with (P := λ x, d < x)
-                                               (g := λ x,  
+                                               (g := λ x,
                                                      match Rlt_dec x 2 with
                                                      | left _ => (x - 1)
                                                      | _ => 1
@@ -231,7 +231,7 @@ Module recurrence_log (ALPHA: rec_factor).
     - intros. apply continuity_const => ??. done.
     - intros. apply piecewise_continuity_pt with (g := λ x, 1)
                                                  (f := λ x, (x - 1))
-                                                 (z := 2) 
+                                                 (z := 2)
                                                  (P := λ x, d < x);
                 try (intros; destruct (Rlt_dec); nra); try nra.
       * rewrite /d. intros.
@@ -239,20 +239,20 @@ Module recurrence_log (ALPHA: rec_factor).
            *** apply continuity_id => ??.
            *** apply continuity_const => ??. done.
       * intros. apply continuity_const => ?? //=.
-    - intros x'. rewrite /a. destruct Rle_dec; try nra; destruct Rlt_dec; nra. 
-    - intros x'. rewrite /a. destruct Rle_dec; nra. 
+    - intros x'. rewrite /a. destruct Rle_dec; try nra; destruct Rlt_dec; nra.
+    - intros x'. rewrite /a. destruct Rle_dec; nra.
     - rewrite /d. intros. fourier.
     - rewrite /d. fourier.
   Qed.
-  
+
   Lemma kinv: /k = ln (/alpha).
   Proof.
     rewrite /k.
     generalize (alpha_range), ln_alpha; intros.
-    rewrite ln_Rinv; last by nra. 
+    rewrite ln_Rinv; last by nra.
     assert (0 < ln (/alpha)).
     { rewrite -ln_1. apply ln_increasing; first nra. apply one_lt_inv_alpha. }
-    rewrite Ropp_inv_permute. 
+    rewrite Ropp_inv_permute.
     - rewrite Rinv_involutive //.
       cut (ln alpha ≠ 0); first by nra.
       apply Rlt_not_eq. rewrite -ln_1.
@@ -265,14 +265,14 @@ Module recurrence_log (ALPHA: rec_factor).
   Lemma urec0 x: x > d → u x ≥ a x + u (m x).
   Proof.
     generalize (alpha_range), ln_alpha => ??.
-    rewrite /u/a/m/d. 
+    rewrite /u/a/m/d.
     destruct (Rle_dec) as [Hc1|Hc1] => //=; first nra.
     destruct (Rle_dec) as [Hc2|Hc2] => //=.
-    - destruct (Rlt_dec) as [?|?]. 
-      { 
+    - destruct (Rlt_dec) as [?|?].
+      {
         destruct (Rlt_dec) as [?|?]; try nra; last first.
         { intros.
-          assert (1 / alpha < 2). 
+          assert (1 / alpha < 2).
           { destruct alpha_range as (Hlt&?).
             apply Rinv_lt_contravar in Hlt; last nra.
             nra.
@@ -306,9 +306,9 @@ Module recurrence_log (ALPHA: rec_factor).
         * rewrite //=. nra.
       }
       assert (x = /alpha) as ->.
-      { 
+      {
         apply (Rmult_le_compat_r (/alpha)) in Hc2; last first.
-        {  
+        {
           left. transitivity 1; first nra. apply one_lt_inv_alpha.
         }
         rewrite Rmult_assoc Rinv_r in Hc2; last first.
@@ -347,8 +347,8 @@ Module recurrence_log (ALPHA: rec_factor).
     rewrite /d/a => ??. destruct (Rlt_dec); destruct (Rle_dec); nra.
   Qed.
 
-  Lemma a_mono: Rmono a. 
-  Proof.                                        
+  Lemma a_mono: Rmono a.
+  Proof.
     rewrite /Rmono. intros x x' Hle.
     inversion Hle; subst; try reflexivity.
     destruct (Rle_dec d x) as [?|?%Rnot_le_gt].
@@ -362,7 +362,7 @@ Module recurrence_log (ALPHA: rec_factor).
     intros y y' Hlt Hle.
     rewrite /m.
     destruct (Rlt_dec).
-    {  destruct (Rlt_dec). 
+    {  destruct (Rlt_dec).
        - intros. rewrite /Rdiv ?Rmult_0_l. fourier.
        - intros. rewrite /Rdiv ?Rmult_0_l.
          rewrite Rmult_comm -Rmult_assoc Rinv_l; nra.

@@ -53,7 +53,7 @@ Proof. intros ?. apply eq_ival_refl. Qed.
 Global Instance eq_ivd_Symmetry {X}: Symmetric (@eq_ivd X).
 Proof. intros ??. apply eq_ival_sym. Qed.
 Global Instance eq_ivd_Equivalence {X}: Equivalence (@eq_ivd X).
-Proof. split; apply _. Qed. 
+Proof. split; apply _. Qed.
 
 Global Instance ivd_ret: MRet ivdist.
 refine(λ A x, {| ivd_ival := mret x;
@@ -76,19 +76,19 @@ Definition prod_pmf (ab: {i : idx I & idx (f (ind I i))})
 Section double.
 Variable P: pred (A * B).
 
-Definition σprod := 
+Definition σprod :=
   λ n, match @pickle_inv [countType of prod_type] n with
        | Some (existT a b) => (S (pickle a), S (pickle b))
        | None => (O, O)
        end.
 
-Definition aprod := 
+Definition aprod :=
   λ mn, match mn with
-        | (S m, S n) => 
+        | (S m, S n) =>
           match (@pickle_inv (idx I) m) with
           | Some a =>
             match @pickle_inv (idx (f (ind I a))) n with
-            |  Some b => 
+            |  Some b =>
                 prod_pmf (existT a b)
             | None => 0
             end
@@ -104,16 +104,16 @@ Proof.
   case_eq (@pickle_inv [countType of prod_type] n); last by nra.
   case_eq (@pickle_inv [countType of prod_type] n'); last first.
   { intros Heq_none (a&b) Heq_some => //=. }
-  intros (a'&b') Heq' (a&b) Heq Hneq0 => //=. 
+  intros (a'&b') Heq' (a&b) Heq Hneq0 => //=.
   inversion 1 as [[Hp1 Hp2]].
   assert (a = a').
-  { 
+  {
     apply (f_equal (@pickle_inv (idx I))) in Hp1. rewrite ?pickleK_inv in Hp1.
     inversion Hp1; done.
   }
   subst.
   assert (b = b').
-  { 
+  {
     apply (f_equal (@pickle_inv (idx (f (ind I a'))))) in Hp2. rewrite ?pickleK_inv in Hp2.
     inversion Hp2; done.
   }
@@ -148,7 +148,7 @@ Variable (Hf_sum_bounded:
                                     v <= rb).
 Lemma aprod_double_summable: double_summable aprod.
 Proof.
-  exists (Rmax 1 (Rabs rb * Rabs rI)) => n. 
+  exists (Rmax 1 (Rabs rb * Rabs rI)) => n.
   destruct n.
   * rewrite ?sum_O //= Rabs_R0. apply Rmax_case_strong; nra.
   * transitivity
@@ -162,7 +162,7 @@ Proof.
                           (λ i, match i with
                                   O => 0
                                 | S i => countable_sum (λ i, val I i * Rabs rb) i
-                                end)). 
+                                end)).
       apply Rle_bigr.
 
       intros i ?.
@@ -182,13 +182,13 @@ Proof.
       { right. apply sum_n_ext => k. rewrite /countable_sum//=.
         destruct pickle_inv => //=.
         * rewrite /prod_pmf//= ?Rabs_mult Rmult_assoc; f_equal.
-          ** apply Rabs_right, val_nonneg. 
-          ** f_equal. apply Rabs_right, val_nonneg. 
+          ** apply Rabs_right, val_nonneg.
+          ** f_equal. apply Rabs_right, val_nonneg.
         * rewrite Rabs_R0; nra.
       }
       rewrite sum_n_mult_l /mult//=.
       destruct (val_nonneg I a) as [Hgt|Heq0]; last first.
-      { rewrite Heq0. nra. } 
+      { rewrite Heq0. nra. }
       apply Rmult_le_compat_l.
       { apply Rge_le, val_nonneg.  }
       edestruct (Hf_sum_bounded a) as (r'&His&Hlt); auto.
@@ -224,7 +224,7 @@ Proof.
   eapply ex_series_ext; last first.
   { eexists;
       eapply (series_double_covering_Rabs _ _ σprod_inj σprod_cov DS); eauto. }
-  intros n. 
+  intros n.
   rewrite [a in a = _]Series_incr_1; last first.
   {
     eapply ex_series_row, DS.
@@ -240,7 +240,7 @@ Proof.
   eapply ex_series_ext; last first.
   { eexists;
       eapply (series_double_covering _ _ σprod_inj σprod_cov DS); eauto. }
-  intros n. 
+  intros n.
   rewrite [a in a = _]Series_incr_1; last first.
   {
     eapply ex_series_Rabs. eapply ex_series_row, DS.
@@ -254,7 +254,7 @@ Lemma is_series_prod_row:
             (Series (λ j, Series (λ k, aprod (S j, S k)))).
 Proof.
   apply (is_series_ext (aprod \o σprod)).
-  { 
+  {
     intros n. rewrite /aprod/σprod/countable_sum/prod_pmf//=.
     destruct (pickle_inv _) as [s|] => //=.
     destruct s as (a0, b0) => //=.
@@ -264,8 +264,8 @@ Proof.
                           (series_double_covering' _ _ σprod_inj σprod_cov DS)).
   cut (Series (λ j, Series (λ k, aprod (j, k))) =
       (Series (λ j : nat, Series (λ k : nat, aprod (S j, S k))))).
-  { 
-    intros <-. apply Series_correct. 
+  {
+    intros <-. apply Series_correct.
     eexists; eapply (series_double_covering _ _ σprod_inj σprod_cov DS); eauto.
   }
   rewrite Series_incr_1; last first.
@@ -312,7 +312,7 @@ Lemma prod_abs_series_ext:
 Proof.
   intros n. rewrite /countable_sum//=/oapp.
   destruct (pickle_inv); last first.
-  { setoid_rewrite Rabs_R0. 
+  { setoid_rewrite Rabs_R0.
     by apply Series_0. }
   rewrite -Series_scal_r.
   eapply Series_ext => m.
@@ -406,7 +406,7 @@ Proof.
   eapply (is_series_chain).
   { eapply is_series_prod_row. }
   rewrite //=.
-  eapply (is_series_ext (countable_sum (val I))). 
+  eapply (is_series_ext (countable_sum (val I))).
   { intros n.
     rewrite /countable_sum//=. destruct pickle_inv as [a|]; last first.
     { rewrite //=. by rewrite Series_0. }
@@ -437,7 +437,7 @@ Proof.
   eapply pre_converge.summable_implies_ds; eauto.
   { apply σprod_inj. }
   { apply σprod_cov. }
-  { eapply ex_series_ext; last eassumption. 
+  { eapply ex_series_ext; last eassumption.
     intros n. rewrite /aprod/σprod/countable_sum/prod_pmf//=.
     destruct (pickle_inv _) as [s|] => //=.
     destruct s as (a0, b0) => //=.
@@ -463,7 +463,7 @@ Variable (Habs_each_row: ∀ i,
   ex_series (countable_sum (λ i', Rabs (h (ind (f (ind I i)) i')
                                   * val (f (ind I i)) i')))). (* * val I i)))). *)
 
-Variable (Hex_series: 
+Variable (Hex_series:
             ex_series (countable_sum (λ i, (Series (countable_sum (λ i', h (ind (f (ind I i)) i')
                                      * val (f (ind I i)) i'))) * val I i))).
 Variable (Hhpos: ∀ x, h x >= 0).
@@ -475,7 +475,7 @@ Proof.
     ** rewrite //=. setoid_rewrite Rabs_R0.
        eapply ex_series_eventually0. exists O; eauto.
     ** eapply ex_series_incr_1.
-       rewrite /aprod. destruct (@pickle_inv (idx I) j) as [s|]; last 
+       rewrite /aprod. destruct (@pickle_inv (idx I) j) as [s|]; last
        (by setoid_rewrite Rabs_R0; eapply ex_series_eventually0; exists O; eauto).
        destruct (val_nonneg I s) as [Hgt|Heq0]; last first.
        { eapply (ex_series_ext (λ _, 0)).
@@ -566,7 +566,7 @@ Defined.
 
 Global Instance ivd_bind_proper X Y :
   Proper (pointwise_relation X (@eq_ivd Y) ==> @eq_ivd X ==> @eq_ivd Y) (ivd_bind X Y).
-Proof. intros ?? ? ?? ?. eapply ibind_proper; eauto. Qed. 
+Proof. intros ?? ? ?? ?. eapply ibind_proper; eauto. Qed.
 
 Lemma ivd_assoc {A B C} (m: ivdist A) (f: A → ivdist B) (g: B → ivdist C) :
   eq_ivd (mbind g (mbind f m)) (mbind (λ x, mbind g (f x)) m).
@@ -590,7 +590,7 @@ Lemma ivd_bind_congr {A B} (m1 m2: ivdist A) (f1 f2: A → ivdist B) :
   eq_ivd m1 m2 →
   (∀ a, eq_ivd (f1 a) (f2 a)) →
   eq_ivd (x ← m1; f1 x) (x ← m2; f2 x).
-Proof. 
+Proof.
   intros Hlem Hlef.
   rewrite /eq_ivd.
   apply ival_bind_congr; eauto.
@@ -602,7 +602,7 @@ Proof.
   assert (iequip:
             is_series (countable_sum (val (iplus (iscale p (mret true))
                                                  (iscale (1 - p) (mret false))))) 1).
-  { 
+  {
     eapply Series_correct'.
     { rewrite SeriesC_SeriesF.
       rewrite SeriesF_big_op.
@@ -687,14 +687,14 @@ Proof.
   setoid_rewrite ival_scale_bind.
   reflexivity.
 Qed.
-  
+
 (* TODO: finite distributions can be regarded as ivdists. *)
 
 (*
 Lemma pr_rvar_ivdist {A: eqType} (ivd: ivdist A) r :
   pr_eq (rvar_of_ivdist ivd) r = \big[Rplus/0%R]_(a | ind ivd a == r) val ivd a.
-Proof. 
-  rewrite /pr_eq/pr. 
+Proof.
+  rewrite /pr_eq/pr.
   rewrite SeriesC_fin_big -big_mkcondr.
   rewrite /dist_of_ivdist //=.
 Qed.
@@ -717,8 +717,8 @@ Qed.
 (*
 Lemma eq_ival_sum {X} (I1 I2: ival X) P:
   eq_ival I1 I2 →
-  \big[Rplus/0]_(i | P (ind I1 i)) (val I1 i) = 
-  \big[Rplus/0]_(i | P (ind I2 i)) (val I2 i). 
+  \big[Rplus/0]_(i | P (ind I1 i)) (val I1 i) =
+  \big[Rplus/0]_(i | P (ind I2 i)) (val I2 i).
 Proof.
   intros Heq.
   transitivity (\big[Rplus/0]_(i : support (val I1) | P (ind I1 (sval i))) (val I1 (sval i))).
@@ -765,8 +765,8 @@ Qed.
 (*
 Lemma pr_gt_rvar_ivdist (ivd: ivdist R) r :
   pr_gt (rvar_of_ivdist ivd) r = \big[Rplus/0%R]_(a | Rgt_dec (ind ivd a) r) val ivd a.
-Proof. 
-  rewrite /pr_gt/pr. 
+Proof.
+  rewrite /pr_gt/pr.
   rewrite SeriesC_fin_big -big_mkcondr.
   rewrite /dist_of_ivdist //=.
 Qed.
@@ -774,15 +774,15 @@ Qed.
 
 (*
 Lemma pr_mbind_ivdist {A B: eqType} (h: ivdist A) (f: A → ivdist B) (b: B) :
-  pr_eq (rvar_of_ivdist (mbind f h)) b = 
-  \big[Rplus/0]_(a : imgT (rvar_of_ivdist h)) 
+  pr_eq (rvar_of_ivdist (mbind f h)) b =
+  \big[Rplus/0]_(a : imgT (rvar_of_ivdist h))
    (pr_eq (rvar_of_ivdist h) (sval a) * pr_eq (rvar_of_ivdist (f (sval a))) b).
 Proof.
   transitivity (Ex (rvar_comp (rvar_of_ivdist h) (λ a, pr_eq (rvar_of_ivdist (f a)) b))); last first.
-  { rewrite Ex_fin_comp. eapply eq_bigr => ??. field. }  
+  { rewrite Ex_fin_comp. eapply eq_bigr => ??. field. }
   rewrite pr_rvar_ivdist Ex_fin_pt.
   symmetry. etransitivity.
-  { apply eq_bigr => ?? /=. rewrite !pr_rvar_ivdist. done. } 
+  { apply eq_bigr => ?? /=. rewrite !pr_rvar_ivdist. done. }
   rewrite //=.
   symmetry.
   rewrite /index_enum {1}[@Finite.enum]unlock /tag_enum big_flatten.
@@ -798,7 +798,7 @@ Qed.
 (*
 Lemma img_rvar_of_ivdist {A: eqType} (h: ivdist A):
   map sval (Finite.enum [finType of (imgT (rvar_of_ivdist h))]) = undup [seq i.2 | i <- h].
-Proof.  
+Proof.
   rewrite {1}[@Finite.enum]unlock //=. rewrite img_fin_enum_sval.
   assert (a: A).
   { destruct h as (l, pf1, pf2). destruct l.
@@ -810,7 +810,7 @@ Proof.
   etransitivity.
   - apply (@eq_map _ _ _ (λ n, nth a [seq i.2 | i <- h] (nat_of_ord n))).
     { intro i. erewrite set_nth_default; auto. rewrite size_map. done. }
-  - rewrite -enumT. rewrite (nat_of_ord_map_iota (size h) (λ n, nth a [seq (snd i) | i <- h] n)). 
+  - rewrite -enumT. rewrite (nat_of_ord_map_iota (size h) (λ n, nth a [seq (snd i) | i <- h] n)).
   destruct h as (l, pf1, pf2) => //=; clear pf1 pf2.
   rewrite -(size_map snd l) map_nth_iota //.
 Qed.
@@ -818,8 +818,8 @@ Qed.
 
 (*
 Lemma Ex_mbind_ivdist {A: eqType} (h: ivdist A) (f: A → ivdist R) :
-  Ex (rvar_of_ivdist (mbind f h)) = 
-  \big[Rplus/0]_(a : imgT (rvar_of_ivdist h)) 
+  Ex (rvar_of_ivdist (mbind f h)) =
+  \big[Rplus/0]_(a : imgT (rvar_of_ivdist h))
    (pr_eq (rvar_of_ivdist h) (sval a) * Ex (rvar_of_ivdist (f (sval a)))).
 Proof.
   rewrite /Ex SeriesC_fin_big.
@@ -829,7 +829,7 @@ Proof.
   rewrite exchange_big.
   apply eq_bigr => x _.
   rewrite SeriesC_fin_big //=.
-  rewrite -big_distrr //=. 
+  rewrite -big_distrr //=.
   f_equal.
   rewrite /index_enum//=.
   rewrite -(big_map sval (λ x, true) (λ i, pr_eq _ i * i)).
@@ -844,7 +844,7 @@ Proof.
     - intros ? ? => //=. intros. by apply sval_inj_pred.
     - rewrite  {1}[@Finite.enum]unlock //=. apply img_fin_uniq.
   }
-  { 
+  {
     apply filter_uniq.
     rewrite map_inj_in_uniq; last first.
     { intros ? ? => //=. intros. by apply sval_inj_pred. }
@@ -853,7 +853,7 @@ Proof.
   destruct x as (x&Hinx).
   rewrite //=.
   rewrite img_alt in Hinx * => [[ih Heqx]].
-  
+
   intros r0.
   rewrite ?mem_filter.
   apply andb_id2l. move /eqP => Hneq0.
@@ -885,7 +885,7 @@ Proof.
     rewrite  {1}[@Finite.enum]unlock //=.
     rewrite //= in Hpr0.
     exists (exist _ r0 Hpr0); auto.
-    apply img_fin_mem. 
+    apply img_fin_mem.
 Qed.
 *)
 
@@ -927,7 +927,7 @@ Proof.
   - intros Heq. f_equal. apply Hprim2; eauto.
 Qed.
 *)
-  
+
 Lemma primitive_ivdplus_mret {X} p HPf (x1 x2: X):
   x1 ≠ x2 →
   ival_primitive (ivdplus p HPf (mret x1) (mret x2)).
@@ -975,7 +975,7 @@ Proof. intros ?. apply eq_ival_prob_refl. Qed.
 Global Instance eq_ivd_prob_Symmetry {X}: Symmetric (@eq_ivd_prob X).
 Proof. intros ??. apply eq_ival_prob_sym. Qed.
 Global Instance eq_ivd_prob_Equivalence {X}: Equivalence (@eq_ivd_prob X).
-Proof. split; apply _. Qed. 
+Proof. split; apply _. Qed.
 
 Global Instance eq_ivd_prob_proper X:
   Proper (@eq_ivd X ==> @eq_ivd X ==> iff) (@eq_ivd_prob X).
@@ -985,12 +985,12 @@ Proof.
   * intros. etransitivity.
     ** eapply eq_ival_to_eq_ival_prob. symmetry; eauto.
     ** etransitivity.
-       *** eauto. 
+       *** eauto.
        *** eapply eq_ival_to_eq_ival_prob; eauto.
   * intros. etransitivity.
     ** eapply eq_ival_to_eq_ival_prob. eauto.
     ** etransitivity.
-       *** eauto. 
+       *** eauto.
        *** eapply eq_ival_to_eq_ival_prob; symmetry; eauto.
 Qed.
 

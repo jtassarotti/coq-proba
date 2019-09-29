@@ -53,7 +53,7 @@ Proof.
   { apply sigma_closed_set_minus; eauto. }
   assert (∀ i : nat,
              F (set_minus (completion_union_proj μ Ps Hin i).2 (completion_union_proj μ Ps Hin i).1)).
-  { 
+  {
     intros i. rewrite /completion_union_proj.
     do 2 destruct constructive_indefinite_description => //=.
     apply sigma_closed_set_minus; intuition.
@@ -107,8 +107,8 @@ Definition completion_fun {A: Type} {F: sigma_algebra A} (μ : measure F) :
   (A → Prop) → R.
 Proof.
   intros U. refine (sval (completeness (λ r, ∃ V, F V ∧ le_prop V U ∧ μ V = r) _ _)).
-  
+
 
 Definition completion {A: Type} {F: sigma_algebra A} (μ: measure F): measure (sigma_completion μ).
 Proof.
-  refine {| measure_fun := 
+  refine {| measure_fun :=

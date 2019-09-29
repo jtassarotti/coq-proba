@@ -41,7 +41,7 @@ Lemma Pr_eq_ival_unif (n: nat) k:
 Proof.
   intros Hle. rewrite /Pr/Ex_ival.
   f_equal.
-  apply is_series_unique. 
+  apply is_series_unique.
   assert (k < S n)%nat as Hlt by (nify; omega).
   eapply is_seriesC_ext; last apply (is_seriesC_bump [finType of ordinal (S n)] (Ordinal Hlt)).
   intros [n' Hlt']. rewrite //=.
@@ -60,4 +60,3 @@ Proof.
   intros [i1 ?] [i2 ?] => //= Heq.
   subst. apply ord_inj => //=.
 Qed.
-  

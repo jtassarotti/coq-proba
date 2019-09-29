@@ -15,7 +15,7 @@ Definition subset_couplingP {A1 A2} (Is1: pidist A1) (Is2: pidist A2) (P: A1 →
   ∃ (I2: ival A2), In (I2 : ival A2) Is2 ∧ ∃ (C: ival_couplingP I1 I2 P), True.
 
 Lemma subset_coupling_eq {A} (Is1 Is2: pidist A)
-      (Ic: subset_couplingP Is1 Is2 (λ x y, x = y)): le_pidist Is1 Is2. 
+      (Ic: subset_couplingP Is1 Is2 (λ x y, x = y)): le_pidist Is1 Is2.
 Proof.
   intros I1 Hin.
   specialize (Ic (lift_In_pidist I1 Hin) Hin).
@@ -25,7 +25,7 @@ Proof.
 Qed.
 
 Lemma singleton_coupling_eq {A} (I1 : ivdist A) (Is2: pidist A)
-      (Ic: subset_couplingP (singleton I1) Is2 (λ x y, x = y)): In_pidist I1 Is2. 
+      (Ic: subset_couplingP (singleton I1) Is2 (λ x y, x = y)): In_pidist I1 Is2.
 Proof.
   by apply In_pidist_le_singleton, subset_coupling_eq.
 Qed.
@@ -38,7 +38,7 @@ Proof.
   intros Hfc.
   intros I1 Hin.
   edestruct (pival_mbind_in_inv_idxOf Is1 f1 I1) as (I1_0&h1&Hin1_0&Hh1&Heq); auto.
-  specialize (Ic I1_0 Hin1_0). 
+  specialize (Ic I1_0 Hin1_0).
   destruct Ic as (I2_0&Hin2_0&(Hcouple&_)).
   apply ival_coupling_idxOf in Hcouple.
   destruct Hcouple as ((Rel&Hfunc)&[Ic_0 Hp1 Hp2]).
@@ -54,7 +54,7 @@ Proof.
 
 
   unshelve (edestruct (pival_mbind_in_alt2_idxOf Is2 f2 I2_0) as (Ib&Heqb&Hinb)).
-  { intros i2. 
+  { intros i2.
     destruct (Rgt_dec (val I2_0 i2) 0) as [Hgt|Hngt]; last (exact zero_ival).
     destruct (hidx2 (coerce_supp _ _ Hgt)) as ((i0&[])&Hgt0).
     destruct (ind Ic_0 i0) as ((i1&i2')&(HP&Hsup1&Hsup2)).
@@ -63,8 +63,8 @@ Proof.
     destruct Hfc as (I2&?).
     exact I2.
   }
-  - exists I2_0; split; auto; reflexivity. 
-  - intros. 
+  - exists I2_0; split; auto; reflexivity.
+  - intros.
     simpl. destruct Rgt_dec as [r|?] => //=.
     specialize (Hind2 ((coerce_supp (val I2_0) i r))).
     destruct (hidx2) as ((i0&[])&Hgt0) => //=.
@@ -72,7 +72,7 @@ Proof.
     case_eq (ind Ic_0 i0). intros (i1&i2') (HP&Hsup1&Hsup2&HQ) Heq0.
     rewrite Heq0. rewrite Heq0 in Hind2.
     destruct ClassicalEpsilon.constructive_indefinite_description as (?&?&?); auto.
-    subst. done. 
+    subst. done.
   - exists Ib; split; auto.
     unshelve (eexists); last done.
     eapply ival_coupling_proper.
@@ -97,9 +97,9 @@ Proof.
 Qed.
 
 Lemma subset_coupling_le {X Y} Is1 Is1' Is2 Is2' (P: X → Y → Prop) :
-  le_pidist Is1' Is1 → 
-  le_pidist Is2 Is2' → 
-  subset_couplingP Is1 Is2 P → 
+  le_pidist Is1' Is1 →
+  le_pidist Is2 Is2' →
+  subset_couplingP Is1 Is2 P →
   subset_couplingP Is1' Is2' P.
 Proof.
   intros Hle1 Hle2 Hsub.
@@ -112,11 +112,11 @@ Proof.
   eapply ival_coupling_proper; try eassumption.
     by symmetry.
 Qed.
-  
+
 Lemma subset_coupling_proper {X Y} Is1 Is1' Is2 Is2' (P: X → Y → Prop) :
-  eq_pidist Is1 Is1' → 
-  eq_pidist Is2 Is2' → 
-  subset_couplingP Is1 Is2 P → 
+  eq_pidist Is1 Is1' →
+  eq_pidist Is2 Is2' →
+  subset_couplingP Is1 Is2 P →
   subset_couplingP Is1' Is2' P.
 Proof.
   intros Heq1 Heq2. eapply subset_coupling_le; eauto.
@@ -125,7 +125,7 @@ Proof.
 Qed.
 
 Lemma subset_coupling_support {X Y} I1 I2 (P: X → Y → Prop) :
-  subset_couplingP I1 I2 P → 
+  subset_couplingP I1 I2 P →
   subset_couplingP I1 I2 (λ x y, P x y ∧ In_psupport x I1 ∧ In_psupport y I2).
 Proof.
   intros Hsub I Hin.
@@ -135,10 +135,10 @@ Proof.
   eapply ival_coupling_conseq; last first.
   { apply (ival_coupling_support _ _ _ Ic). }
   intros x y (Hpf&Hin1&Hin2&?); repeat split; auto.
-  - exists I; auto. edestruct Hin1; eexists; eauto. 
-  - exists I'; auto. edestruct Hin2; eexists; eauto. 
+  - exists I; auto. edestruct Hin1; eexists; eauto.
+  - exists I'; auto. edestruct Hin2; eexists; eauto.
 Qed.
-  
+
 Lemma subset_coupling_plus {A1 A2} p Hpf p' Hpf'
       (P : A1 → A2 → Prop) (Is1 Is1': pidist A1) (Is2 Is2': pidist A2) :
   p = p' →

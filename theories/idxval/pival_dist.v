@@ -41,7 +41,7 @@ Proof. intros ?. apply eq_pival_refl. Qed.
 Global Instance eq_pidist_Symmetry {X}: Symmetric (@eq_pidist X).
 Proof. intros ??. apply eq_pival_sym. Qed.
 Global Instance eq_pidist_Equivalence {X}: Equivalence (@eq_pidist X).
-Proof. split; apply _. Qed. 
+Proof. split; apply _. Qed.
 
 Global Instance le_pidist_Transitivite {X}: Transitive (@le_pidist X).
 Proof. intros ???. apply le_pival_trans. Qed.
@@ -65,7 +65,7 @@ Proof. intros ?. apply eq_pival_prob_refl. Qed.
 Global Instance eq_pidist_prob_Symmetry {X}: Symmetric (@eq_pidist_prob X).
 Proof. intros ??. apply eq_pival_prob_sym. Qed.
 Global Instance eq_pidist_prob_Equivalence {X}: Equivalence (@eq_pidist_prob X).
-Proof. split; apply _. Qed. 
+Proof. split; apply _. Qed.
 
 Global Instance le_pidist_prob_Transitivite {X}: Transitive (@le_pidist_prob X).
 Proof. intros ???. apply le_pival_prob_trans. Qed.
@@ -130,7 +130,7 @@ Proof.
   rewrite Heq.
   destruct Hin1 as (I1'&Hin1%all_sum1&Heq1').
   destruct Hin2 as (I2'&Hin2%all_sum1&Heq2').
-  subst. 
+  subst.
   unshelve (eapply (ivdplus_sum1 p Hrange {| ivd_ival := I1' |} {| ivd_ival := I2' |})); eauto.
 Qed.
 
@@ -200,7 +200,7 @@ Proof. intros ?? ? ?? ?. eapply pival_bind_mono; eauto. Qed.
 
 Global Instance pidist_bind_proper X Y :
   Proper (pointwise_relation X (@eq_pidist Y) ==> @eq_pidist X ==> @eq_pidist Y) (pidist_bind X Y).
-Proof. intros ?? ? ?? ?. eapply pival_bind_proper; eauto. Qed. 
+Proof. intros ?? ? ?? ?. eapply pival_bind_proper; eauto. Qed.
 
 
 Lemma pidist_union_comm:
@@ -231,7 +231,7 @@ Lemma pidist_union_le_id:
   ∀ (X : Type) (Is1 Is2 : pidist X),
     le_pidist Is1 Is2 → eq_pidist (pidist_union Is1 Is2) Is2.
 Proof. intros. rewrite /eq_pidist/pidist_union//=. by apply punion_le_id. Qed.
-  
+
 Lemma pidist_union_idemp: ∀ (X : Type) (Is : pidist X), eq_pidist (pidist_union Is Is) Is.
 Proof. intros. rewrite /eq_pidist/pidist_union//=. by apply punion_idemp. Qed.
 
@@ -268,7 +268,7 @@ Lemma pidist_bind_congr_le_supp {A B} (m1 m2: pidist A) (f1 f2: A → pidist B) 
   le_pidist m1 m2 →
   (∀ a, In_psupport a m1 → le_pidist (f1 a) (f2 a)) →
   le_pidist (x ← m1; f1 x) (x ← m2; f2 x).
-Proof. 
+Proof.
   intros Hlem Hlef.
   rewrite /le_pidist.
   apply pival_bind_congr_le_supp; eauto.
@@ -278,7 +278,7 @@ Lemma pidist_bind_congr_le {A B} (m1 m2: pidist A) (f1 f2: A → pidist B) :
   le_pidist m1 m2 →
   (∀ a, le_pidist (f1 a) (f2 a)) →
   le_pidist (x ← m1; f1 x) (x ← m2; f2 x).
-Proof. 
+Proof.
   intros Hlem Hlef.
   rewrite /le_pidist.
   apply pival_bind_congr_le; eauto.
@@ -288,7 +288,7 @@ Lemma pidist_bind_congr {A B} (m1 m2: pidist A) (f1 f2: A → pidist B) :
   eq_pidist m1 m2 →
   (∀ a, eq_pidist (f1 a) (f2 a)) →
   eq_pidist (x ← m1; f1 x) (x ← m2; f2 x).
-Proof. 
+Proof.
   intros Hlem Hlef.
   rewrite /le_pidist.
   apply pival_bind_congr; eauto.
@@ -354,18 +354,18 @@ Proof.
   setoid_rewrite pscale_assoc.
   eapply pplus_proper.
   * eapply pplus_proper.
-    ** eapply pscale_proper; try reflexivity. 
+    ** eapply pscale_proper; try reflexivity.
        field. nra.
-    ** eapply pscale_proper; try reflexivity. 
+    ** eapply pscale_proper; try reflexivity.
        field. nra.
   * eapply pscale_proper; try reflexivity.
     field.
 Qed.
-   
+
 Global Opaque pidist_ret.
 Global Opaque pidist_bind.
 
-  
+
 
 Lemma eq_ival_support_coerce_aux {X} (I1 I2: ival X) :
   eq_ival I1 I2 →
@@ -438,7 +438,7 @@ Proof.
     intros i2.
     rewrite //=.
     destruct (eqVneq).
-    * subst; auto. 
+    * subst; auto.
     * intros. destruct (f (ind I1 i2)) as [Is' Hne] => //=.
       destruct ClassicalEpsilon.constructive_indefinite_description => //=.
     }
@@ -449,13 +449,13 @@ Proof.
     rewrite //= in Heq.
     eapply (eq_ival_support_coerce_aux _ _ Heq).
     unshelve (eexists).
-    { rewrite //=.  
+    { rewrite //=.
       exists i1. destruct eqVneq as [?|Hneq]; last first.
       { rewrite eq_refl in Hneq. exfalso; auto. }
       eauto.
     }
     split.
-    * rewrite //=. 
+    * rewrite //=.
       subst. destruct eqVneq as [?|Hneq] => //=; last first.
       { exfalso. rewrite eq_refl in Hneq. auto. }
     * rewrite //=.
@@ -568,7 +568,7 @@ Lemma easy_fix_eq:
     ∀ x : A, Fix Rwf P F x = F x (λ (y : A) (_ : R y x), Fix Rwf P F y).
 Proof.
   intros. apply Init.Wf.Fix_eq.
-  intros. assert (f = g) as ->; last done. 
+  intros. assert (f = g) as ->; last done.
   apply FunctionalExtensionality.functional_extensionality_dep => ?.
   apply FunctionalExtensionality.functional_extensionality_dep => ?. done.
 Qed.
@@ -619,10 +619,10 @@ Qed.
 Definition pidist_iter_aux {A: Type} (m: A → pidist A) : Ord → A → pidist A.
   refine(Fix wf_Ord_lt (fun _ => A → pidist A)
              (fun o rec =>
-               λ a, 
+               λ a,
                match o as o' return (o = o' → pidist A) with
                | OrdO => λ eq, mret a
-               | _ => λ eq, 
+               | _ => λ eq,
                   x ← m a;
                   @pidist_join { o'' : Ord | Ord_lt o'' o } _ _
                                (λ n', rec (proj1_sig n') (proj2_sig n') x)
@@ -705,7 +705,7 @@ Proof.
     }
     rewrite -Heq. eauto.
 Qed.
-    
+
 Lemma pidist_iter_unfold {A: Type} (m: A → pidist A) (a: A):
   eq_pidist (pidist_iter m a)
             (pidist_union (mret a) (x ← m a; pidist_iter m x)).
@@ -747,7 +747,7 @@ Proof.
       exists I. split; auto.
   - rewrite //= -pidist_union_foldleft_hd.
     split.
-    * intros I [Hin|Hin]. 
+    * intros I [Hin|Hin].
       ** exists I; split; first done. unshelve eexists.
          { exists m. by left. }
          rewrite //=.
@@ -767,7 +767,7 @@ Proof.
          { unshelve (eexists).
            { exists m'. auto. }
            rewrite //=.
-         } 
+         }
          exists I'; split; auto.
          right. eauto.
 Qed.

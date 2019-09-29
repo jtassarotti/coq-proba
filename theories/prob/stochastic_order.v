@@ -15,10 +15,10 @@ Proof.
   inversion 1. done.
 Qed.
 Lemma big_cons_Rplus:
-  ∀ (I : Type) 
+  ∀ (I : Type)
   (i : I) (r : seq I) (P : pred I) (F : I → R)
   (x:=\big[Rplus/0]_(j <- r | P j) F j),
-  \big[Rplus/0]_(j <- (i :: r) | P j) F j = (if P i then (F i) else 0) + x. 
+  \big[Rplus/0]_(j <- (i :: r) | P j) F j = (if P i then (F i) else 0) + x.
 Proof.
   intros. rewrite big_cons. case: ifP => //. by rewrite Rplus_0_l.
 Qed.
@@ -26,24 +26,24 @@ Qed.
 Lemma Rlt_not_eq': ∀ r1 r2, r1 < r2 → r2 ≠ r1.
 Proof. intros ??? Hfalse. symmetry in Hfalse. eapply Rlt_not_eq; last exact Hfalse. done. Qed.
 
-Lemma if_sumbool_case_match {A: Type} P Q (b: {P} + {¬ P}) (b': {Q} + {¬ Q}) (x y: A): 
+Lemma if_sumbool_case_match {A: Type} P Q (b: {P} + {¬ P}) (b': {Q} + {¬ Q}) (x y: A):
   (P ↔ Q) → (if b then x else y) = (if b' then x else y).
-Proof. 
-  intros HPQ; destruct b as [p|np], b' as [q|nq] => //=. 
-  - contradiction nq. by rewrite -HPQ. 
-  - contradiction np. by rewrite HPQ. 
+Proof.
+  intros HPQ; destruct b as [p|np], b' as [q|nq] => //=.
+  - contradiction nq. by rewrite -HPQ.
+  - contradiction np. by rewrite HPQ.
 Qed.
 
 
 (* TODO: lots of redundancy and duplication here *)
 
-Lemma pr_sum_restrict {A: finType} (Ω: distrib A) (X: rrvar Ω) l P: 
-  \big[Rplus/0]_(i <- l | P i) pr_eq X i = 
+Lemma pr_sum_restrict {A: finType} (Ω: distrib A) (X: rrvar Ω) l P:
+  \big[Rplus/0]_(i <- l | P i) pr_eq X i =
   \big[Rplus/0]_(i <- l | P i && (Rgt_dec (pr_eq X i) 0)) pr_eq X i.
 Proof.
   symmetry; induction l.
   * rewrite ?big_nil //=.
-  * rewrite ?big_cons. 
+  * rewrite ?big_cons.
     symmetry. case: ifP.
     **  intros HP. rewrite //=.
         case: ifP.
@@ -69,7 +69,7 @@ Proof.
   rewrite /pr_eq/pr. apply Series_ext => n. rewrite /countable_sum; destruct pickle_inv => //=.
   destruct Rgt_dec; rewrite /rvar_dist//=; eauto; case: ifP => //=; move /eqP; nra.
 Qed.
-  
+
 Variable A: finType.
 Variable Ω: distrib A.
 Variable T: rrvar Ω.
@@ -83,9 +83,9 @@ Proof.
 Qed.
 
 (* There must be a better way to do this kind of splitting on sequences... *)
-Lemma pr_gt_alt3 r: pr (rvar_dist T) (λ n, Rgt_dec (T n) r) = 
-                    \big[Rplus/0]_(i <- filter (λ x, Rgt_dec (sval x) r) 
-                                     (Finite.enum [finType of imgT T])) (pr_eq T (sval i)). 
+Lemma pr_gt_alt3 r: pr (rvar_dist T) (λ n, Rgt_dec (T n) r) =
+                    \big[Rplus/0]_(i <- filter (λ x, Rgt_dec (sval x) r)
+                                     (Finite.enum [finType of imgT T])) (pr_eq T (sval i)).
 Proof.
   rewrite pr_gt_alt.
   rewrite big_filter //=.
@@ -95,7 +95,7 @@ Proof.
   { apply eq_bigr. rewrite //=.  intros ?; destruct Rgt_dec => //=; done. }
   assert (H0: 0 = (\big[Rplus/0]_(i : imgT (A:=A) T | (λ i, true) i && ~~ (Rgt_dec (sval i) r))
                  if (Rgt_dec (sval i) r) then pr_eq T (sval i) else 0)).
-  { 
+  {
     symmetry; apply big1 => i.  move /negP. destruct (Rgt_dec) => //=.
   }
   rewrite -[a in a = _]Rplus_0_r [a in _ + a = _]H0 -bigID.
@@ -103,7 +103,7 @@ Proof.
 Qed.
 End pr_gt.
 
-Lemma pr_gt_alt_comp {A: finType} {B: eqType} {Ω: distrib A} (T: rvar Ω B) (f: B → R) r: 
+Lemma pr_gt_alt_comp {A: finType} {B: eqType} {Ω: distrib A} (T: rvar Ω B) (f: B → R) r:
  pr (rvar_dist (rvar_comp T f)) (λ n, Rgt_dec ((rvar_comp T f) n) r)
                  = \big[Rplus/0]_(v : imgT T) if (Rgt_dec (f (sval v)) r) then pr_eq T (sval v) else 0.
 Proof.
@@ -124,7 +124,7 @@ Proof.
   rewrite /pr_eq/pr. apply Series_ext => n. rewrite /countable_sum; destruct pickle_inv => //=.
   destruct Rge_dec; rewrite /rvar_dist//=; eauto; case: ifP => //=; move /eqP; nra.
 Qed.
-  
+
 
 Variable A: finType.
 Variable Ω: distrib A.
@@ -139,9 +139,9 @@ Proof.
 Qed.
 
 (* There must be a better way to do this kind of splitting on sequences... *)
-Lemma pr_ge_alt3 r: pr (rvar_dist T) (λ n, Rge_dec (T n) r) = 
-                    \big[Rplus/0]_(i <- filter (λ x, Rge_dec (sval x) r) 
-                                     (Finite.enum [finType of imgT T])) (pr_eq T (sval i)). 
+Lemma pr_ge_alt3 r: pr (rvar_dist T) (λ n, Rge_dec (T n) r) =
+                    \big[Rplus/0]_(i <- filter (λ x, Rge_dec (sval x) r)
+                                     (Finite.enum [finType of imgT T])) (pr_eq T (sval i)).
 Proof.
   rewrite pr_ge_alt.
   rewrite big_filter //=.
@@ -151,7 +151,7 @@ Proof.
   { apply eq_bigr. rewrite //= => ?; destruct Rge_dec => //=. }
   assert (H0: 0 = (\big[Rplus/0]_(i : imgT (A:=A) T | (λ i, true) i && ~~ (Rge_dec (sval i) r))
                  if (Rge_dec (sval i) r) then pr_eq T (sval i) else 0)).
-  { 
+  {
     symmetry; apply big1 => i.  move /negP. destruct (Rge_dec) => //=.
   }
   rewrite -[a in a = _]Rplus_0_r [a in _ + a = _]H0 -bigID.
@@ -159,7 +159,7 @@ Proof.
 Qed.
 End pr_ge.
 
-Lemma pr_ge_alt_comp {A: finType} {B: eqType} {Ω: distrib A} (T: rvar Ω B) (f: B → R) r: 
+Lemma pr_ge_alt_comp {A: finType} {B: eqType} {Ω: distrib A} (T: rvar Ω B) (f: B → R) r:
  pr (rvar_dist (rvar_comp T f)) (λ n, Rge_dec ((rvar_comp T f) n) r)
                  = \big[Rplus/0]_(v : imgT T) if (Rge_dec (f (sval v)) r) then pr_eq T (sval v) else 0.
 Proof.
@@ -196,7 +196,7 @@ Qed.
 
 End pr_eq.
 
-Lemma pr_eq_alt_comp {A: finType} {B C: eqType} {Ω: distrib A} (T: rvar Ω B) (f: B → C) r: 
+Lemma pr_eq_alt_comp {A: finType} {B C: eqType} {Ω: distrib A} (T: rvar Ω B) (f: B → C) r:
   pr (rvar_dist (rvar_comp T f)) (λ n, (rvar_comp T f) n == r)
   = \big[Rplus/0]_(v : imgT T) if (f (sval v) == r) then pr_eq T (sval v) else 0.
 Proof.
@@ -210,10 +210,10 @@ Section convert.
 Lemma pr_gt_to_geq_eps {A: finType} {Ω: distrib A} (X: rrvar Ω) (x eps: R):
   (eps > 0 ∧ ∀ y, y \in img X → y ≠ x → Rabs (x - y) ≥ eps) →
     pr_gt X x = pr_ge X (x + eps/2).
-Proof.      
+Proof.
   intros (Hgt0&HX).
   rewrite /pr_ge /pr_gt !pr_ge_alt !pr_gt_alt.
-  rewrite big_seq_cond. 
+  rewrite big_seq_cond.
   rewrite [a in _ = a]big_seq_cond.
   apply eq_bigr. intros (y&?) Hin => //=. rewrite Bool.andb_true_r in Hin.
   destruct (Rgt_dec) as [Hgt|Hngt] => //=.
@@ -221,7 +221,7 @@ Proof.
     exfalso; eapply Rlt_not_ge; last eapply (HX y); eauto.
     * rewrite Rabs_minus_sym Rabs_right; nra.
     * apply Rgt_not_eq. done.
-  - destruct (Rge_dec); last done. 
+  - destruct (Rge_dec); last done.
     exfalso; eapply Rlt_not_ge; last eapply (HX y); eauto.
     * rewrite Rabs_minus_sym Rabs_right; nra.
     * apply Rlt_not_eq. nra.
@@ -230,17 +230,17 @@ Qed.
 Lemma pr_ge_to_gt_eps {A: finType} {Ω: distrib A} (X: rrvar Ω) (x eps: R):
   (eps > 0 ∧ ∀ y, y \in img X → y ≠ x → Rabs (x - y) ≥ eps) →
     pr_ge X x = pr_gt X (x - eps/2).
-Proof.      
+Proof.
   intros (Hgt0&HX).
   rewrite /pr_ge /pr_gt ?pr_ge_alt ?pr_gt_alt.
-  rewrite big_seq_cond. 
+  rewrite big_seq_cond.
   rewrite [a in _ = a]big_seq_cond.
   apply eq_bigr. intros (y&?) Hin => //=. rewrite Bool.andb_true_r in Hin.
   destruct (Rge_dec).
-  - destruct (Rgt_dec); first done. 
+  - destruct (Rgt_dec); first done.
     exfalso; eapply Rlt_not_ge; last eapply (HX y); eauto.
     * rewrite Rabs_minus_sym Rabs_right; nra.
-    * apply Rlt_not_eq. nra. 
+    * apply Rlt_not_eq. nra.
   - destruct (Rgt_dec); last done.
     exfalso; eapply Rlt_not_ge; last eapply (HX y); eauto.
     * rewrite Rabs_minus_sym Rabs_left; nra.
@@ -258,29 +258,29 @@ Proof.
   rewrite big_distrr //=.
   rewrite -big_split //=.
   rewrite {1}/pr_eq ?pr_eq_alt.
-  rewrite big_seq_cond. 
+  rewrite big_seq_cond.
   rewrite [a in _ = a]big_seq_cond.
   apply eq_bigr. intros (y&?) Hin => //=. rewrite Bool.andb_true_r in Hin.
   case: ifP.
-  - move /eqP => ->. 
+  - move /eqP => ->.
     destruct (Rge_dec) as [Hle|Hle]; last nra.
     destruct (Rge_dec) as [Hle'|Hle']; first nra.
     rewrite Rmult_0_r Rplus_0_r //.
-  - move /eqP => Hneq. 
+  - move /eqP => Hneq.
     destruct (Rge_dec) as [Hle|Hle] => //=; try nra;
     destruct (Rge_dec) as [Hle'|Hle'] => //=; try nra.
-    exfalso. 
+    exfalso.
     eapply Rlt_not_ge; last eapply (HX y); eauto.
     assert (y - x ≤ eps / 2) by nra.
     assert (x - y ≤ eps / 2) by fourier.
     destruct (Rle_dec 0 (x - y)) as [?|Hgt%Rnot_le_gt].
     ** rewrite Rabs_right; fourier.
-    ** rewrite Rabs_minus_sym Rabs_right; fourier. 
+    ** rewrite Rabs_minus_sym Rabs_right; fourier.
 Qed.
 
 Lemma Rmin_dist_list (l: seq R) (x: R):
   ∃ eps, eps > 0 ∧ ∀ y, y \in l → y ≠ x → Rabs (x - y) >= eps.
-Proof.                               
+Proof.
   exists (foldl (Rmin) 1 (map (λ y, Rabs (x - y)) (filter (predC1 x) l))).
   split.
   * assert (1 > 0) as Hgt0 by fourier.
@@ -288,11 +288,11 @@ Proof.
     induction l.
     ** rewrite //=; fourier.
     ** rewrite //=. case: ifP.
-       *** rewrite map_cons //=. 
+       *** rewrite map_cons //=.
            move /eqP => Hneq r Hgt.
            eapply IHl.
            apply Rmin_case => //.
-           apply Rabs_pos_lt. intros Heq. 
+           apply Rabs_pos_lt. intros Heq.
            apply Hneq; symmetry; by apply Rminus_diag_uniq.
        *** intros; eauto.
   * intros y Hin Hneq.
@@ -311,7 +311,7 @@ Qed.
 (* Because we are working with finite probability spaces, the following is true: *)
 
 Lemma pr_ge_split2 {A B: finType} {Ω: distrib A} {Ω': distrib B} (X: rrvar Ω) (Y: rrvar Ω')
-      (x: R): ∃ x1 x2, 
+      (x: R): ∃ x1 x2,
     pr_eq X x = pr_ge X x1 - pr_ge X x2 ∧
     pr_eq Y x = pr_ge Y x1 - pr_ge Y x2.
 Proof.
@@ -324,7 +324,7 @@ Proof.
     rewrite /index_enum [Finite.enum]unlock //=. rewrite img_fin_enum_sval.
     by apply img_alt', img_alt.
   - split; auto. intros. eapply Hdist; auto.
-    rewrite mem_cat. apply /orP; right. 
+    rewrite mem_cat. apply /orP; right.
     rewrite /index_enum [Finite.enum]unlock //=. rewrite img_fin_enum_sval.
     by apply img_alt', img_alt.
 Qed.
@@ -343,7 +343,7 @@ Proof.
     rewrite /index_enum [Finite.enum]unlock //=. rewrite img_fin_enum_sval.
     by apply img_alt', img_alt.
   - split; auto. intros. eapply Hdist; auto.
-    rewrite mem_cat. apply /orP; right. 
+    rewrite mem_cat. apply /orP; right.
     rewrite /index_enum [Finite.enum]unlock //=. rewrite img_fin_enum_sval.
     by apply img_alt', img_alt.
 Qed.
@@ -362,7 +362,7 @@ Proof.
     rewrite /index_enum [Finite.enum]unlock //=. rewrite img_fin_enum_sval.
     by apply img_alt', img_alt.
   - split; auto. intros. eapply Hdist; auto.
-    rewrite mem_cat. apply /orP; right. 
+    rewrite mem_cat. apply /orP; right.
     rewrite /index_enum [Finite.enum]unlock //=. rewrite img_fin_enum_sval.
     by apply img_alt', img_alt.
 Qed.
@@ -377,7 +377,7 @@ Lemma eq_dist_ext {A: countType} {B: eqType} {Ω: distrib A} (X Y: rvar Ω B) :
 Proof.
   intros Hext v. rewrite /pr_eq. apply pr_eq_pred' => i; by rewrite Hext.
 Qed.
-  
+
 Lemma eq_dist_refl {A: countType} {C: eqType} {Ω: distrib A} (X: rvar Ω C) :
   eq_dist X X.
 Proof. rewrite /eq_dist => x; done. Qed.
@@ -398,34 +398,34 @@ Proof. intros ?. apply eq_dist_refl. Qed.
 Lemma eq_dist_comp {A1 A2: finType} {B C: eqType} {Ω1: distrib A1} {Ω2: distrib A2}
       (X1: rvar Ω1 B) (X2: rvar Ω2 B) (f: B → C) :
   eq_dist X1 X2 → eq_dist (rvar_comp X1 f) (rvar_comp X2 f).
-Proof.  
-  intros Heq c. rewrite /pr_eq ?pr_eq_alt_comp. 
-  rewrite -(big_map sval (λ x, true) (λ v, if f v == c then pr_eq X1 v else 0)). 
-  rewrite -(big_map sval (λ x, true) (λ v, if f v == c then pr_eq X2 v else 0)). 
+Proof.
+  intros Heq c. rewrite /pr_eq ?pr_eq_alt_comp.
+  rewrite -(big_map sval (λ x, true) (λ v, if f v == c then pr_eq X1 v else 0)).
+  rewrite -(big_map sval (λ x, true) (λ v, if f v == c then pr_eq X2 v else 0)).
   rewrite bigop_cond_non0.
   eapply (sum_reidx_map _ _ _ _ (λ x, x)).
-  - intros. by rewrite Heq. 
-  - rewrite //=. intros a ?. case: ifP; last by (intros ?; move /eqP; nra). 
+  - intros. by rewrite Heq.
+  - rewrite //=. intros a ?. case: ifP; last by (intros ?; move /eqP; nra).
     intros _.  move /eqP. rewrite Heq => Hnon0.
     split; auto.
     assert (a \in img X2) as Hin.
     { apply pr_img. move: Hnon0. rewrite /pr_eq. edestruct (ge_pr_0 Ω2); eauto; nra. }
     destruct (proj1 (img_alt X2 a) Hin) as (x&Heq').
-    subst. apply /mapP. 
+    subst. apply /mapP.
     exists (exist _ (X2 x) Hin) => //=.
     rewrite /index_enum [Finite.enum]unlock //=. apply img_fin_mem.
-  - intros b Hin _ Hfalse. 
+  - intros b Hin _ Hfalse.
     rewrite -Heq. apply /eqP.
     case_eq ((if f b == c then pr_eq X1 b else 0) == 0); auto.
     move /eqP => Hneq.
-    exfalso; apply Hfalse. 
+    exfalso; apply Hfalse.
     exists b; split; auto.
-    * move: Hneq. case: ifP; last (intros ?; nra). 
-      move /eqP => _  Himg. 
+    * move: Hneq. case: ifP; last (intros ?; nra).
+      move /eqP => _  Himg.
       assert (b \in img X1) as Hin'.
       { apply pr_img. move: Himg. rewrite /pr_eq.  edestruct (ge_pr_0 Ω1); eauto; nra. }
       destruct (proj1 (img_alt X1 b) Hin') as (x&Heq').
-      subst. apply /mapP. 
+      subst. apply /mapP.
       exists (exist _ (X1 x) Hin') => //=.
       rewrite /index_enum [Finite.enum]unlock //=. apply img_fin_mem.
     * split; auto. rewrite /=. apply /eqP. done.
@@ -447,41 +447,41 @@ Lemma eq_dist_pr_ge {A B: finType} {Ω: distrib A} {Ω': distrib B} (X: rrvar Ω
   eq_dist X Y ↔ (∀ x, pr_ge X x = pr_ge Y x).
 Proof.
   rewrite /eq_dist; split.
-  - intros Heqd x. rewrite /pr_ge. rewrite ?pr_ge_alt. 
+  - intros Heqd x. rewrite /pr_ge. rewrite ?pr_ge_alt.
     rewrite -?big_mkcond_sumbool.
     rewrite -!(big_map sval (λ y, Rge_dec y x)).
     rewrite //=.
-    rewrite (pr_sum_restrict). 
+    rewrite (pr_sum_restrict).
     apply sum_reidx_map with (h := λ x, x); auto.
     * intros a Hin. move /andP => [Hge Hgt].
       destruct (Rgt_dec) => //=.
       split; auto.
-      rewrite /index_enum [Finite.enum]unlock //=. rewrite img_fin_enum_sval. 
+      rewrite /index_enum [Finite.enum]unlock //=. rewrite img_fin_enum_sval.
       apply img_alt', img_alt.
       apply pr_img. rewrite -Heqd. done.
     * intros ??? Hfalse. edestruct (pr_eq_ge_0 Y); eauto.
       exfalso; apply Hfalse.
       eexists. split; eauto.
-      ** rewrite /index_enum [Finite.enum]unlock //=. rewrite img_fin_enum_sval. 
+      ** rewrite /index_enum [Finite.enum]unlock //=. rewrite img_fin_enum_sval.
          apply img_alt', img_alt, pr_img. rewrite Heqd /pr. eauto.
       ** split; auto. apply /andP; split; auto.
          rewrite Heqd /pr. destruct (Rgt_dec) => //=.
     * rewrite /index_enum [Finite.enum]unlock //=. rewrite img_fin_enum_sval. apply undup_uniq.
     * rewrite /index_enum [Finite.enum]unlock //=. rewrite img_fin_enum_sval. apply undup_uniq.
-  - intros Heqd x. 
+  - intros Heqd x.
     edestruct (pr_ge_split2 X Y x) as (x1&x2&HeqX&HeqY).
     rewrite HeqX HeqY ?Heqd. done.
 Qed.
 
 Lemma eq_dist_pr_gt {A B: finType} {Ω: distrib A} {Ω': distrib B}
-      (X: rrvar Ω) (Y: rrvar Ω'): 
+      (X: rrvar Ω) (Y: rrvar Ω'):
   eq_dist X Y ↔ (∀ x, pr_gt X x = pr_gt Y x).
 Proof.
   rewrite eq_dist_pr_ge; split.
-  - intros Heqd x. 
+  - intros Heqd x.
     edestruct (pr_gt_to_geq2 X Y x) as (x1&HeqX&HeqY).
     rewrite HeqX HeqY ?Heqd. done.
-  - intros Heqd x. 
+  - intros Heqd x.
     edestruct (pr_ge_to_gt2 X Y x) as (x1&HeqX&HeqY).
     rewrite HeqX HeqY ?Heqd. done.
 Qed.
@@ -529,7 +529,7 @@ Section eq_dist_Ex.
         eapply pickle_inv_some_inj; eauto.
         rewrite Heqs Heqs'. f_equal. inversion Heq'.
         by apply sval_inj_pred.
-    - intros Hnone. 
+    - intros Hnone.
       destruct (Rgt_dec) => //=.
       rewrite Hnone.
       intros Heqa' Heq0. inversion Heq0.
@@ -571,11 +571,11 @@ Section eq_dist_Ex.
   Proof.
     destruct (ex_Ex_alt) as (v&Hisv).
     edestruct (rearrange.series_rearrange_covering a' σ).
-    - apply σinj. 
+    - apply σinj.
     - apply σcov.
     - eauto.
     - split.
-      ** exists v; eauto. 
+      ** exists v; eauto.
       ** eauto.
   Qed.
 
@@ -594,7 +594,7 @@ Section eq_dist_Ex.
   Proof.
     apply ex_Ex_comp_by_alt.
     destruct rearrange as (Hex&_).
-    eapply ex_series_ext; last eapply Hex. 
+    eapply ex_series_ext; last eapply Hex.
     intros n => //=.
     rewrite /a'/σ/countable_sum.
     destruct (pickle_inv) => //=; last by apply Rabs_R0.

@@ -16,7 +16,7 @@ Qed.
 
 Lemma Rbar_eq_fin x y: x = (Finite y) → (real x) = y.
 Proof.
-  destruct x => //=. inversion 1; auto. 
+  destruct x => //=. inversion 1; auto.
 Qed.
 
 Lemma is_series_0 a: (∀ n, a n = 0) → is_series a 0.
@@ -30,7 +30,7 @@ Qed.
 
 Lemma Series_0 a: (∀ n, a n = 0) → Series a = 0.
 Proof.
-  intros Heq. apply is_series_unique, is_series_0. done. 
+  intros Heq. apply is_series_unique, is_series_0. done.
 Qed.
 
 Lemma is_lim_seq_pos a (v: R):
@@ -53,7 +53,7 @@ Proof.
   cut (Rbar_le 0 (Lim_seq a)).
   { rewrite //=. rewrite /real. destruct Lim_seq; nra. }
   rewrite -Lim_seq_const. apply Lim_seq_le_loc.
-  exists O. intros. apply Rge_le; auto. 
+  exists O. intros. apply Rge_le; auto.
 Qed.
 
 Lemma Series_pos a:
@@ -85,7 +85,7 @@ Qed.
 Lemma is_lim_seq_unique_series a v:
   is_series a v → Lim_seq (sum_n a) = v.
 Proof.
-  intros. apply is_lim_seq_unique. rewrite //=. 
+  intros. apply is_lim_seq_unique. rewrite //=.
 Qed.
 
 Lemma is_series_partial_pos a n v:
@@ -93,19 +93,19 @@ Lemma is_series_partial_pos a n v:
   is_series a v →
   sum_n a n <= v.
 Proof.
-  intros Hpos His_series. 
+  intros Hpos His_series.
   assert (Hpos' : ∀ n : nat, sum_n a n >= 0).
-  { intros n'. induction n' => //=; rewrite ?sum_O ?sum_Sn; eauto. 
+  { intros n'. induction n' => //=; rewrite ?sum_O ?sum_Sn; eauto.
     specialize (Hpos (S n')). rewrite /plus//=. nra. }
   replace (sum_n a n) with (real (sum_n a n)) by auto.
   rewrite -(is_series_unique _ _ His_series).
   eapply Rbar_le_fin'.
   - case_eq (Lim_seq (sum_n a)) => //=; try nra.
-    intros r Heq. 
+    intros r Heq.
     rewrite /is_series in His_series.
     assert (ex_lim_seq (sum_n a)).
     { exists v. eauto. }
-    eapply is_lim_seq_pos; eauto. 
+    eapply is_lim_seq_pos; eauto.
     rewrite -Heq. apply Lim_seq_correct; eauto.
   -  rewrite -Lim_seq_const.
      case_eq (Lim_seq (sum_n a)) => //=; try nra.
@@ -124,8 +124,8 @@ Lemma sum_n_partial_pos a :
   (∀ n, a n >= 0) →
    ∀ n : nat, sum_n a n >= 0.
 Proof.
-  intros Hpos n'; induction n' => //=; rewrite ?sum_O ?sum_Sn; eauto. 
-    specialize (Hpos (S n')). rewrite /plus//=. nra. 
+  intros Hpos n'; induction n' => //=; rewrite ?sum_O ?sum_Sn; eauto.
+    specialize (Hpos (S n')). rewrite /plus//=. nra.
 Qed.
 
 Lemma sum_n_pos a (n: nat):
@@ -190,7 +190,7 @@ Lemma is_series_filter_pos a (P: pred nat) (v: R):
 Proof.
   intros Hge Hconv. apply ex_series_Rabs.
   apply: ex_series_le; last by (exists v; eauto).
-  intros n. rewrite /norm//=/abs//=. 
+  intros n. rewrite /norm//=/abs//=.
   destruct (P n); rewrite Rabs_Rabsolu Rabs_right => //=; try nra.
   specialize (Hge n); nra.
 Qed.
@@ -203,7 +203,7 @@ Lemma is_series_filter_PQ a (P Q: pred nat) (v: R):
 Proof.
   intros Hge Hconv Himp. apply ex_series_Rabs.
   apply: ex_series_le; last by (exists v; eauto).
-  intros n. rewrite /norm//=/abs//=. 
+  intros n. rewrite /norm//=/abs//=.
   specialize (Himp n); specialize (Hge n).
   destruct (P n), (Q n); rewrite Rabs_Rabsolu Rabs_right => //=; try nra.
   exfalso; auto.
@@ -211,7 +211,7 @@ Qed.
 
 Lemma is_series_filter_split a (P: pred nat) (v: R):
   (∀ n, a n >= 0) →
-  is_series a v → 
+  is_series a v →
   Series (λ n, if P n then a n else 0) + Series (λ n, if ~~ P n then a n else 0) = v.
 Proof.
   intros.
@@ -222,19 +222,19 @@ Qed.
 
 Lemma is_series_filter_union a (P Q: pred nat) (v: R):
   (∀ n, a n >= 0) →
-  is_series (λ n, if P n || Q n then a n else 0) v → 
+  is_series (λ n, if P n || Q n then a n else 0) v →
   Series (λ n, if P n then a n else 0) + Series (λ n, if Q n then a n else 0)
     - Series (λ n, if P n && Q n then a n else 0) = v.
 Proof.
   intros Hge Hexists.
-  rewrite -Series_plus; try (eapply (is_series_filter_PQ _ _ _ _ Hge Hexists); eauto; 
+  rewrite -Series_plus; try (eapply (is_series_filter_PQ _ _ _ _ Hge Hexists); eauto;
                              try (intros n; destruct (P n), (Q n); auto)).
   rewrite -Series_minus; try (eapply (is_series_filter_PQ _ _ _ _ Hge Hexists); eauto;
                              try (intros n; destruct (P n), (Q n); auto)).
-  - rewrite -(is_series_unique _ v Hexists). 
+  - rewrite -(is_series_unique _ v Hexists).
     apply Series_ext => n; destruct (P n) => //=; nra.
-  - apply: (ex_series_le _ (λ n, scal 2 (if P n || Q n then a n else 0))). 
-    + intros n. specialize (Hge n). destruct (P n), (Q n) => //=; 
+  - apply: (ex_series_le _ (λ n, scal 2 (if P n || Q n then a n else 0))).
+    + intros n. specialize (Hge n). destruct (P n), (Q n) => //=;
       rewrite /norm//=/abs//=/scal//=/mult/=; rewrite Rabs_right; nra.
     + exists (scal 2 v). by apply: is_series_scal.
 Qed.
@@ -243,7 +243,7 @@ Lemma is_series_bump_hd v:
   is_series (λ x, if eq_nat_dec x 0 then v else 0) v.
 Proof.
   apply is_series_decr_1.
-  rewrite //=. rewrite plus_opp_r. 
+  rewrite //=. rewrite plus_opp_r.
   by apply is_series_0.
 Qed.
 
@@ -252,12 +252,12 @@ Lemma is_series_bump n v:
 Proof.
   induction n.
   - apply is_series_bump_hd.
-  - apply is_series_decr_1. 
+  - apply is_series_decr_1.
     destruct eq_nat_dec; first by done.
     rewrite opp_zero plus_zero_r.
     eapply is_series_ext; eauto.
     intros n' => //=.
-    destruct eq_nat_dec => //=. 
+    destruct eq_nat_dec => //=.
 Qed.
 
 Lemma Series_bump n v:
@@ -320,7 +320,7 @@ Proof.
 Qed.
 
 Lemma Lim_seq_le_loc_const u v:
-  0 <= v → 
+  0 <= v →
   eventually (λ n : nat, u n <= v) → Lim_seq u <= v.
 Proof.
   intros.
@@ -357,7 +357,7 @@ Proof.
             with ((@sum_n R_AbelianGroup a n')) by auto.
     nra.
   - apply Lim_seq_le_loc_const.
-    * transitivity (a O); auto. 
+    * transitivity (a O); auto.
       rewrite -(sum_O a). done.
     * exists O. auto.
 Qed.

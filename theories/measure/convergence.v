@@ -49,15 +49,15 @@ Section convergence.
       apply measure_mono; eauto using sigma_closed_intersections.
     }
     assert (Hlim: is_lim_seq (λ n, μ (Bn n)) 0).
-    { 
-      rewrite -Hinter. apply measure_decr_seq; eauto. 
+    {
+      rewrite -Hinter. apply measure_decr_seq; eauto.
       clear. rewrite /Bn. intros i x (n&Hin). exists (S n).
       replace (i + S n)%nat with (S i + n)%nat by omega.
       auto.
     }
     eapply (is_lim_seq_le_le (λ n, 0) _ (λ n, μ (Bn n))).
     - intros n; split.
-      * apply Rge_le, measure_nonneg. 
+      * apply Rge_le, measure_nonneg.
       * apply measure_mono; eauto.
         rewrite /Bn/An. intros x ?. exists O. replace (n + O)%nat with n by lia.
         eauto.
@@ -73,9 +73,9 @@ Section convergence.
   Proof.
     intros Hmeas_fn Hmeas Hlim.
     assert (Hequiv: (λ x : A, ¬ is_lim_seq (fn^~ x) (f x)) ≡ ∅).
-    { 
+    {
       intros x; split.
-      - intros Hfalse. exfalso. apply Hfalse. eapply Hlim. 
+      - intros Hfalse. exfalso. apply Hfalse. eapply Hlim.
       - inversion 1.
     }
     eapply convergence_ae_measure; auto.

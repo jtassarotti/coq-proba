@@ -94,7 +94,7 @@ Section borel_R.
         intros n. rewrite /compl//=.
       - intros Hall. destruct x as [r | |].
         * exfalso. destruct (Rle_dec 0 r).
-          ** exfalso. feed pose proof (Hall (S O)) as H. rewrite //= in H. nra. 
+          ** exfalso. feed pose proof (Hall (S O)) as H. rewrite //= in H. nra.
           ** destruct (archimed_pos (-r)) as (n'&?); first nra.
              feed pose proof (Hall (S n')) as H'. rewrite S_INR //= in H' H.
              apply Ropp_le_ge_contravar in H'.
@@ -148,7 +148,7 @@ Section borel_R.
       * exact V.
       * exact ∅.
     }
-    { 
+    {
       split.
       * intros HUz. specialize (HopenU _ HUz).
         destruct HopenU as ((δ&Hpos)&Hdelta).
@@ -270,7 +270,7 @@ Section borel_R.
     (minimal_sigma (λ (U : R → Prop), ∃ x, U = (λ z, z <= x))).
   Proof.
     intros z; split.
-    * apply borel_gen_closed_ray2. 
+    * apply borel_gen_closed_ray2.
     * apply minimal_sigma_lub. intros U (?&Heq). subst.
       apply (closed_ray_borel_le x).
   Qed.
@@ -307,21 +307,21 @@ Section borel_R.
         { apply Rmin_case_strong; intros; try nra. }
         exists (pickle (true, (n, m))).
         rewrite pickleK_inv //=; split; rewrite /fun_inv.
-        ** nra. 
+        ** nra.
         ** rewrite /δ in Hnm. move: Hnm.
            apply Rmin_case_strong; nra.
       * set (δ := ((f1 a + f2 a) - t) / 2).
         edestruct (archimed_rat_dense2 (δ/2) (-δ/2)) as (n&m&Hnm&?); rewrite /δ; auto; try nra.
         exists (pickle (false, (n, m))).
         rewrite pickleK_inv //=; split; rewrite /fun_inv.
-        ** nra. 
+        ** nra.
         ** rewrite /δ in Hnm. move: Hnm.
            rewrite -?Heq //=. nra.
       * set (δ := ((f1 a + f2 a) - t) / 2).
         edestruct (archimed_rat_dense2 (δ/2) (f1 a - δ/2)) as (n&m&Hnm&?); rewrite /δ; auto; try nra.
         exists (pickle (false, (n, m))).
         rewrite pickleK_inv //=; split; rewrite /fun_inv.
-        ** nra. 
+        ** nra.
         ** rewrite /δ in Hnm. move: Hnm.
            rewrite -?Heq //=. nra.
     - intros (bnm&Hspec). destruct (pickle_inv) as [(b&(n&m))|].
@@ -339,7 +339,7 @@ Section borel_R.
       { rewrite /le_sigma; reflexivity. }
       { rewrite /le_sigma/flip. apply borel_gen_open_ray_gt. }
       eapply measurable_generating_sets.
-      intros ? (x&->). 
+      intros ? (x&->).
       rewrite /fun_inv. eapply (sigma_proper _ _ (λ a, x /c < f a)).
       { intros z; split.
         * intros. eapply (Rmult_lt_reg_r (1/c)). move: Hgt0. clear.
@@ -360,11 +360,11 @@ Section borel_R.
       { rewrite /le_sigma; reflexivity. }
       { rewrite /le_sigma/flip. apply borel_gen_open_ray_gt. }
       eapply measurable_generating_sets.
-      intros ? (x&->). 
+      intros ? (x&->).
       rewrite /fun_inv. eapply (sigma_proper _ _ (λ a, x /c > f a)).
       { intros z; split.
         * intros Hineq%(Rmult_lt_gt_compat_neg_l c); last nra.
-          field_simplify in Hineq; nra. 
+          field_simplify in Hineq; nra.
         * intros Hineq%(Rmult_lt_gt_compat_neg_l (1/c)); last first.
           { rewrite /Rdiv Rmult_1_l. apply Rinv_lt_0_compat. nra. }
           field_simplify in Hineq; nra.
@@ -384,7 +384,7 @@ Section borel_R.
     intros ? (t&->).
     rewrite /fun_inv//=.
     destruct (Rlt_dec t 0) as [Hlt|Hnlt].
-    - eapply sigma_proper; last eapply sigma_empty_set. 
+    - eapply sigma_proper; last eapply sigma_empty_set.
       intros x; split.
       * intros Hle. assert (f x * f x >= 0).
         { apply Rle_ge. apply Rle_0_sqr. }
@@ -406,7 +406,7 @@ Section borel_R.
       }
       apply Hmeas, closed_interval_borel.
   Qed.
-    
+
 
   Lemma measurable_opp {A: Type} (F: sigma_algebra A) (f: A → R) :
     measurable f F (borel _) →
@@ -437,13 +437,13 @@ Section borel_R.
     intros Hmeas1 Hmeas2.
     assert (∀ x, f1 x * f2 x = /2 * ((f1 x + f2 x) * (f1 x + f2 x)) -
                                /2 * (f1 x * f1 x) - /2 * (f2 x * f2 x)) as Heq.
-    { intros x. field. } 
+    { intros x. field. }
     setoid_rewrite Heq.
     repeat (apply measurable_plus || apply measurable_minus ||
             apply measurable_scal || apply measurable_opp ||
             apply measurable_square || auto).
   Qed.
-   
+
 
   Ltac measurable := repeat (apply measurable_plus || apply measurable_minus ||
                              apply measurable_scal || apply measurable_opp ||
@@ -490,7 +490,7 @@ Section borel_R.
   Proof.
     eapply measurable_mono.
     { rewrite /le_sigma; reflexivity. }
-    { rewrite /le_sigma/flip. apply borel_gen_closed_ray2. } 
+    { rewrite /le_sigma/flip. apply borel_gen_closed_ray2. }
     eapply measurable_generating_sets.
     intros ? (t&->).
     destruct (Rlt_dec t 0).
@@ -502,7 +502,7 @@ Section borel_R.
       * apply sigma_closed_pair_intersect.
         ** eapply minimal_sigma_ub. exists t => //=.
         ** apply sigma_closed_complements, Rbar_sigma_m_infty.
-    - eapply (sigma_proper _ _ (Rbar_le^~ t ∪ ({[m_infty]} ∪ {[p_infty]}))). 
+    - eapply (sigma_proper _ _ (Rbar_le^~ t ∪ ({[m_infty]} ∪ {[p_infty]}))).
       * intros x; split.
         ** intros [Hle|[Hm|Hp]]; destruct x => //=; rewrite /fun_inv/real; nra.
         ** rewrite /fun_inv/real//=.
@@ -566,7 +566,7 @@ Section borel_R.
         ** right; subst; done.
       * intros [Hnle|Heq].
         ** apply Rbar_not_le_lt in Hnle. by apply Rbar_lt_le.
-        ** inversion Heq; subst; apply Rbar_le_refl. 
+        ** inversion Heq; subst; apply Rbar_le_refl.
     }
     apply sigma_closed_pair_union.
     - apply sigma_closed_complements.
@@ -627,7 +627,7 @@ Section borel_R.
     (∀ n, measurable (fn n) F Rbar_sigma) →
     measurable (λ x, Inf_seq (λ n, fn n x)) F Rbar_sigma.
   Proof.
-    intros. 
+    intros.
     setoid_rewrite Inf_opp_sup.
     apply measurable_Rbar_opp.
     apply measurable_Sup.
@@ -705,7 +705,7 @@ Section borel_R.
     destruct t as [r | | ].
     -
       destruct (Rle_dec 0 r) as [Hle0|Hnle0].
-      { 
+      {
         assert (fun_inv (λ x, Rbar_plus (f1 x) (f2 x)) (Rbar_le^~ r) ≡
                         (fun_inv (λ x, Rplus (f1 x) (f2 x)) (Rle^~ r)
                                  ∩ compl (fun_inv f1 ({[p_infty]} ∪ {[m_infty]}))
@@ -873,9 +873,9 @@ Section borel_R.
     measurable g F (borel R_UniformSpace) →
     F (λ x, f x = g x).
   Proof.
-    intros Hmeas1 Hmeas2. 
+    intros Hmeas1 Hmeas2.
     apply (sigma_proper _ _ (λ x, f x - g x = 0)).
-    { intros x; split; nra. } 
+    { intros x; split; nra. }
     apply measurable_fun_eq_0. measurable.
   Qed.
 
@@ -884,9 +884,9 @@ Section borel_R.
     measurable g F (borel R_UniformSpace) →
     F (λ x, f x <= g x).
   Proof.
-    intros Hmeas1 Hmeas2. 
+    intros Hmeas1 Hmeas2.
     apply (sigma_proper _ _ (λ x, f x - g x <= 0)).
-    { intros x; split; nra. } 
+    { intros x; split; nra. }
     apply measurable_fun_le_const. measurable.
   Qed.
 
@@ -895,7 +895,7 @@ Section borel_R.
     measurable g F Rbar_sigma →
     F (λ x, f x = g x).
   Proof.
-    intros Hmeas1 Hmeas2. 
+    intros Hmeas1 Hmeas2.
     apply (sigma_proper _ _ (λ x, Rbar_minus (f x) (g x) = 0)).
     { intros x; split.
       - destruct (f x), (g x) => //=.
@@ -911,7 +911,7 @@ Section borel_R.
     (∀ n, measurable (fn n) F (borel _)) →
     F (λ x, ex_lim_seq (λ n, fn n x)).
   Proof.
-    intros Hmeas. 
+    intros Hmeas.
     eapply sigma_proper.
     { intros x. apply ex_lim_LimSup_LimInf_seq. }
     apply measurable_fun_eq_inv_Rbar; auto using measurable_LimSup, measurable_LimInf.
@@ -921,7 +921,7 @@ Section borel_R.
     (∀ n, measurable (fn n) F (borel _)) →
     F (λ x, ex_finite_lim_seq (λ n, fn n x)).
   Proof.
-    intros Hmeas. 
+    intros Hmeas.
     eapply (sigma_proper _ _ ((λ x, ex_lim_seq (λ n, fn n x))
                                 ∩ (fun_inv (λ x, Lim_seq (λ n, fn n x)) (compl {[p_infty]}))
                                 ∩ (fun_inv (λ x, Lim_seq (λ n, fn n x)) (compl {[m_infty]})))).
@@ -929,16 +929,16 @@ Section borel_R.
       - intros ((Hex&Hlim1)&Hlim2).
         destruct Hex as (v&His).
         destruct v as [r | |].
-        * exists r; eauto. 
+        * exists r; eauto.
         * rewrite (is_lim_seq_unique _ _ His) //= in Hlim1. exfalso; apply Hlim1; done.
         * rewrite (is_lim_seq_unique _ _ His) //= in Hlim2. exfalso; apply Hlim2; done.
-      - intros (v&His). 
+      - intros (v&His).
         split; first split.
-        * eexists; eauto. 
+        * eexists; eauto.
         * rewrite //= (is_lim_seq_unique _ _ His) //=.
         * rewrite //= (is_lim_seq_unique _ _ His) //=.
     }
-    apply sigma_closed_pair_intersect; first apply sigma_closed_pair_intersect. 
+    apply sigma_closed_pair_intersect; first apply sigma_closed_pair_intersect.
     - apply measure_ex_lim_seq; auto.
     - apply measurable_Lim; eauto. apply sigma_closed_complements, Rbar_sigma_pt.
     - apply measurable_Lim; eauto. apply sigma_closed_complements, Rbar_sigma_pt.
@@ -962,7 +962,7 @@ Section borel_R.
     - apply measure_ex_lim_seq; eauto.
     - apply measurable_fun_eq_inv_Rbar; eauto using measurable_Lim.
   Qed.
-      
+
 
 End borel_R.
 

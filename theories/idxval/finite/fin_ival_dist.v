@@ -89,7 +89,7 @@ Defined.
 
 Global Instance ivd_bind_proper X Y :
   Proper (pointwise_relation X (@eq_ivd Y) ==> @eq_ivd X ==> @eq_ivd Y) (ivd_bind X Y).
-Proof. intros ?? ? ?? ?. eapply ibind_proper; eauto. Qed. 
+Proof. intros ?? ? ?? ?. eapply ibind_proper; eauto. Qed.
 
 Lemma ivd_assoc {A B C} (m: ivdist A) (f: A → ivdist B) (g: B → ivdist C) :
   eq_ivd (mbind g (mbind f m)) (mbind (λ x, mbind g (f x)) m).
@@ -113,7 +113,7 @@ Lemma ivd_bind_congr {A B} (m1 m2: ivdist A) (f1 f2: A → ivdist B) :
   eq_ivd m1 m2 →
   (∀ a, eq_ivd (f1 a) (f2 a)) →
   eq_ivd (x ← m1; f1 x) (x ← m2; f2 x).
-Proof. 
+Proof.
   intros Hlem Hlef.
   rewrite /eq_ivd.
   apply ival_bind_congr; eauto.
@@ -129,11 +129,11 @@ Proof.
   setoid_rewrite ival_scale_bind.
   reflexivity.
 Qed.
-  
+
 Lemma eq_ival_sum {X} (I1 I2: ival X) P:
   eq_ival I1 I2 →
-  \big[Rplus/0]_(i | P (ind I1 i)) (val I1 i) = 
-  \big[Rplus/0]_(i | P (ind I2 i)) (val I2 i). 
+  \big[Rplus/0]_(i | P (ind I1 i)) (val I1 i) =
+  \big[Rplus/0]_(i | P (ind I2 i)) (val I2 i).
 Proof.
   intros Heq.
   transitivity (\big[Rplus/0]_(i : support (val I1) | P (ind I1 (sval i))) (val I1 (sval i))).
@@ -170,7 +170,7 @@ Qed.
 (*
 Lemma img_rvar_of_ivdist {A: eqType} (h: ivdist A):
   map sval (Finite.enum [finType of (imgT (rvar_of_ivdist h))]) = undup [seq i.2 | i <- h].
-Proof.  
+Proof.
   rewrite {1}[@Finite.enum]unlock //=. rewrite img_fin_enum_sval.
   assert (a: A).
   { destruct h as (l, pf1, pf2). destruct l.
@@ -182,7 +182,7 @@ Proof.
   etransitivity.
   - apply (@eq_map _ _ _ (λ n, nth a [seq i.2 | i <- h] (nat_of_ord n))).
     { intro i. erewrite set_nth_default; auto. rewrite size_map. done. }
-  - rewrite -enumT. rewrite (nat_of_ord_map_iota (size h) (λ n, nth a [seq (snd i) | i <- h] n)). 
+  - rewrite -enumT. rewrite (nat_of_ord_map_iota (size h) (λ n, nth a [seq (snd i) | i <- h] n)).
   destruct h as (l, pf1, pf2) => //=; clear pf1 pf2.
   rewrite -(size_map snd l) map_nth_iota //.
 Qed.
@@ -201,7 +201,7 @@ Proof.
   - intros Heq. exfalso; eapply Hdisj; eauto.
   - intros Heq. f_equal. apply Hprim2; eauto.
 Qed.
-  
+
 Lemma primitive_ivdplus_mret {X} p HPf (x1 x2: X):
   x1 ≠ x2 →
   ival_primitive (ivdplus p HPf (mret x1) (mret x2)).

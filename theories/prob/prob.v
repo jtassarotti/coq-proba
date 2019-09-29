@@ -27,12 +27,12 @@ Proof.
   apply is_series_unique, pmf_sum1.
 Qed.
 
-Lemma pmf_sum_sum_n {A} (X: distrib A) n : 
+Lemma pmf_sum_sum_n {A} (X: distrib A) n :
   sum_n (countable_sum X) n <= 1.
 Proof.
   rewrite -(pmf_sum1_Series X).
   apply is_series_partial_pos; last (apply Series_correct; eexists; eapply pmf_sum1).
-  intros n'. rewrite /countable_sum. destruct (pickle_inv) => //=; last nra. 
+  intros n'. rewrite /countable_sum. destruct (pickle_inv) => //=; last nra.
   apply pmf_pos.
 Qed.
 
@@ -56,9 +56,9 @@ Proof.
   rewrite /pr. apply Rle_ge, (Rle_trans _ (Series (countable_sum (λ n:A, 0)))).
   - right. symmetry; apply is_series_unique, is_seriesC_0; done.
   - apply Series_le.
-    * rewrite /countable_sum => n. destruct (pickle_inv) as [s|] => //=; try nra. 
+    * rewrite /countable_sum => n. destruct (pickle_inv) as [s|] => //=; try nra.
       destruct (P s) => //=; specialize (pmf_pos d s); nra.
-    * auto with prob. 
+    * auto with prob.
 Qed.
 
 Lemma pr_le_1 {A: countType} (d: distrib A) P:
@@ -69,19 +69,19 @@ Proof.
   - right. symmetry; apply is_series_unique, is_seriesC_0; done.
    *)
   - apply Series_le.
-    * rewrite /countable_sum => n. destruct (pickle_inv) as [s|] => //=; try nra. 
+    * rewrite /countable_sum => n. destruct (pickle_inv) as [s|] => //=; try nra.
       destruct (P s) => //=; specialize (pmf_pos d s); nra.
     * eexists; eapply pmf_sum1.
   - right. apply pmf_sum1_Series.
 Qed.
 
-Lemma pr_sum_n {A} (d: distrib A) (P: A → bool) n : 
+Lemma pr_sum_n {A} (d: distrib A) (P: A → bool) n :
   sum_n (countable_sum (λ a, if P a then d a else 0)) n <= 1.
 Proof.
   etransitivity; last apply (pr_le_1 d P).
-  apply is_series_partial_pos; last first. 
-  {  rewrite /pr. apply Series_correct. auto with prob. } 
-  intros n'. rewrite /countable_sum. destruct (pickle_inv) => //=; last nra. 
+  apply is_series_partial_pos; last first.
+  {  rewrite /pr. apply Series_correct. auto with prob. }
+  intros n'. rewrite /countable_sum. destruct (pickle_inv) => //=; last nra.
   destruct (P _); last nra.
   apply pmf_pos.
 Qed.
@@ -99,17 +99,17 @@ Proof.
   destruct (pickle_inv _) => //=.
 Qed.
 
-Lemma pr_eq_pred {A: countType} (d: distrib A) P Q: 
+Lemma pr_eq_pred {A: countType} (d: distrib A) P Q:
   P =i Q →
   pr d P = pr d Q.
 Proof.
   rewrite /pr => HPQ.
   apply Series_ext => n. rewrite /countable_sum; destruct (@pickle_inv A n) => //=.
-  specialize (HPQ s). rewrite /in_mem//= in HPQ. rewrite HPQ. 
+  specialize (HPQ s). rewrite /in_mem//= in HPQ. rewrite HPQ.
   done.
 Qed.
 
-Lemma pr_eq_pred' {A: countType} (d: distrib A) (P Q: pred A): 
+Lemma pr_eq_pred' {A: countType} (d: distrib A) (P Q: pred A):
   (∀ i, P i ↔ Q i) →
   pr d P = pr d Q.
 Proof.
@@ -120,7 +120,7 @@ Proof.
   * destruct Hext as [? <-]; auto.
 Qed.
 
-Lemma pr_mono_pred {A: countType} (d: distrib A) (P Q: pred A): 
+Lemma pr_mono_pred {A: countType} (d: distrib A) (P Q: pred A):
   (∀ i, P i → Q i) →
   pr d P <= pr d Q.
 Proof.
@@ -138,7 +138,7 @@ Lemma pr_union {A: countType} (d: distrib A) P Q:
   pr d P + pr d Q - pr d (predI P Q).
 Proof.
   rewrite /pr. symmetry; apply is_seriesC_filter_union.
-  - auto with prob. 
+  - auto with prob.
   - apply Series_correct. auto with prob.
 Qed.
 
@@ -179,7 +179,7 @@ Definition prod_pmf (ab: A * B) := (dist1 (fst ab)) * (dist2 (snd ab)).
 
 Lemma prod_pmf_pos ab: prod_pmf ab >= 0.
 Proof.
-  rewrite /prod_pmf. 
+  rewrite /prod_pmf.
   specialize (pmf_pos dist1 (fst ab)).
   specialize (pmf_pos dist2 (snd ab)).
   nra.
@@ -193,19 +193,19 @@ Qed.
 Section double.
 Variable P: pred (A * B).
 
-Definition σprod := 
+Definition σprod :=
   λ n, match @pickle_inv [countType of (A * B)] n with
        | Some (a, b) => (S (pickle a), S (pickle b))
        | None => (O, O)
        end.
 
-Definition aprod := 
+Definition aprod :=
   λ mn, match mn with
-        | (S m, S n) => 
+        | (S m, S n) =>
           match (@pickle_inv A m), (@pickle_inv B n) with
-            | Some a, Some b => 
-              if P (a, b) then 
-                prod_pmf (a, b) 
+            | Some a, Some b =>
+              if P (a, b) then
+                prod_pmf (a, b)
               else
                 0
             | _, _ => 0
@@ -215,18 +215,18 @@ Definition aprod :=
 
 Lemma aprod_double_summable: double_summable aprod.
 Proof.
-  exists 1 => n. 
-  set (a' := (λ mn, 
+  exists 1 => n.
+  set (a' := (λ mn,
               match mn with
-              | (S m, S n) => (countable_sum dist1 m) * 
+              | (S m, S n) => (countable_sum dist1 m) *
                               (countable_sum dist2 n)
               | _ => 0
-              end)). 
+              end)).
   transitivity (sum_n (λ j, sum_n (λ k, Rabs (a' (j, k))) n) n).
   { rewrite ?sum_n_bigop. rewrite /a'.
-    eapply Rle_bigr. intros (i&?) ?. 
-    rewrite ?sum_n_bigop. 
-    eapply Rle_bigr. intros (j&?) ?. 
+    eapply Rle_bigr. intros (i&?) ?.
+    rewrite ?sum_n_bigop.
+    eapply Rle_bigr. intros (j&?) ?.
     destruct i, j => //=; try reflexivity.
     rewrite ?/countable_sum/prod_pmf.
     destruct pickle_inv, pickle_inv => //=; rewrite ?Rmult_0_l ?Rmult_0_r; try reflexivity; [].
@@ -235,31 +235,31 @@ Proof.
   }
   destruct n.
   * rewrite ?sum_O //= Rabs_R0. nra.
-  * etransitivity. 
-    { 
-      rewrite sum_n_bigop. 
+  * etransitivity.
+    {
+      rewrite sum_n_bigop.
       rewrite -(big_mkord (λ x, true) (λ i, sum_n (λ k, Rabs (a' (i, k))) (S n))).
-      rewrite big_nat_recl; last done. 
+      rewrite big_nat_recl; last done.
       rewrite {1}/a' Rabs_R0 sum_n_const Rmult_0_r Rplus_0_l.
-      eapply Rle_bigr => ??. 
-      rewrite sum_n_bigop. 
+      eapply Rle_bigr => ??.
+      rewrite sum_n_bigop.
       rewrite -(big_mkord (λ x, true) (λ i, Rabs (a' (_, i)))).
-      rewrite big_nat_recl; last done. 
+      rewrite big_nat_recl; last done.
       rewrite {1}/a' Rabs_R0 Rplus_0_l.
       rewrite /a'//=.
       etransitivity.
-      { right. eapply eq_bigr => ??. rewrite Rabs_mult. 
+      { right. eapply eq_bigr => ??. rewrite Rabs_mult.
         rewrite ?Rabs_right; first done.
         - rewrite /countable_sum.  destruct pickle_inv => //=; try nra; try apply pmf_pos.
         - rewrite /countable_sum.  destruct pickle_inv => //=; try nra; try apply pmf_pos.
       }
       rewrite -big_distrr.
-      rewrite big_mkord -(sum_n_bigop (λ i, countable_sum _ i)). 
-      etransitivity. 
-      { 
+      rewrite big_mkord -(sum_n_bigop (λ i, countable_sum _ i)).
+      etransitivity.
+      {
         apply Rmult_le_compat_l.
         - rewrite /countable_sum; destruct pickle_inv => //=; try nra; try apply Rge_le, pmf_pos.
-        - apply pmf_sum_sum_n. 
+        - apply pmf_sum_sum_n.
       }
       rewrite Rmult_1_r.
       reflexivity.
@@ -274,15 +274,15 @@ Proof.
   case_eq (@pickle_inv [countType of A * B] n); last by nra.
   case_eq (@pickle_inv [countType of A * B] n'); last first.
   { intros Heq_none (a&b) Heq_some => //=. }
-  intros (a'&b') Heq' (a&b) Heq Hneq0 => //=. 
+  intros (a'&b') Heq' (a&b) Heq Hneq0 => //=.
   inversion 1 as [[Hp1 Hp2]].
   assert (a = a').
-  { 
+  {
     apply (f_equal (@pickle_inv A)) in Hp1. rewrite ?pickleK_inv in Hp1.
     inversion Hp1; done.
   }
   assert (b = b').
-  { 
+  {
     apply (f_equal (@pickle_inv B)) in Hp2. rewrite ?pickleK_inv in Hp2.
     inversion Hp2; done.
   }
@@ -312,7 +312,7 @@ Lemma is_series_prod_row:
             (Series (λ j, Series (λ k, aprod (S j, S k)))).
 Proof.
   apply (is_series_ext (aprod \o σprod)).
-  { 
+  {
     intros n. rewrite /aprod/σprod/countable_sum/prod_pmf//=.
     destruct (pickle_inv _) as [s|] => //=.
     destruct s as (a0, b0) => //=.
@@ -322,8 +322,8 @@ Proof.
                           (series_double_covering' _ _ σprod_inj σprod_cov aprod_double_summable)).
   cut (Series (λ j, Series (λ k, aprod (j, k))) =
       (Series (λ j : nat, Series (λ k : nat, aprod (S j, S k))))).
-  { 
-    intros <-. apply Series_correct. 
+  {
+    intros <-. apply Series_correct.
     eexists; eapply (series_double_covering _ _ σprod_inj σprod_cov aprod_double_summable); eauto.
   }
   rewrite Series_incr_1; last first.
@@ -350,7 +350,7 @@ Proof.
   eapply (is_series_chain).
   { apply (is_series_prod_row xpredT). }
   rewrite //=.
-  eapply (is_series_ext (countable_sum dist1)). 
+  eapply (is_series_ext (countable_sum dist1)).
   { intros n.
     rewrite -(Series_ext (λ k, countable_sum dist1 n * countable_sum dist2 k)); last first.
     { intros m. rewrite /countable_sum. destruct (pickle_inv), (pickle_inv) => //=; nra. }
@@ -381,8 +381,8 @@ Lemma pr_gt_contra {A} (Ω: distrib A) (X: rrvar Ω) (r1 r2: R):
   r1 <= r2 →
   pr_gt X r1 >= pr_gt X r2.
 Proof.
-  rewrite /pr_gt. intros Hle. apply Rle_ge, pr_mono_pred. 
-  intros x. 
+  rewrite /pr_gt. intros Hle. apply Rle_ge, pr_mono_pred.
+  intros x.
   destruct Rgt_dec as [Hgt1|Hngt1] => //=.
   destruct Rgt_dec as [Hgt2|Hngt2] => //=.
   rewrite //= in Hngt2 Hgt1. nra.
@@ -455,7 +455,7 @@ Hint Resolve  ex_Ex' ex_Ex_nonabs.
 Definition rvar_comp {A: countType} {B C: eqType} {Ω : distrib A} (X: rvar Ω B) (f: B → C)
   : rvar Ω C :=
   mkRvar (rvar_dist X) (f \o X).
-  
+
 Section Ex_pt_gen.
 Variable (A: countType).
 Variable (B: eqType).
@@ -469,12 +469,12 @@ Definition σpt : nat → nat * nat.
                             S (pickle a))
                | None => (O, O)
                end).
-  { rewrite /img//=. apply /exCP. exists a. by rewrite eq_refl. } 
+  { rewrite /img//=. apply /exCP. exists a. by rewrite eq_refl. }
 Defined.
 
-Definition apt := 
+Definition apt :=
   λ mn, match mn with
-        | (S m, S n) => 
+        | (S m, S n) =>
           match (@pickle_inv [countType of imgT X] m), (@pickle_inv A n) with
             | Some v, Some a => (if (X a) == (sval v) then rvar_dist X a else 0) * f (sval v)
             | _, _ => 0
@@ -489,7 +489,7 @@ Proof.
 Qed.
 
 Lemma Series_correct' a v:
-  Series a = v → ex_series a → is_series a v. 
+  Series a = v → ex_series a → is_series a v.
 Proof. by intros <- ?; apply Series_correct. Qed.
 
 Lemma apt_double_summable_by_row
@@ -502,31 +502,31 @@ Proof.
     * rewrite ex_series_incr_1.
       rewrite /apt. destruct (@pickle_inv _ j) as [v|]; last first.
       { exists 0. apply is_series_0 => ?. rewrite Rabs_R0. done. }
-      apply (ex_series_ext (λ k, Rabs (f (sval v)) * (match @pickle_inv A k with 
+      apply (ex_series_ext (λ k, Rabs (f (sval v)) * (match @pickle_inv A k with
                                                  | Some a => (if X a == sval v then (rvar_dist X) a
                                                              else 0)
                                                  | None => 0
                                                  end))).
-      { intros k. destruct (pickle_inv) as [s|] => //=. 
+      { intros k. destruct (pickle_inv) as [s|] => //=.
         ** case: ifP => _. rewrite Rabs_mult.
            *** rewrite (Rabs_right ((rvar_dist X) s)); last apply pmf_pos; rewrite //=; nra.
            *** rewrite Rmult_0_l Rabs_R0. nra.
         ** rewrite Rabs_R0; nra.
       }
       apply: ex_series_scal.
-      apply pr_ex_series. 
-  - rewrite ex_series_incr_1. 
+      apply pr_ex_series.
+  - rewrite ex_series_incr_1.
     destruct EX. eapply ex_series_ext; last (eexists; eauto).
     intros k. rewrite /countable_sum/apt. destruct (@pickle_inv _ k) as [v|] => //=; last first.
     { symmetry; apply Series_0; intros [|]; by rewrite Rabs_R0. }
     rewrite Series_incr_1_aux; last by apply Rabs_R0.
-    rewrite -(Series_ext (λ k, Rabs (f (sval v)) * (match @pickle_inv A k with 
+    rewrite -(Series_ext (λ k, Rabs (f (sval v)) * (match @pickle_inv A k with
                                                  | Some a => (if X a == sval v then (rvar_dist X) a
                                                              else 0)
                                                  | None => 0
                                                  end))).
     * rewrite Series_scal_l. rewrite /pr_eq/pr/countable_sum/oapp//= Rmult_comm. done.
-    * { intros j. destruct (pickle_inv) as [s|] => //=. 
+    * { intros j. destruct (pickle_inv) as [s|] => //=.
         ** case: ifP => _. rewrite Rabs_mult.
            *** rewrite (Rabs_right ((rvar_dist X) s)); last apply pmf_pos; rewrite //=; nra.
            *** rewrite Rmult_0_l Rabs_R0. nra.
@@ -558,7 +558,7 @@ Proof.
     * specialize (@pickle_invK [countType of imgT X] x) => //=.
       intros. destruct pickle_inv => //.
       case: ifP.
-      ** move /eqP => Heq. 
+      ** move /eqP => Heq.
          rewrite Heq in Himg n. rewrite //= in H.
          rewrite -H in n.
          exfalso. apply n. f_equal. apply sval.sval_inj_pred => //=.
@@ -570,13 +570,13 @@ Proof.
     * rewrite ex_series_incr_1.
       rewrite /apt. destruct (pickle_inv j) as [v|]; last first.
       { exists 0. apply is_series_0 => n. destruct (pickle_inv _); rewrite Rabs_R0; done. }
-      apply (ex_series_ext (λ k, rvar_dist X v * (match @pickle_inv [countType of imgT X] k with 
+      apply (ex_series_ext (λ k, rvar_dist X v * (match @pickle_inv [countType of imgT X] k with
                                                   | Some v0 => (if X v == sval v0 then
                                                                   Rabs (f (sval v0))
                                                                 else 0)
                                                  | None => 0
                                                  end))).
-      { intros k. destruct (pickle_inv) as [s|] => //=. 
+      { intros k. destruct (pickle_inv) as [s|] => //=.
         ** case: ifP => _. rewrite Rabs_mult.
            *** rewrite (Rabs_right ((rvar_dist X) v)); last apply pmf_pos; rewrite //=.
            *** rewrite Rmult_0_l Rabs_R0. nra.
@@ -585,7 +585,7 @@ Proof.
       apply: ex_series_scal.
       eapply ex_series_ext; first (intros; symmetry; eapply Hext).
       eexists; eapply is_series_bump.
-  - rewrite ex_series_incr_1. 
+  - rewrite ex_series_incr_1.
     destruct EX_pt. eapply ex_series_ext; last (eexists; eauto).
     intros k. rewrite /countable_sum/apt.
     rewrite /oapp//=. destruct (@pickle_inv _ k) as [v|] => //=; last first.
@@ -593,7 +593,7 @@ Proof.
       rewrite Rabs_R0; done.
     }
     rewrite Series_incr_1_aux; last by apply Rabs_R0.
-    rewrite -(Series_ext (λ k, rvar_dist X v * (match @pickle_inv [countType of imgT X] k with 
+    rewrite -(Series_ext (λ k, rvar_dist X v * (match @pickle_inv [countType of imgT X] k with
                                                 | Some v0 => (if X v == sval v0 then
                                                                 Rabs (f (sval v0))
                                                              else 0)
@@ -601,10 +601,10 @@ Proof.
                                                  end))).
     * rewrite Series_scal_l. rewrite /pr_eq/pr/countable_sum/oapp//= Rmult_comm.
       f_equal. symmetry; etransitivity.
-      ** apply Series_ext. 
+      ** apply Series_ext.
          intros; eapply Hext.
       ** apply Series_bump.
-    * intros j. destruct (pickle_inv) as [s|] => //=. 
+    * intros j. destruct (pickle_inv) as [s|] => //=.
         ** case: ifP => _. rewrite Rabs_mult.
            *** rewrite (Rabs_right ((rvar_dist X) v)); last apply pmf_pos; rewrite //=; nra.
            *** rewrite Rmult_0_l Rabs_R0. nra.
@@ -618,10 +618,10 @@ Proof.
   case_eq (@pickle_inv [countType of A] n); last by nra.
   case_eq (@pickle_inv [countType of A] n'); last first.
   { intros Heq_none a Heq_some => //=. }
-  intros a' Heq' a Heq Hneq0 => //=. 
+  intros a' Heq' a Heq Hneq0 => //=.
   inversion 1 as [[Hp1 Hp2]].
   assert (a = a').
-  { 
+  {
     apply (f_equal (@pickle_inv A)) in Hp2. rewrite ?pickleK_inv in Hp2.
     inversion Hp2; done.
   }
@@ -645,7 +645,7 @@ Proof.
   rewrite /σpt pickleK_inv. repeat f_equal.
   - apply (f_equal (oapp (@pickle _) n1)) in Heq1. rewrite pickle_invK //= in Heq1.
     rewrite Heq1. f_equal => //=. move: Hneq0. case: ifP; last by nra.
-    move /eqP => Heq ?. destruct v as (v&Hpf). rewrite //= in Heq. subst. 
+    move /eqP => Heq ?. destruct v as (v&Hpf). rewrite //= in Heq. subst.
     rewrite //=. f_equal. apply bool_irrelevance.
   - apply (f_equal (oapp (@pickle _) n2)) in Heq2. rewrite pickle_invK //= in Heq2.
 Qed.
@@ -653,30 +653,30 @@ Qed.
 Lemma apt_row_rewrite j:
   Series (λ k : nat, apt (S j, S k)) = countable_sum (λ r : imgT X, pr_eq X (sval r) * f (sval r)) j.
 Proof.
- rewrite /apt/countable_sum. 
+ rewrite /apt/countable_sum.
  destruct (@pickle_inv _ j) as [v|] => //=; last apply Series_0 => //=.
- rewrite -(Series_ext (λ k, f (sval v) * (match @pickle_inv A k with 
+ rewrite -(Series_ext (λ k, f (sval v) * (match @pickle_inv A k with
                                              | Some a => (if X a == sval v then (rvar_dist X) a
                                                           else 0)
                                              | None => 0
                                              end))).
     * rewrite Series_scal_l. rewrite /pr_eq/pr/countable_sum/oapp//=. rewrite Rmult_comm; done.
-    * intros ?.  destruct (pickle_inv) as [s|] => //=; try case: ifP => _; nra. 
+    * intros ?.  destruct (pickle_inv) as [s|] => //=; try case: ifP => _; nra.
 Qed.
 
 Lemma apt_row_rewrite_abs j:
   Series (λ k : nat, Rabs (apt (S j, S k)))
   = countable_sum (λ r : imgT X, pr_eq X (sval r) * Rabs (f (sval r))) j.
 Proof.
- rewrite /apt/countable_sum. 
+ rewrite /apt/countable_sum.
  destruct (@pickle_inv _ j) as [v|] => //=; last apply Series_0 => //=.
- rewrite -(Series_ext (λ k, Rabs (f (sval v)) * (match @pickle_inv A k with 
+ rewrite -(Series_ext (λ k, Rabs (f (sval v)) * (match @pickle_inv A k with
                                              | Some a => (if X a == sval v then (rvar_dist X) a
                                                           else 0)
                                              | None => 0
                                              end))).
     * rewrite Series_scal_l. rewrite /pr_eq/pr/countable_sum/oapp//=. rewrite Rmult_comm; done.
-    * intros ?.  destruct (pickle_inv) as [s|] => //=; try case: ifP => _; try nra. 
+    * intros ?.  destruct (pickle_inv) as [s|] => //=; try case: ifP => _; try nra.
       ** rewrite Rabs_mult. rewrite (Rabs_right ((rvar_dist X) s)); auto using pmf_pos.
          rewrite Rmult_comm. done.
       ** by rewrite ?Rmult_0_l ?Rmult_0_r Rabs_R0.
@@ -685,14 +685,14 @@ Proof.
 Qed.
 
 Lemma is_series_Ex_pt_f
-  (EX: ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r)))))): 
+  (EX: ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r)))))):
   is_series (countable_sum (λ a : A, f (X a) * (rvar_dist X) a))
     (Series (countable_sum (λ a : A, f (X a) * (rvar_dist X) a))).
 Proof.
   intros.
   apply (Series_correct_ext (apt \o σpt)).
   {
-    intros n. rewrite /apt/σpt/countable_sum//=. 
+    intros n. rewrite /apt/σpt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=.
     rewrite ?pickleK_inv //= eq_refl. nra.
   }
@@ -701,14 +701,14 @@ Proof.
 Qed.
 
 Lemma is_series_Ex_pt_f_abs
-  (EX: ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r)))))): 
+  (EX: ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r)))))):
   is_series (countable_sum (λ a : A, Rabs (f (X a)) * (rvar_dist X) a))
     (Series (countable_sum (λ a : A, Rabs (f (X a)) * (rvar_dist X) a))).
 Proof.
   intros.
   apply (Series_correct_ext (Rabs \o apt \o σpt)).
   {
-    intros n. rewrite /apt/σpt/countable_sum//=. 
+    intros n. rewrite /apt/σpt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=.
     rewrite ?pickleK_inv //= eq_refl.
     rewrite Rabs_mult //=.
@@ -721,16 +721,16 @@ Proof.
 Qed.
 
 Lemma is_series_Ex_pt_f'
-  (EX: ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r)))))): 
-  is_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * f (sval r)))) 
+  (EX: ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r)))))):
+  is_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * f (sval r))))
             (Series (countable_sum (λ a, f (X a) * (rvar_dist X) a))).
-Proof.  
+Proof.
   intros.
   eapply (is_series_ext (λ j, Series (λ k, apt (S j, k)))).
   { intros n. rewrite Series_incr_1_aux => //. apply apt_row_rewrite. }
   rewrite -(Series_ext (apt \o σpt)); last first.
   {
-    intros n. rewrite /apt/σpt/countable_sum//=. 
+    intros n. rewrite /apt/σpt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=.
     rewrite ?pickleK_inv //= eq_refl. nra.
   }
@@ -749,7 +749,7 @@ Proof.
   { intros n. rewrite Series_incr_1_aux => //. apply apt_row_rewrite. }
   rewrite -(Series_ext (apt \o σpt)); last first.
   {
-    intros n. rewrite /apt/σpt/countable_sum//=. 
+    intros n. rewrite /apt/σpt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=.
     rewrite ?pickleK_inv //= eq_refl //=. nra.
   }
@@ -770,7 +770,7 @@ Proof.
   }
   rewrite -(Series_ext (Rabs \o apt \o σpt)); last first.
   {
-    intros n. rewrite /apt/σpt/countable_sum//=. 
+    intros n. rewrite /apt/σpt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=.
     rewrite ?pickleK_inv //= eq_refl //=.
     rewrite Rabs_mult //=.
@@ -791,20 +791,20 @@ Lemma is_series_Ex_by_pt_f:
 Proof. intros. apply Series_correct. eexists; by apply is_series_Ex_by_pt_f'. Qed.
 
 Lemma ex_Ex_pt_f
-  (EX: ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r)))))): 
+  (EX: ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r)))))):
   ex_series (countable_sum (λ a, f (X a) * (rvar_dist X) a)).
 Proof. eexists; by apply is_series_Ex_pt_f. Qed.
 
 Lemma ex_Ex_pt_f_abs
-  (EX: ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r)))))): 
+  (EX: ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r)))))):
   ex_series (countable_sum (λ a, Rabs (f (X a)) * (rvar_dist X) a)).
 Proof. intros. eexists; by apply is_series_Ex_pt_f_abs. Qed.
 
 Lemma Ex_pt_f
-  (EX: ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r)))))): 
+  (EX: ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r)))))):
   Series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * (f (sval r)))))
   = Series (countable_sum (λ a, f (X a) * (rvar_dist X) a)).
-Proof.  
+Proof.
   intros. by apply is_series_unique, is_series_Ex_pt_f'.
 Qed.
 
@@ -817,7 +817,7 @@ Lemma Ex_pt_by_column_f:
   ex_series (countable_sum (λ a, Rabs (f (X a)) * (rvar_dist X) a)) →
   Series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * (f (sval r)))))
   = Series (countable_sum (λ a, f (X a) * (rvar_dist X) a)).
-Proof.  
+Proof.
   intros. by apply is_series_unique, is_series_Ex_by_pt_f'.
 Qed.
 
@@ -841,7 +841,7 @@ Proof. intros; apply is_series_Ex_pt_f_abs with (f := id) => //=. Qed.
 
 Lemma is_series_Ex_pt':
   ex_Ex X →
-  is_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * sval r))) 
+  is_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * sval r)))
             (Series (countable_sum (λ a, X a * (rvar_dist X) a))).
 Proof. intros; apply is_series_Ex_pt_f' with (f := id) => //=. Qed.
 
@@ -1008,7 +1008,7 @@ Proof. rewrite //=. Qed.
 
 Module Ex_comp_pt.
 Section Ex_comp_pt.
-  
+
 Variable (A: countType).
 Variable (B: eqType).
 Variable (Ω: distrib A).
@@ -1022,12 +1022,12 @@ Definition σcomppt : nat → nat * nat.
                             S (pickle a))
                | None => (O, O)
                end).
-  { rewrite /img//=. apply /exCP. exists a. by rewrite eq_refl. } 
+  { rewrite /img//=. apply /exCP. exists a. by rewrite eq_refl. }
 Defined.
 
-Definition acomppt := 
+Definition acomppt :=
   λ mn, match mn with
-        | (S m, S n) => 
+        | (S m, S n) =>
           match (@pickle_inv [countType of imgT X] m), (@pickle_inv A n) with
             | Some v, Some a => (if (X a) == (sval v) then rvar_dist X a else 0) * f (sval v)
             | _, _ => 0
@@ -1042,10 +1042,10 @@ Proof.
   case_eq (@pickle_inv [countType of A] n); last by nra.
   case_eq (@pickle_inv [countType of A] n'); last first.
   { intros Heq_none a Heq_some => //=. }
-  intros a' Heq' a Heq Hneq0 => //=. 
+  intros a' Heq' a Heq Hneq0 => //=.
   inversion 1 as [[Hp1 Hp2]].
   assert (a = a').
-  { 
+  {
     apply (f_equal (@pickle_inv A)) in Hp2. rewrite ?pickleK_inv in Hp2.
     inversion Hp2; done.
   }
@@ -1069,7 +1069,7 @@ Proof.
   rewrite /σcomppt pickleK_inv. repeat f_equal.
   - apply (f_equal (oapp (@pickle _) n1)) in Heq1. rewrite pickle_invK //= in Heq1.
     rewrite Heq1. f_equal => //=. move: Hneq0. case: ifP; last by nra.
-    move /eqP => Heq ?. destruct v as (v&Hpf). rewrite //= in Heq. subst. 
+    move /eqP => Heq ?. destruct v as (v&Hpf). rewrite //= in Heq. subst.
     rewrite //=. f_equal. apply bool_irrelevance.
   - apply (f_equal (oapp (@pickle _) n2)) in Heq2. rewrite pickle_invK //= in Heq2.
 Qed.
@@ -1077,24 +1077,24 @@ Qed.
 Lemma acomppt_row_rewrite j:
   Series (λ k : nat, acomppt (S j, S k)) = countable_sum (λ r : imgT X, pr_eq X (sval r) * f (sval r)) j.
 Proof.
- rewrite /acomppt/countable_sum. 
+ rewrite /acomppt/countable_sum.
  destruct (@pickle_inv _ j) as [v|] => //=; last apply Series_0 => //=.
- rewrite -(Series_ext (λ k, f (sval v) * (match @pickle_inv A k with 
+ rewrite -(Series_ext (λ k, f (sval v) * (match @pickle_inv A k with
                                              | Some a => (if X a == sval v then (rvar_dist X) a
                                                           else 0)
                                              | None => 0
                                              end))).
     * rewrite Series_scal_l. rewrite /pr_eq/pr/countable_sum/oapp//= Rmult_comm; done.
-    * intros ?.  destruct (pickle_inv) as [s|] => //=; try case: ifP => _; nra. 
+    * intros ?.  destruct (pickle_inv) as [s|] => //=; try case: ifP => _; nra.
 Qed.
 
 Lemma acomppt_row_rewrite_abs j:
   Series (λ k : nat, Rabs (acomppt (S j, S k)))
   = countable_sum (λ r : imgT X, pr_eq X (sval r) * Rabs (f (sval r))) j.
 Proof.
- rewrite /acomppt/countable_sum. 
+ rewrite /acomppt/countable_sum.
  destruct (@pickle_inv _ j) as [v|] => //=; last apply Series_0 => //=.
- rewrite -(Series_ext (λ k, Rabs (f (sval v)) * (match @pickle_inv A k with 
+ rewrite -(Series_ext (λ k, Rabs (f (sval v)) * (match @pickle_inv A k with
                                              | Some a => (if X a == sval v then (rvar_dist X) a
                                                           else 0)
                                              | None => 0
@@ -1109,14 +1109,14 @@ Proof.
 Qed.
 
 Lemma is_series_Ex_comp_pt:
-  is_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * f (sval r)))) 
+  is_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * f (sval r))))
             (Series (countable_sum (λ a, f (X a) * (rvar_dist X) a))).
-Proof.  
+Proof.
   eapply (is_series_ext (λ j, Series (λ k, acomppt (S j, k)))).
   { intros n. rewrite Series_incr_1_aux => //. apply acomppt_row_rewrite. }
   rewrite -(Series_ext (acomppt \o σcomppt)); last first.
   {
-    intros n. rewrite /acomppt/σcomppt/countable_sum//=. 
+    intros n. rewrite /acomppt/σcomppt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=.
     rewrite ?pickleK_inv //= eq_refl. nra.
   }
@@ -1130,14 +1130,14 @@ Proof.
 Qed.
 
 Lemma is_series_Ex_comp_pt_abs:
-  is_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r))))) 
+  is_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r)))))
             (Series (countable_sum (λ a, Rabs (f (X a)) * (rvar_dist X) a))).
-Proof.  
+Proof.
   eapply (is_series_ext (λ j, Series (λ k, Rabs (acomppt (S j, k))))).
   { intros n. rewrite Series_incr_1_aux ?Rabs_R0 => //=. by rewrite acomppt_row_rewrite_abs. }
   rewrite -(Series_ext (Rabs \o acomppt \o σcomppt)); last first.
   {
-    intros n. rewrite /acomppt/σcomppt/countable_sum//=. 
+    intros n. rewrite /acomppt/σcomppt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=; last by rewrite Rabs_R0.
     rewrite ?pickleK_inv //= eq_refl ?Rabs_mult.
     rewrite (Rabs_right); last by apply pmf_pos.
@@ -1153,14 +1153,14 @@ Proof.
 Qed.
 
 Lemma ex_series_Ex_comp_pt:
-  ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * f (sval r)))). 
-Proof.  
+  ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * f (sval r)))).
+Proof.
   eexists; apply is_series_Ex_comp_pt.
 Qed.
 
 Lemma ex_series_Ex_comp_pt_abs:
-  ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r))))). 
-Proof.  
+  ex_series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * Rabs (f (sval r))))).
+Proof.
   eexists; apply is_series_Ex_comp_pt_abs.
 Qed.
 
@@ -1171,7 +1171,7 @@ Proof. by intros <-; apply is_series_Ex_comp_pt. Qed.
 
 Lemma Ex_comp:
   Ex (rvar_comp X f) = Series (countable_sum (λ r: imgT X, (pr_eq X (sval r) * f (sval r)))).
-Proof.  
+Proof.
   rewrite Ex_pt //=.  symmetry.
   apply is_series_unique. apply is_series_Ex_comp_pt.
 Qed.
@@ -1217,11 +1217,11 @@ Proof.
           apply Rmult_le_compat_r; first by nra.
           apply Rabs_triang.
        ** rewrite /abs//=. rewrite Rabs_right; nra.
-     * eapply ex_series_ext. 
+     * eapply ex_series_ext.
        { intros; symmetry; eapply countable_sum_plus. }
        unshelve (apply: ex_series_plus).
-       ** by apply ex_Ex_pt_abs. 
-       ** by apply ex_Ex_pt_abs. 
+       ** by apply ex_Ex_pt_abs.
+       ** by apply ex_Ex_pt_abs.
 Qed.
 
 Lemma Ex_sum :
@@ -1266,7 +1266,7 @@ Hint Resolve ex_Ex_const.
 Lemma Ex_const (x: R):
   Ex (rvar_const Ω x) = x.
 Proof.
-  rewrite Ex_pt //. 
+  rewrite Ex_pt //.
   erewrite Series_ext; last first.
   { intros. by rewrite /rvar_const /= countable_sum_scal_l. }
   by rewrite Series_scal_l pmf_sum1_Series Rmult_1_r.
@@ -1321,12 +1321,12 @@ Proof.
   * intros n. rewrite /countable_sum/oapp. destruct pickle_inv; auto.
     ** rewrite Rabs_mult /rvar_dist//=. field.
     ** by rewrite Rmult_0_r.
-  * unshelve (apply: ex_series_scal_l). by apply ex_Ex_pt_abs. 
+  * unshelve (apply: ex_series_scal_l). by apply ex_Ex_pt_abs.
 Qed.
 
 Lemma Ex_scal_l (c: R):
   Ex (rvar_comp X (λ x, c * x)) = c * Ex X.
-Proof. 
+Proof.
   rewrite ?Ex_pt //; last apply ex_Ex_scal_l.
   rewrite -Series_scal_l. apply Series_ext.
   intros n. rewrite /countable_sum/oapp. destruct pickle_inv; auto.
@@ -1340,12 +1340,12 @@ Proof.
   eapply ex_Ex_ext; first eapply ex_Ex_scal_l.
   intros a => //=. apply Rmult_comm.
 Qed.
-  
+
 Lemma Ex_scal_r (c: R):
   Ex (rvar_comp X (λ x, x * c)) = Ex X * c.
 Proof.
   erewrite Ex_ext.
-  * rewrite Rmult_comm. eapply Ex_scal_l. 
+  * rewrite Rmult_comm. eapply Ex_scal_l.
   * apply ex_Ex_scal_r.
   * intros a => //=. apply Rmult_comm.
 Qed.
@@ -1370,7 +1370,7 @@ Proof.
   apply: ex_series_le; last (eapply ex_Ex_pt_abs, EX_X).
   intros n. rewrite /norm//=/countable_sum; destruct (pickle_inv _) => //=.
   * rewrite /abs//=. rewrite Rabs_right /rvar_dist; first apply Rmult_le_compat_r.
-    ** apply Rge_le, pmf_pos. 
+    ** apply Rge_le, pmf_pos.
     ** eauto.
     ** apply Rle_ge, Rmult_le_pos; auto using Rabs_pos, Rge_le, pmf_pos.
   * rewrite /abs//=. rewrite Rabs_R0; reflexivity.
@@ -1400,13 +1400,13 @@ Proof.
     destruct pickle_inv as [s|].
     * destruct (P _).
       ** rewrite Rabs_mult ?Rabs_R1.
-         specialize (pmf_pos Ω s). intros. rewrite /rvar_dist Rabs_right //=. 
+         specialize (pmf_pos Ω s). intros. rewrite /rvar_dist Rabs_right //=.
          nra.
       ** rewrite Rabs_mult ?Rabs_R0 Rmult_0_l. reflexivity.
     * rewrite Rabs_R0; reflexivity.
   - apply pr_ex_series.
 Qed.
-       
+
 
 Lemma Ex_indicator {A} {B: eqType} {Ω : distrib A} (X: rvar Ω B) P:
   Ex (indicator X P) = pr_eq (indicator X P) 1.
@@ -1451,7 +1451,7 @@ Proof.
   * rewrite Rabs_mult ?Rabs_Rabsolu.
     rewrite (Rabs_right (rvar_dist _ _)); auto using pmf_pos.
     apply Rmult_le_compat_r.
-    ** apply Rge_le, pmf_pos. 
+    ** apply Rge_le, pmf_pos.
     ** rewrite Rabs_right; last apply Rle_ge, pow_le, Rabs_pos.
        destruct (Rle_dec 1 (Rabs (X a))).
        *** transitivity (Rabs (X a) ^ s).
@@ -1463,7 +1463,7 @@ Proof.
                 ***** apply Rabs_pos.
                 ***** by apply Rnot_le_gt.
            **** rewrite RPow_abs. specialize (Rabs_pos (X a ^ s)).
-                intros. clear -H. rewrite -[a in a <= _]Rplus_0_r. 
+                intros. clear -H. rewrite -[a in a <= _]Rplus_0_r.
                 apply Rplus_le_compat_l. done.
   * rewrite Rabs_R0; reflexivity.
 Qed.
@@ -1493,7 +1493,7 @@ Proof.
   - intros [HexX HexDiff].
     eapply (@ex_Ex_sum_inv _ _ (mkRvar Ω (λ x, X x * (-2 * Ex X) + (Ex X)^2))).
     * unshelve (apply: (ex_Ex_plus_r _ _ (mkRvar Ω (λ x, X x * (-2 * Ex X))) _ ((Ex X)^2))).
-        by apply ex_Ex_scal_r. 
+        by apply ex_Ex_scal_r.
     * eapply ex_Ex_ext; first eapply HexDiff.
       intros a => //=. field.
   - intros Hex.
@@ -1510,7 +1510,7 @@ Qed.
 Lemma ex_Var_first_moment {A} {Ω: distrib A} (X: rrvar Ω) :
   ex_Var X → ex_Ex X.
 Proof.
-  intros. apply ex_Ex_second_moment. rewrite -ex_Var_second_moment. done. 
+  intros. apply ex_Ex_second_moment. rewrite -ex_Var_second_moment. done.
 Qed.
 
 (*
@@ -1521,8 +1521,8 @@ Lemma Var_Ex_diff {A} {Ω: distrib A} (X: rrvar Ω) :
   ex_Var X →
   Var X = Ex (rvar_comp X (λ x, x^2)) - (Ex X)^2.
 Proof.
-  intros HexVar. 
-  rewrite /Var. 
+  intros HexVar.
+  rewrite /Var.
   transitivity (Ex (mkRvar Ω (λ a, (X a)^2 + ((-2) * Ex X * (X a) + (Ex X)^2)))).
   - apply Ex_ext; first by destruct HexVar; auto.
     intros a => //=. field.
@@ -1530,7 +1530,7 @@ Proof.
     * rewrite (Ex_plus_r _ _ (mkRvar Ω (λ a, -2 * Ex X * X a))  _ ((Ex X)^2)) //=.
       ** rewrite Ex_scal_l //=; auto using ex_Var_first_moment.
          rewrite /rvar_comp/comp //=. rewrite Rmult_1_r. rewrite /Rminus.
-         f_equal. field. 
+         f_equal. field.
       ** by apply ex_Ex_scal_l; auto using ex_Var_first_moment.
     * by rewrite -ex_Var_second_moment.
     * apply (ex_Ex_plus_r' _ _ (mkRvar Ω (λ a, -2 * Ex X * X a))).
@@ -1549,7 +1549,7 @@ Lemma ex_Cov_ex_diff {A} {Ω: distrib A} (X Y: rrvar Ω) :
 Proof.
   intros Hcov.
   repeat split.
-  *  
+  *
 
 Lemma Cov_Ex_diff {A} {Ω: distrib A} (X Y: rrvar Ω) :
   ex_Cov X Y →
@@ -1601,7 +1601,7 @@ Proof.
   - intros n'.  rewrite /countable_sum; destruct (pickle_inv _) as [s|] => //=.
     * destruct (pr_eq_ge_0 X (sval s)) as [Hge|Heq0].
       ** specialize (Hpos _ Hge). apply Rle_ge, Rmult_le_pos; auto using Rge_le.
-         by left. 
+         by left.
       ** rewrite Heq0 Rmult_0_l. by right.
     * by right.
   - destruct (Ex_correct X); auto.
@@ -1618,7 +1618,7 @@ Proof.
   - intros n'.  rewrite /countable_sum; destruct (pickle_inv _) as [s|] => //=.
     * destruct (pr_eq_ge_0 X (sval s)) as [Hge|Heq0].
       ** specialize (Hpos _ Hge). apply Rle_ge, Rmult_le_pos; auto using Rge_le.
-         by left. 
+         by left.
       ** rewrite Heq0 Rmult_0_l. by right.
     * by right.
   - apply Ex_comp_pt.is_series_Ex_comp_pt'; auto.
@@ -1630,7 +1630,7 @@ Lemma pr_eq_sum_n_le_1 {A} {B} {Ω: distrib A} (X: rvar Ω B) P n:
   sum_n (countable_sum (λ a : imgT X, if P (sval a) then pr_eq X (sval a) else 0)) n <= 1.
 Proof.
   etransitivity; last apply (Ex_indicator_le_1 X (λ x, P x)).
-  apply is_series_partial_pos; last first. 
+  apply is_series_partial_pos; last first.
   rewrite Ex_comp_pt.Ex_comp.
   * eapply is_series_ext; last first.
     ** apply Series_correct.
@@ -1648,7 +1648,7 @@ Definition sum_list_rrvar {A} {Ω: distrib A} (l: list (rrvar Ω)) : rrvar Ω :=
 Definition prod_list_rrvar {A} {Ω: distrib A} (l: list (rrvar Ω)) : rrvar Ω :=
   mkRvar Ω (λ a, fold_right Rmult 1 (map (λ X, (rvar_fun _ _ X) a) l)).
 
-From mathcomp Require Import seq. 
+From mathcomp Require Import seq.
 
 Definition rvar_list {A} {B: eqType} {Ω: distrib A} (lX: list (rvar Ω B))
   : (rvar Ω [eqType of seq B]) :=
@@ -1677,7 +1677,7 @@ Lemma Ex_sum_list {A} {Ω: distrib A} (l: list (rrvar Ω)) :
   Ex (sum_list_rrvar l) = fold_right Rplus 0 (map Ex l).
 Proof.
   induction l as [| X l].
-  - rewrite /sum_list_rrvar //= => ?; apply Ex_const. 
+  - rewrite /sum_list_rrvar //= => ?; apply Ex_const.
   - rewrite //= => Hin.
     rewrite (Ex_ext _ (mkRvar Ω (λ a, X a + sum_list_rrvar l a))); auto using ex_Ex_sum.
     * rewrite Ex_sum //.
@@ -1691,7 +1691,7 @@ Lemma rvar_exists_support {A: countType} {B: eqType} {Ω: distrib A} (X: rvar Ω
   ∃ a, pr_eq X a > 0.
 Proof.
   edestruct (distrib_exists_support Ω) as (a&Hgt0).
-  exists (X a). 
+  exists (X a).
   rewrite /pr_eq.
   rewrite /pr.
   eapply Rlt_gt, (Series_strict_pos _ (pickle a)).
@@ -1699,7 +1699,7 @@ Proof.
     * intros. apply pmf_pos.
     * nra.
     * nra.
-  - by rewrite /countable_sum pickleK_inv //= eq_refl. 
+  - by rewrite /countable_sum pickleK_inv //= eq_refl.
   - destruct (pr_ex_series Ω (λ a', X a' == X a)) as (v&?).
     by exists v.
 Qed.
@@ -1713,29 +1713,29 @@ Proof.
   assert (Ex (rvar_const Ω 1) = Ex (rvar_comp X (λ _, 1))) as ->.
   { rewrite Ex_pt //=. }
   eapply (is_series_ext (countable_sum (λ v: imgT X, pr_eq X (sval v) * 1))).
-  { intros n. rewrite /countable_sum; destruct (pickle_inv) => //=; nra. } 
+  { intros n. rewrite /countable_sum; destruct (pickle_inv) => //=; nra. }
   apply (Ex_comp_pt.is_series_Ex_comp_pt') with (f:= (λ _, 1)) => //=.
   rewrite Ex_pt //=.
 Qed.
-  
+
 Lemma Series_pr_eq_over_range {A : countType} {B: eqType} {Ω: distrib A} (X: rvar Ω B):
   Series (countable_sum (λ v : imgT X, pr_eq X (sval v))) = 1.
 Proof.
-  apply is_series_unique, is_series_pr_eq_over_range. 
+  apply is_series_unique, is_series_pr_eq_over_range.
 Qed.
 
 Module total_prob.
 Section total_prob.
-  
+
 Variable (A: countType).
 Variable (B: eqType).
 Variable (Ω: distrib A).
 Variable (X: rvar Ω B).
 Variable (P: pred A).
 
-Definition atotal := 
+Definition atotal :=
   λ mn, match mn with
-        | (m, n) => 
+        | (m, n) =>
           match (@pickle_inv [countType of imgT X] m), (@pickle_inv A n) with
             | Some v, Some a => (if (X a == sval v) && P a then Ω a else 0)
             | _, _ => 0
@@ -1763,7 +1763,7 @@ Proof.
        *** intros; case: ifP; auto using Rge_le, pmf_pos; reflexivity.
     ** case: ifP => ?.
        *** apply pmf_pos.
-       *** nra. 
+       *** nra.
   * rewrite ?Rabs_R0. reflexivity.
 Qed.
 
@@ -1773,13 +1773,13 @@ Proof.
   assert (Himg: ∀ v, X v \in img X).
   { intros v. rewrite /img //=. apply /exCP. eexists. eauto. }
   apply ex_series_rows_ds.
-  - intros j. 
+  - intros j.
     * rewrite /atotal. destruct (@pickle_inv _ j) as [v|]; last first.
       { exists 0. apply is_series_0 => n. rewrite Rabs_R0; done. }
       apply ex_total_column_abs.
   - rewrite /atotal.
     apply: (ex_series_le _ (countable_sum (λ v : imgT X, pr_eq X (sval v)))).
-    { 
+    {
       intros n. rewrite /norm //= /abs //=.
       rewrite /countable_sum. rewrite /pr_eq/pr //=.
       assert (Hge0: ∀ k (s : imgT X),
@@ -1801,7 +1801,7 @@ Proof.
                **** rewrite Rabs_R0. intros; case: ifP; auto using Rge_le, pmf_pos; reflexivity.
            *** apply pr_ex_series.
         ** apply Rle_ge, Series_pos; auto.
-      * rewrite Series_0 // Rabs_R0; reflexivity. 
+      * rewrite Series_0 // Rabs_R0; reflexivity.
     }
     exists 1; apply is_series_pr_eq_over_range.
 Qed.
@@ -1810,20 +1810,20 @@ Lemma atotal_row_rewrite j:
   Series (λ k : nat, atotal (j, k))
   = countable_sum (λ b : imgT X, pr Ω (λ a, (X a == sval b) && P a)) j.
 Proof.
- rewrite /atotal/countable_sum. 
+ rewrite /atotal/countable_sum.
  destruct (@pickle_inv _ j) as [v|] => //=; last apply Series_0 => //=.
 Qed.
 
 Lemma atotal_column_rewrite k:
   Series (λ j : nat, atotal (j, k))
-  = countable_sum (λ a, if P a then Ω a else 0) k. 
+  = countable_sum (λ a, if P a then Ω a else 0) k.
 Proof.
   assert (Himg: ∀ v, X v \in img X).
   { intros v. rewrite /img //=. apply /exCP. eexists. eauto. }
- rewrite /atotal/countable_sum. 
+ rewrite /atotal/countable_sum.
  destruct (@pickle_inv A k) as [s|].
  - rewrite //=. destruct (P s).
-   * rewrite -{2}(Series_bump (@pickle [countType of imgT X] (exist _ (X s) (Himg s))) (Ω s)). 
+   * rewrite -{2}(Series_bump (@pickle [countType of imgT X] (exist _ (X s) (Himg s))) (Ω s)).
      apply Series_ext => n.
      destruct (Nat.eq_dec ) as [Heqn|Hneq].
      ** subst. rewrite pickleK_inv //= eq_refl //=.
@@ -1851,7 +1851,7 @@ Qed.
 End total_prob.
 End total_prob.
 
-  
+
 Lemma pr_total_prob {A : countType} {B: eqType} {Ω: distrib A} (X: rvar Ω B) P:
   pr Ω P = Series (countable_sum (λ r: imgT X, pr Ω (λ a, (X a == sval r) && P a))).
 Proof.
@@ -1866,8 +1866,8 @@ Proof.
   - intros [x Heq]. apply /exCP. exists x. subst. done.
 Qed.
 
-Lemma img_alt' {A: finType} {B: eqType} (f: A → B) i: 
-  (i \in undup [seq f i | i <- Finite.enum A]) ↔ ∃ x, f x = i.  
+Lemma img_alt' {A: finType} {B: eqType} (f: A → B) i:
+  (i \in undup [seq f i | i <- Finite.enum A]) ↔ ∃ x, f x = i.
 Proof.
   split.
   - rewrite mem_undup. move /mapP => [a ? ->]. eexists; eauto.
@@ -1877,7 +1877,7 @@ Qed.
 Lemma pr_img {A} {B} {Ω : distrib A} (X: rvar Ω B) i: pr_eq X i > 0 → i \in img X.
 Proof.
   rewrite /pr_eq/pr img_alt.
-  move/Rgt_not_eq => Hsum0. 
+  move/Rgt_not_eq => Hsum0.
   destruct (elimNf (exCP (λ x, X x == i))) as (x&?).
   - rewrite /exC. destruct (LPO_countb) as [|Hnone] => //=.
     exfalso. apply Hsum0. apply is_series_unique, is_seriesC_0.
@@ -1907,7 +1907,7 @@ Proof.
   - rewrite /exC. destruct (LPO_countb) as [|Hnone] => //=.
     exfalso. apply Hsum0. apply is_series_unique, is_seriesC_0.
     intros a. case: ifP; auto. intros. exfalso. eapply Hnone; eauto.
-  - exists (X x). destruct (Rgt_dec); last by (exfalso; auto). 
+  - exists (X x). destruct (Rgt_dec); last by (exfalso; auto).
     split; auto. apply img_alt. eauto.
 Qed.
 
@@ -1919,7 +1919,7 @@ Proof.
   - rewrite /exC. destruct (LPO_countb) as [|Hnone] => //=.
     exfalso. apply Hsum0. apply is_series_unique, is_seriesC_0.
     intros a. case: ifP; auto. intros. exfalso. eapply Hnone; eauto.
-  - exists (X x). destruct (Rge_dec); last by (exfalso; auto). 
+  - exists (X x). destruct (Rge_dec); last by (exfalso; auto).
     split; auto. apply img_alt. eauto.
 Qed.
 
@@ -1946,16 +1946,16 @@ Proof.
   { intros; apply countable_sum_ext.
     intros a. case: ifP.
     * move /eqP; intros; subst. rewrite eq_refl. rewrite HP. done.
-    * move /eqP; intros Hneq. case: ifP => //=. move /eqP. 
+    * move /eqP; intros Hneq. case: ifP => //=. move /eqP.
       congruence.
   }
   rewrite (SeriesC_bump); nra.
 Qed.
 
-Lemma if_case_match {A: Type} (b b': bool) (x y: A): 
+Lemma if_case_match {A: Type} (b b': bool) (x y: A):
   b == b' → (if b then x else y) = (if b' then x else y).
-Proof. 
-    by move /eqP => ->. 
+Proof.
+    by move /eqP => ->.
 Qed.
 
 Lemma pr_eq_sum_list {A: countType} {B: eqType} {Ω: distrib A} (X : rvar Ω B) l:
@@ -1979,11 +1979,11 @@ Proof.
                                                                else 0)
                                                      (λ v, a == sval v)); swap 1 3.
        ** apply Series_correct. apply (ex_seriesC_filter_P).
-         *** intros; apply pr_eq_ge_0. 
+         *** intros; apply pr_eq_ge_0.
          *** exists 1. apply is_series_pr_eq_over_range.
        ** intros n. case: ifP; auto using Rle_ge, Rle_refl, pr_eq_ge_0.
        ** f_equal.
-          *** symmetry.  
+          *** symmetry.
               {
                 destruct (Req_dec (pr_eq X a) 0) as [Heq0|Hneq0].
                 * rewrite Heq0.
@@ -1999,10 +1999,10 @@ Proof.
                   apply SeriesC_ext => x.
                   case: ifP.
                   ** move /eqP; intros; subst => //=.
-                     rewrite eq_refl. rewrite in_cons //= eq_refl //=. 
+                     rewrite eq_refl. rewrite in_cons //= eq_refl //=.
                   ** move /eqP; intros Hneq.
                      case: ifP.
-                     *** move /eqP.  intros Heq. 
+                     *** move /eqP.  intros Heq.
                          exfalso. apply Hneq. apply sval_inj_pred => //=.
                      *** done.
               }
@@ -2022,9 +2022,9 @@ Proof.
   rewrite -(Series_pr_eq_over_range X).
   rewrite -[a in _ <= a - _](is_seriesC_filter_split _ (λ v : imgT X, pr_eq X (sval v))
                                                  (λ v, (sval v) \in l)); swap 1 3.
-  - apply Series_correct. eexists; apply is_series_pr_eq_over_range. 
-  - intros; apply pr_eq_ge_0. 
-  - rewrite pr_eq_sum_list. ring_simplify. 
+  - apply Series_correct. eexists; apply is_series_pr_eq_over_range.
+  - intros; apply pr_eq_ge_0.
+  - rewrite pr_eq_sum_list. ring_simplify.
     destruct (Req_dec (pr_eq X b) 0) as [Heq0|Hneq0].
     * rewrite Heq0.
       apply Series_pos. intros n. rewrite /countable_sum.
@@ -2036,9 +2036,9 @@ Proof.
       apply (@SeriesC_pred_sat_le) with (x := (exist _ b Hneq0) : img_countType X)
                                      (f := λ x, pr_eq X (sval x))
                                      (P := λ x, sval x \notin l).
-      ** intros; apply pr_eq_ge_0. 
+      ** intros; apply pr_eq_ge_0.
       ** rewrite //=. by apply /negP.
       ** apply (ex_seriesC_filter_P).
-         *** intros; apply pr_eq_ge_0. 
+         *** intros; apply pr_eq_ge_0.
          *** exists 1. apply is_series_pr_eq_over_range.
 Qed.

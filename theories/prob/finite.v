@@ -15,16 +15,16 @@ Implicit Types (a: A → R).
 Lemma ex_series_eventually0 (a: nat → R):
   (∃ N, ∀ n, n ≥ N → a n = 0) → ex_series a.
 Proof.
-  intros (N&Hev0). apply: ex_series_Cauchy. 
+  intros (N&Hev0). apply: ex_series_Cauchy.
   rewrite /Cauchy_series => eps. exists N => n m Hlen Hlem.
   assert (Heq: sum_n_m a n m = 0).
-  { 
-    rewrite /sum_n_m. 
+  {
+    rewrite /sum_n_m.
     rewrite (Iter.iter_nat_ext_loc _ _ _ (λ x, 0)).
     - rewrite /plus/zero//=/Iter.iter_nat Iter.iter_const; nra.
-    - intros k (?&?). apply Hev0. lia. 
+    - intros k (?&?). apply Hev0. lia.
   }
-  rewrite /norm//=/abs//=. destruct eps =>//=. rewrite Heq Rabs_right; nra. 
+  rewrite /norm//=/abs//=. destruct eps =>//=. rewrite Heq Rabs_right; nra.
 Qed.
 
 Lemma ex_series_list_Rabs {B: eqType} (l: list B) (f: B → R):
@@ -55,7 +55,7 @@ Proof.
   induction (Finite.enum A) => //=.
   - rewrite big_nil. apply is_series_unique, is_series_0 => n.
     destruct n; auto.
-  - rewrite big_cons Series_incr_1 //=. 
+  - rewrite big_cons Series_incr_1 //=.
     * rewrite IHl; f_equal.
     * apply ex_series_Rabs, ex_series_list_Rabs.
 Qed.
@@ -64,9 +64,9 @@ Lemma SeriesF_is_seriesC a:
   is_series (countable_sum a) (Series (finite_sum a)).
 Proof.
   edestruct (ex_seriesF_Rabs); eauto.
-  edestruct (series_rearrange_covering (finite_sum a) 
+  edestruct (series_rearrange_covering (finite_sum a)
                                        (λ n, match @pickle_inv A n with
-                                             | Some a => seq.index a (Finite.enum A) 
+                                             | Some a => seq.index a (Finite.enum A)
                                              | None => length (Finite.enum A)
                                              end)) as (?&Hconv); eauto.
   - intros n n'. rewrite /finite_sum => //=.
@@ -76,30 +76,30 @@ Proof.
     case_eq (@pickle_inv A n') => //=; last first.
     { intros ? ? Heq. exfalso.
       cut (length (Finite.enum A) < length (Finite.enum A))%nat;
-                         first by (intros; nify; omega). 
+                         first by (intros; nify; omega).
       rewrite -{1}Heq. rewrite -size_legacy. apply SSR_leq. rewrite seq.index_mem.
       by rewrite -enumT mem_enum.
     }
     intros s' Hpickle2.
     intros Hneq0 Hidxeq.
     assert (s = s').
-    { 
-      rewrite -[a in a = _](@seq.nth_index _ s s (Finite.enum A)); 
-        last by rewrite -enumT mem_enum. 
-      rewrite -[a in _ = a](@seq.nth_index _ s s' (Finite.enum A)); 
-        last by rewrite -enumT mem_enum. 
+    {
+      rewrite -[a in a = _](@seq.nth_index _ s s (Finite.enum A));
+        last by rewrite -enumT mem_enum.
+      rewrite -[a in _ = a](@seq.nth_index _ s s' (Finite.enum A));
+        last by rewrite -enumT mem_enum.
       auto.
     }
-    subst. 
+    subst.
     transitivity (pickle s').
     * apply (f_equal (oapp (@pickle A) n)) in Hpickle1.
-      rewrite //= pickle_invK in Hpickle1. 
+      rewrite //= pickle_invK in Hpickle1.
       done.
     * apply (f_equal (oapp (@pickle A) n')) in Hpickle2.
       rewrite //= pickle_invK in Hpickle2.
       done.
   - rewrite /finite_sum => n.
-    rewrite /oapp. 
+    rewrite /oapp.
     case_eq (nth_error (Finite.enum A) n).
     * intros s Heq Hneq0.
       exists (pickle s). rewrite pickleK_inv.
@@ -107,9 +107,9 @@ Proof.
       {  apply nth_error_Some. congruence. }
       eapply nth_error_nth2 with (d := s) in Heq.
       rewrite -Heq. apply seq.index_uniq.
-      { nify. rewrite size_legacy. done. } 
+      { nify. rewrite size_legacy. done. }
       rewrite -enumT. apply enum_uniq.
-    * rewrite //=. 
+    * rewrite //=.
   - eapply is_series_ext; last apply Hconv.
     intros n. rewrite /finite_sum/countable_sum.
     destruct (@pickle_inv A n) as [s|] => //=.
@@ -119,7 +119,7 @@ Proof.
       }
       rewrite seq.nth_index; last by rewrite -enumT mem_enum.
       rewrite //=.
-    * rewrite (proj2 (nth_error_None _ _)); last by omega. done. 
+    * rewrite (proj2 (nth_error_None _ _)); last by omega. done.
 Qed.
 
 Lemma SeriesC_SeriesF a:
@@ -150,22 +150,22 @@ Defined.
 Lemma img_fin_enum_sval (f: A → B):
   map sval (img_fin_enum f) = undup [seq (f i) | i <- Finite.enum A].
 Proof.
-  rewrite /img_fin_enum //=. 
+  rewrite /img_fin_enum //=.
   induction (Finite.enum A) => //=.
-  - case: ifP. 
-    * case: ifP. 
+  - case: ifP.
+    * case: ifP.
       ** intros. eauto.
       ** intros Hnin Hin. exfalso.
-         move /mapP in Hin. destruct Hin as [x Hin Hex]. 
+         move /mapP in Hin. destruct Hin as [x Hin Hex].
          inversion Hex.
          move /negP in Hnin. apply Hnin.
          apply /mapP. eexists; eauto.
     * case: ifP.
-      ** eauto. intros Hin Hnin. eauto. exfalso. 
-         move /mapP in Hin. destruct Hin as [x Hin Hex]. 
+      ** eauto. intros Hin Hnin. eauto. exfalso.
+         move /mapP in Hin. destruct Hin as [x Hin Hex].
          move /negP in Hnin. apply Hnin.
          apply /mapP. eexists; eauto.
-         apply /eqP. rewrite -(inj_eq val_inj) => //=. apply /eqP. done.  
+         apply /eqP. rewrite -(inj_eq val_inj) => //=. apply /eqP. done.
       ** intros. rewrite ?big_cons.
          rewrite //=. f_equal. eauto.
 Qed.
@@ -178,38 +178,38 @@ Qed.
 Lemma img_fin_mem f x : x \in img_fin_enum f.
 Proof.
   rewrite /img_fin_enum mem_undup. destruct x as (x&Heq) => //=.
-  generalize (Heq). move /exCP in Heq. destruct Heq as (a&Heq) => ?. 
+  generalize (Heq). move /exCP in Heq. destruct Heq as (a&Heq) => ?.
   apply /mapP. exists a.
   - rewrite -enumT mem_enum //.
   - move /eqP in Heq. subst. f_equal.
     apply bool_irrelevance.
 Qed.
 
-Definition img_finMixin (f: A → B) := 
+Definition img_finMixin (f: A → B) :=
   Eval hnf in @UniqFinMixin [countType of imgT f] (img_fin_enum f) (img_fin_uniq f) (img_fin_mem f).
-Canonical img_finType (f: A → B) := 
-  Eval hnf in FinType (imgT f) (img_finMixin f). 
+Canonical img_finType (f: A → B) :=
+  Eval hnf in FinType (imgT f) (img_finMixin f).
 End img_fin.
 
 Lemma img_fin_enum_sval_comp {A: finType} {B C: eqType} (f: A → B) (g: B → C):
   map sval (img_fin_enum _ _ (g \o f)) = undup [seq (g (f i)) | i <- Finite.enum A].
 Proof.
-  rewrite /img_fin_enum. rewrite img_fin_enum_sval; done. 
+  rewrite /img_fin_enum. rewrite img_fin_enum_sval; done.
 Qed.
 
 Lemma img_fin_big {A: finType} {B: eqType} (f: A → B) (F: B → R) P:
   \big[Rplus/0]_(i in img_finType A B f | P (sval i)) (F (sval i)) =
-  \big[Rplus/0]_(i <- undup [seq (f i) | i <- Finite.enum A] | P i) (F i). 
+  \big[Rplus/0]_(i <- undup [seq (f i) | i <- Finite.enum A] | P i) (F i).
 Proof.
   rewrite /img_finType /index_enum.
-  rewrite {1}[@Finite.enum]unlock //=. 
+  rewrite {1}[@Finite.enum]unlock //=.
   rewrite /img_fin_enum /imgT/img//=/index_enum.
   rewrite -big_map. rewrite img_fin_enum_sval. done.
 Qed.
 
 Lemma img_fin_big' {A: finType} {B: eqType} (f: A → B) (F: B → R) P:
   \big[Rplus/0]_(i <- img_fin_enum A B f | P (sval i)) (F (sval i)) =
-  \big[Rplus/0]_(i <- undup [seq (f i) | i <- Finite.enum A] | P i) (F i). 
+  \big[Rplus/0]_(i <- undup [seq (f i) | i <- Finite.enum A] | P i) (F i).
 Proof.
  intros. etransitivity; last apply img_fin_big.
  rewrite /index_enum. rewrite [@Finite.enum]unlock //=.
@@ -236,7 +236,7 @@ Qed.
 
 Lemma Ex_fin_comp {B: eqType} (X: rvar Ω B) (f: B → R):
   Ex (rvar_comp X f) = \big[Rplus/0]_(a : imgT X) (pr_eq X (sval a) * f (sval a)).
-Proof. 
+Proof.
   rewrite Ex_comp_pt.Ex_comp. rewrite SeriesC_fin_big //. apply ex_Ex_fin.
 Qed.
 
@@ -250,17 +250,17 @@ Proof.
   * eauto.
 Qed.
 
-Lemma pr_sum_all {B: eqType} (X: rvar Ω B): 
+Lemma pr_sum_all {B: eqType} (X: rvar Ω B):
   \big[Rplus/0]_(i : imgT X) pr_eq X (sval i) = 1.
 Proof.
   transitivity (Ex (rvar_comp X (fun _ => 1))).
-  - rewrite Ex_fin_comp. apply eq_bigr => ??. field. 
+  - rewrite Ex_fin_comp. apply eq_bigr => ??. field.
   - rewrite Ex_fin_pt //= -big_distrr //= Rmult_1_l -SeriesC_fin_big.
     apply is_series_unique, pmf_sum1.
 Qed.
 
 Lemma Ex_comp_ext {B: eqType} (X: rvar Ω B) (f f': B → R):
-  (∀ x, f x = f' x) → 
+  (∀ x, f x = f' x) →
   Ex (rvar_comp X f) = Ex (rvar_comp X f').
 Proof.
   intros Hext. rewrite ?Ex_fin_pt.
@@ -292,7 +292,7 @@ Lemma img_rvar_comp {B B': eqType} (r: rvar Ω B) (f: B → B'):
   map sval (Finite.enum [finType of (imgT (rvar_comp r f))])
   = undup ([ seq (f (sval x)) | x <- Finite.enum [finType of (imgT r)]]).
 Proof.
-  rewrite /img//=. rewrite {1}unlock //=. rewrite img_fin_enum_sval_comp. 
+  rewrite /img//=. rewrite {1}unlock //=. rewrite img_fin_enum_sval_comp.
   symmetry. rewrite {1}unlock //=. rewrite map_comp img_fin_enum_sval //=.
   rewrite -undup_map -map_comp. done.
 Qed.
@@ -314,7 +314,7 @@ Arguments img_rvar_comp {_ _ _ _}.
 Lemma img_pair_rv {A A': finType} {B B': eqType} (Ω: distrib A) (Ω' : distrib A')
       (r: rvar Ω B) (r': rvar Ω' B'):
   perm_eq (map sval (Finite.enum [finType of imgT (rvar_pair r r')]))
-          [seq (sval x1, sval x2) | x1 <- Finite.enum [finType of (imgT r)], 
+          [seq (sval x1, sval x2) | x1 <- Finite.enum [finType of (imgT r)],
                           x2 <- Finite.enum [finType of (imgT r')]].
 Proof.
   rewrite /img/rvar_pair//= ?unlock /=/prod_enum ?enumT.
@@ -322,19 +322,19 @@ Proof.
   - rewrite img_fin_enum_sval. apply undup_uniq.
   - apply allpairs_uniq; try (rewrite /img_fin_enum;  apply undup_uniq).
     intros x y ?? Heq => //=.
-    destruct x as (s1&s1'), y as (s2&s2'). 
-    f_equal. 
+    destruct x as (s1&s1'), y as (s2&s2').
+    f_equal.
     * destruct s1, s2.  inversion Heq; subst. f_equal; apply bool_irrelevance.
     * destruct s1', s2'.  inversion Heq; subst. f_equal; apply bool_irrelevance.
-  - intros (x, y). 
+  - intros (x, y).
     apply /mapP. case: ifP => [HP|HnP].
     * move /allpairsP in HP. destruct HP as [(b&b') [Hb Hb' Heq]].
       rewrite mem_undup in Hb. move /mapP in Hb. destruct Hb as [a ? Hex].
       rewrite mem_undup in Hb'. move /mapP in Hb'. destruct Hb' as [a' ? Hex'].
       assert ((λ y, exC (λ x, (r (fst x), r' (snd x)) == y)) (x, y)) as Hpf.
-      { 
+      {
         apply /exCP. exists (a, a').
-        rewrite //= in Heq. inversion Heq. subst. 
+        rewrite //= in Heq. inversion Heq. subst.
         rewrite //= in Hex Hex'.
         apply /eqP; f_equal.
         - rewrite Hex => //=.
@@ -342,10 +342,10 @@ Proof.
       }
       exists (exist _ (x, y) Hpf).
       ** apply img_fin_mem.
-      ** rewrite //=. 
-    * intros [((b, b')&Hin0) Hin Heq]. 
+      ** rewrite //=.
+    * intros [((b, b')&Hin0) Hin Heq].
       rewrite //= in Heq. move /negP in  HnP. apply HnP.
-      apply /allpairsP. 
+      apply /allpairsP.
       rewrite //= in Hin.
       generalize (Hin0). move /exCP => [[a a'] Heq'].
       move /eqP in Heq'. inversion Heq'; subst.
@@ -371,14 +371,14 @@ Lemma pr_eq_rvar_pair {A A': finType} {B B': eqType} {Ω: distrib A} {Ω': distr
 Proof.
   rewrite /pr_eq//=/pr ?SeriesC_fin_big.
   rewrite /index_enum -big_mkcondr.
-  erewrite (eq_bigl (fun x => (r (fst x) == fst bb) && (r' (snd x) == (snd bb)))); last first. 
+  erewrite (eq_bigl (fun x => (r (fst x) == fst bb) && (r' (snd x) == (snd bb)))); last first.
   { rewrite //= => x. }
-  rewrite -(pair_big (λ x, r x == (fst bb)) (λ y, r' y == (snd bb)) 
+  rewrite -(pair_big (λ x, r x == (fst bb)) (λ y, r' y == (snd bb))
                      (fun a b => rvar_dist r a * rvar_dist r' b)%R) //=.
   rewrite big_distrl /=.
   rewrite /index_enum.
   rewrite -big_mkcondr.
-  transitivity 
+  transitivity
     (\big[Rplus/0]_(i <- Finite.enum A | i \in A)
      ((if r i == bb.1 then (rvar_dist r) i *
       \big[Rplus_monoid/0]_(i0 <- Finite.enum A' | (i0 \in A') && (r' i0 == bb.2)) (rvar_dist r') i0

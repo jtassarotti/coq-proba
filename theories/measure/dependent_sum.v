@@ -36,7 +36,7 @@ Qed.
 Definition dep_section_sigma (a: A) : sigma_algebra (sigT B).
 Proof.
   refine {| sigma_sets := (λ UV, F2 a (dep_section UV a)) |}.
-  - intros UV UV' Heq. rewrite dep_section_proper; eauto. 
+  - intros UV UV' Heq. rewrite dep_section_proper; eauto.
   - eapply sigma_proper; last apply sigma_full.
     firstorder.
   - intros P. intros HF.
@@ -72,7 +72,7 @@ Qed.
 Definition dep_proj_sigma (a: A) : sigma_algebra (sigT B).
 Proof.
   refine {| sigma_sets := (λ UV, F2 a (dep_section UV a)) |}.
-  - intros UV UV' Heq. rewrite dep_section_proper; eauto. 
+  - intros UV UV' Heq. rewrite dep_section_proper; eauto.
   - eapply sigma_proper; last apply sigma_full.
     firstorder.
   - intros P. intros HF.
@@ -91,7 +91,7 @@ Lemma dep_sum_sigma_elim UV:
   F3 (fun_img (λ ab, f (projT1 ab) (projT2 ab)) UV).
 Proof.
   intros Hdep.
-  
+
 
 
   intros Hdep.
@@ -137,8 +137,8 @@ Proof.
   eexists. exists V.
   split_and!; auto.
   split.
-  * firstorder. 
-  * firstorder. 
+  * firstorder.
+  * firstorder.
 Qed.
 
 (*
@@ -164,11 +164,11 @@ Proof.
     intros.
     intros Hdep.
     rewrite /initial_algebra1/initial_algebra.
-    intros σ. 
+    intros σ.
     intros.
   Focus 2. apply initial_algebra1_lb. apply fun_decode_measurable.
 *)
-    
+
 
 (*
 Lemma dep_pair_measurable {A} B C: Type} F1 F2 F3 (f : A → B) (g: ∀ a, C):
@@ -211,7 +211,7 @@ Section dep_sum_measure.
       split; intuition.
     * rewrite Rmult_0_r. etransitivity; last eapply measure_empty.
       apply measure_proper. split.
-      ** intros (?&?); intuition. 
+      ** intros (?&?); intuition.
       ** inversion 1.
   Qed.
 
@@ -258,10 +258,10 @@ Section dep_sum_measure.
       { intros x. rewrite (measure_dep_section_rectangle (λ _, True) (λ _ _, True)). done. }
       measurable.
       * eapply measurable_ext; last eapply (Hmeas_meas (λ _, True)); eauto.
-      * apply wpt_fun_measurable. 
+      * apply wpt_fun_measurable.
     }
     assert (HFset_minus: ∀ P Q, F P → F Q → Q ⊆ P → F (set_minus P Q)).
-    { 
+    {
       intros P Q (HP&?) (HQ&?) Hsub.
       rewrite /F; split; first (apply sigma_closed_set_minus; auto).
       assert (∀ x, ν x (dep_section (set_minus P Q) x) =
@@ -304,7 +304,7 @@ Section dep_sum_measure.
     { intros P Q HP HQ.
       destruct HP as (A1&B1&?&?&HequivP).
       destruct HQ as (A2&B2&?&?&HequivQ).
-      exists (A1 ∩ A2). exists (B1 ∩ B2). 
+      exists (A1 ∩ A2). exists (B1 ∩ B2).
       split_and!; try apply sigma_closed_pair_intersect; eauto.
       { rewrite HequivP HequivQ; clear; firstorder. }
     }
@@ -381,7 +381,7 @@ Section dep_sum_measure.
         nra.
       }
       { intros n. apply ex_integral_sum_n; eauto. }
-      { 
+      {
         exists (μ (λ _, True) * Mbound).
         intros ? (n&His).
         eapply (is_integral_mono _ _ _ (λ x_, Mbound)); eauto.
@@ -393,7 +393,7 @@ Section dep_sum_measure.
                eapply dep_section_measurable; eauto.
             ** auto.
           * intros; eapply dep_section_measurable; eauto.
-          * apply disjointF_dep_section; auto. 
+          * apply disjointF_dep_section; auto.
         }
         rewrite Rmult_comm.
         apply is_integral_const.
@@ -416,7 +416,7 @@ Section dep_sum_measure.
     - abstract (intros; apply Integral_ge0; intros; apply Rge_le; auto).
     - assert (∀ x : A, dep_section (empty_set : _ → Prop) x ≡ ∅) as Heq by auto.
       abstract (setoid_rewrite Heq; setoid_rewrite measure_empty; apply Integral_0).
-    - apply dep_sum_measure_additivity1. 
+    - apply dep_sum_measure_additivity1.
   Defined.
 
   Lemma dep_sum_measure_ex_integral' UV P:
@@ -445,7 +445,7 @@ Section dep_sum_measure.
       * apply measurable_measure_dep. eauto.
       * apply ex_integral_const.
   Qed.
-  
+
 
   Definition wpt_dep_proj (wpt: weighted_partition (dep_sum_sigma)) (x: A)
     : weighted_partition (F2 x).
@@ -460,7 +460,7 @@ Section dep_sum_measure.
     wpt_fun (wpt_dep_proj wpt x) y = wpt_fun wpt (existT x y).
   Proof.
     rewrite /wpt_dep_proj.
-    edestruct (@wpt_indicator_scal_list_spec2) as [(Hneg&->)|Hcase]. 
+    edestruct (@wpt_indicator_scal_list_spec2) as [(Hneg&->)|Hcase].
     { specialize (wpt_map_snd_disjoint wpt).
       generalize (wpt_list wpt). clear. induction l.
       * rewrite //=. intros. econstructor.
@@ -478,7 +478,7 @@ Section dep_sum_measure.
     - exfalso. destruct (partition_union (wpt_part wpt) (existT x y)) as (UV&?&?); first done.
       eapply (Hneg (wpt_fun wpt (existT x y)) (dep_section UV x)).
       * apply in_map_iff. exists (wpt_fun wpt (existT x y), UV) => //=.
-        split; eauto. apply wpt_fun_eq1; eauto. 
+        split; eauto. apply wpt_fun_eq1; eauto.
       * auto.
     - destruct Hcase as (r&U&Hin&HU&->).
       symmetry. apply in_map_iff in Hin.
@@ -587,12 +587,12 @@ Section dep_sum_measure.
       apply Integral_correct, ex_integral_left_section_measure.
       done.
     - rewrite Integral_wpt wpt_integral_plus.
-      setoid_rewrite wpt_plus_spec. 
+      setoid_rewrite wpt_plus_spec.
       eapply is_integral_ext.
       { intros x. rewrite Integral_plus; eauto. }
       apply is_integral_plus; rewrite -Integral_wpt; done.
     - rewrite Integral_wpt wpt_integral_scal.
-      setoid_rewrite wpt_scal_spec. 
+      setoid_rewrite wpt_scal_spec.
       eapply is_integral_ext.
       { intros x. rewrite Integral_scal; eauto. }
       apply is_integral_scal; rewrite -Integral_wpt; done.
@@ -675,7 +675,7 @@ Section dep_sum_measure.
     assert (Himp: ∀ P Q : Prop, P ∧ (P → Q) → P ∧ Q) by intuition.
     assert (∀ i,
         measurable (λ x : A, Integral (ν x) (λ y, Rmin (g (existT x y)) (INR i))) F1 (borel _)).
-    { 
+    {
       intros i.
       apply (tonelli_dep_measurable (λ ab, Rmin (g ab) (INR i))).
       apply measurable_Rmin; measurable.
@@ -711,7 +711,7 @@ Section dep_sum_measure.
         field_simplify in Hr1; try nra.
         feed pose proof (pos_INR' (S n)); auto. nra.
       }
-      clear -HF Hpos Hmeas Hmeas' Hfmeas. 
+      clear -HF Hpos Hmeas Hmeas' Hfmeas.
       apply measure_mono; auto.
       intros x Hneg.
       apply Classical_Pred_Type.not_all_not_ex.
@@ -722,14 +722,14 @@ Section dep_sum_measure.
       intros ? (?&<-).
       left. apply Rnot_le_gt. eauto.
     }
-    intros k. apply Himp. 
+    intros k. apply Himp.
     split.
     { apply sigma_closed_unions => i; apply measurable_fun_ge; eauto. }
     intros Hmeas'.
     feed pose proof (ex_integral_Rmin (dep_sum_measure) g) as Hex; eauto.
     assert (Hlen: ∀ n , μ (λ x, INR (S k) <= Integral (ν x) (λ y, Rmin (g (existT x y)) (INR n)))
                          <= (v + 1) / INR (S k)).
-    { 
+    {
       intros n.
       specialize (Hex n).
       destruct Hex as (v'&His').
@@ -814,7 +814,7 @@ Section dep_sum_measure.
         intros x Hex'. rewrite Rabs_right; last eauto.
         apply Integral_Rabs.
         right; split; eauto.
-        eapply fun_dep_measurable; eauto. 
+        eapply fun_dep_measurable; eauto.
       }
       * apply measurable_Rabs.
         apply tonelli_dep_measurable; eauto.
@@ -837,7 +837,7 @@ Section dep_sum_measure.
       { apply measurable_minus; eauto. }
       eapply almost_everywhere_meas_mono; last eapply Hae.
       { apply measurable_fun_eq_inv; eauto.
-        * apply tonelli_dep_measurable; auto.  
+        * apply tonelli_dep_measurable; auto.
         * apply measurable_minus; eauto.
       }
       intros x (Hex1&Hex2).
@@ -898,12 +898,12 @@ Section dep_sum_measure.
     almost_everywhere_meas dep_sum_measure (λ ip, Q (projT1 ip) (projT2 ip)).
   Proof.
     intros. split; auto.
-    rewrite //=. 
+    rewrite //=.
     erewrite <-Integral_0.
     apply Integral_ext.
     intros a. destruct (H0 a); eauto.
   Qed.
-  
+
 End dep_sum_measure.
 
 End dep_sum_sigma.

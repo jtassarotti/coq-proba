@@ -22,7 +22,7 @@ Proof.
 Qed.
 
 Definition outer_measurable {A} (μ: outer_measure A) (U: A → Prop) :=
-  ∀ V, μ V = μ (V ∩ U) + μ (V ∩ (compl U)). 
+  ∀ V, μ V = μ (V ∩ U) + μ (V ∩ (compl U)).
 
 Global Instance outer_measurable_proper {A: Type} (μ: outer_measure A) :
   Proper (@eq_prop A ==> iff) (@outer_measurable _ μ).
@@ -71,7 +71,7 @@ Section outer_measure_props.
   Proof.
     intros Hge V. apply Rle_antisym; last by (apply Rge_le, Hge).
     setoid_rewrite <-outer_measure_finite_sub_additivity.
-    right. apply outer_measure_proper. 
+    right. apply outer_measure_proper.
     rewrite -intersect_union_l union_compl intersect_top. done.
   Qed.
 
@@ -104,14 +104,14 @@ Section outer_measure_props.
   Lemma empty_outer_measurable:
     outer_measurable μ ∅.
   Proof. by apply null_outer_measurable. Qed.
-    
+
   Lemma compl_outer_measurable U:
     outer_measurable μ U → outer_measurable μ (compl U).
   Proof.
     rewrite /outer_measurable => HU V.
     rewrite HU. rewrite compl_involutive Rplus_comm //.
   Qed.
-    
+
   Lemma union_outer_measurable U1 U2:
     outer_measurable μ U1 → outer_measurable μ U2 → outer_measurable μ (U1 ∪ U2).
   Proof.
@@ -122,7 +122,7 @@ Section outer_measure_props.
     assert ((V ∩ (U1 ∪ U2)) ∩ compl U1 ≡
             ((V ∩ (compl U1)) ∩ U2)) as Hsimpl2
         by firstorder.
-    rewrite compl_union. 
+    rewrite compl_union.
     rewrite Hsimpl1 Hsimpl2 => ->.
     rewrite Rplus_assoc ?assoc.
     rewrite -HU2. apply HU1.
@@ -150,7 +150,7 @@ Section outer_measure_props.
       - rewrite sum_O. rewrite (Houter O V). f_equal.
         apply outer_measure_proper. intros a.
         split.
-        * intros [Hv Hcompl]; split; auto => i' Hle. by inversion Hle; subst. 
+        * intros [Hv Hcompl]; split; auto => i' Hle. by inversion Hle; subst.
         * intros [Hv Hcompl]; split; auto. by apply Hcompl.
       - rewrite IHn. rewrite sum_Sn /plus//= Rplus_assoc. f_equal.
         rewrite (Houter (S n) (V ∩ (λ x : A, ∀ i : nat, i ≤ n → ¬ Us i x))).
@@ -165,7 +165,7 @@ Section outer_measure_props.
           ** intros Hin; split; auto. by apply Hin.
     }
     assert (Hind': ∀ n, ∀ V, μ V >= sum_n (λ i, μ (V ∩ (Us i))) n
-                            + μ (V ∩ (compl (unionF Us)))). 
+                            + μ (V ∩ (compl (unionF Us)))).
     { intros. rewrite (Hind n). apply Rle_ge.
       apply Rplus_le_compat; first reflexivity.
       apply outer_measure_mono. apply intersect_mono; first done.
@@ -228,14 +228,14 @@ Section outer_measure_props.
   Proof.
     intros Hmeasur Hdisj.
     assert (Hsimpl1: ∀ i, (unionF Us ∩ Us i) ≡ Us i).
-    { 
+    {
       intros i x; split.
       * intros (?&H); done.
       * intros; split; auto. exists i; auto.
     }
     assert (Hsimpl2: (unionF Us ∩ compl (unionF Us)) ≡ ∅).
-    { 
-      intros x; split; firstorder. 
+    {
+      intros x; split; firstorder.
     }
     cut (ex_series (λ i, μ (Us i)) ∧ (Series (λ i, μ (Us i)) = (μ (unionF Us)))).
     { intros (?&<-). by apply Series_correct. }
@@ -247,7 +247,7 @@ Section outer_measure_props.
       apply Rle_antisym.
       * etransitivity; last eapply Hseries.
         right. apply Series_ext => n. by rewrite Hsimpl1.
-      * apply outer_measure_subadditivity. 
+      * apply outer_measure_subadditivity.
         eapply ex_series_ext; try eassumption.
         intros n. apply outer_measure_proper, Hsimpl1.
   Qed.
@@ -280,7 +280,7 @@ Lemma outer_pt_measure_sigma_full : ∀ U, outer_measurable (outer_pt_measure) U
 Proof.
   intros U. rewrite /outer_measurable => V //=.
   destruct ClassicalEpsilon.excluded_middle_informative as [HVfull|HVempty].
-  { 
+  {
     destruct (ClassicalEpsilon.excluded_middle_informative (eq_prop U (λ _, True))) as
         [HUfull|HUempty].
     * assert (eq_prop (V ∩ U) (λ _, True)).
@@ -298,7 +298,7 @@ Proof.
       do 2 destruct ClassicalEpsilon.excluded_middle_informative; eauto; try nra;
         intuition.
   }
-  { 
+  {
     assert (¬ (eq_prop (V ∩ U) (λ _, True))).
     { firstorder. }
     assert (¬ (eq_prop (V ∩ compl U) (λ _, True))).
@@ -307,4 +307,3 @@ Proof.
         intuition.
   }
 Qed.
-  

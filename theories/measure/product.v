@@ -165,7 +165,7 @@ Section product_measure.
       split; intuition.
     * rewrite Rmult_0_r. etransitivity; last eapply measure_empty.
       apply measure_proper. split.
-      ** intros (?&?); intuition. 
+      ** intros (?&?); intuition.
       ** inversion 1.
   Qed.
 
@@ -179,7 +179,7 @@ Section product_measure.
       split; intuition.
     * rewrite Rmult_0_r. etransitivity; last eapply measure_empty.
       apply measure_proper. split.
-      ** intros (?&?); intuition. 
+      ** intros (?&?); intuition.
       ** inversion 1.
   Qed.
 
@@ -206,10 +206,10 @@ Section product_measure.
       eapply measurable_ext.
       { intros x. rewrite (measure_left_section_rectangle (λ _, True) (λ _, True)). done. }
       measurable.
-      apply wpt_fun_measurable. 
+      apply wpt_fun_measurable.
     }
     assert (HFset_minus: ∀ P Q, F P → F Q → Q ⊆ P → F (set_minus P Q)).
-    { 
+    {
       intros P Q (HP&?) (HQ&?) Hsub.
       rewrite /F; split; first (apply sigma_closed_set_minus; auto).
       assert (∀ x, ν (left_section (set_minus P Q) x) =
@@ -297,10 +297,10 @@ Section product_measure.
       eapply measurable_ext.
       { intros x. rewrite (measure_right_section_rectangle (λ _, True) (λ _, True)). done. }
       measurable.
-      apply wpt_fun_measurable. 
+      apply wpt_fun_measurable.
     }
     assert (HFset_minus: ∀ P Q, F P → F Q → Q ⊆ P → F (set_minus P Q)).
-    { 
+    {
       intros P Q (HP&?) (HQ&?) Hsub.
       rewrite /F; split; first (apply sigma_closed_set_minus; auto).
       assert (∀ x, μ (right_section (set_minus P Q) x) =
@@ -408,7 +408,7 @@ Section product_measure.
         nra.
       }
       { intros n. apply ex_integral_sum_n; eauto. }
-      { 
+      {
         exists (μ (λ _, True) * ν (λ _, True)).
         intros ? (n&His).
         eapply (is_integral_mono _ _ _ (λ x_, ν (λ _, True))); eauto.
@@ -418,7 +418,7 @@ Section product_measure.
                eapply left_section_measurable; eauto.
             ** auto.
           * intros; eapply left_section_measurable; eauto.
-          * apply disjointF_left_section; auto. 
+          * apply disjointF_left_section; auto.
         }
         rewrite Rmult_comm.
         apply is_integral_const.
@@ -469,7 +469,7 @@ Section product_measure.
         nra.
       }
       { intros n. apply ex_integral_sum_n; eauto. }
-      { 
+      {
         exists (μ (λ _, True) * ν (λ _, True)).
         intros ? (n&His).
         eapply (is_integral_mono _ _ _ (λ x_, μ (λ _, True))); eauto.
@@ -479,7 +479,7 @@ Section product_measure.
                eapply right_section_measurable; eauto.
             ** auto.
           * intros; eapply right_section_measurable; eauto.
-          * apply disjointF_right_section; auto. 
+          * apply disjointF_right_section; auto.
         }
         apply is_integral_const.
       }
@@ -493,7 +493,7 @@ Section product_measure.
     - abstract (intros; apply Integral_ge0; intros; apply Rge_le; auto).
     - assert (∀ x : A, left_section (empty_set : A * B → Prop) x ≡ ∅) as Heq by auto.
       abstract (setoid_rewrite Heq; setoid_rewrite measure_empty; apply Integral_0).
-    - apply product_measure_additivity1. 
+    - apply product_measure_additivity1.
   Defined.
 
   Definition product_measure_alt : measure (product_sigma F1 F2).
@@ -505,7 +505,7 @@ Section product_measure.
       abstract (setoid_rewrite Heq; setoid_rewrite measure_empty; apply Integral_0).
     - apply product_measure_additivity2.
   Defined.
-    
+
   Lemma product_measure_equiv UV:
     product_sigma F1 F2 UV →
     product_measure UV = product_measure_alt UV.
@@ -601,7 +601,7 @@ Section fubini_tonelli_lr.
     wpt_fun (wpt_proj2 wpt x) y = wpt_fun wpt (x, y).
   Proof.
     rewrite /wpt_proj2.
-    edestruct (@wpt_indicator_scal_list_spec2) as [(Hneg&->)|Hcase]. 
+    edestruct (@wpt_indicator_scal_list_spec2) as [(Hneg&->)|Hcase].
     { specialize (wpt_map_snd_disjoint wpt).
       generalize (wpt_list wpt). clear. induction l.
       * rewrite //=. intros. econstructor.
@@ -619,7 +619,7 @@ Section fubini_tonelli_lr.
     - exfalso. destruct (partition_union (wpt_part wpt) (x, y)) as (UV&?&?); first done.
       eapply (Hneg (wpt_fun wpt (x, y)) (left_section UV x)).
       * apply in_map_iff. exists (wpt_fun wpt (x, y), UV) => //=.
-        split; eauto. apply wpt_fun_eq1; eauto. 
+        split; eauto. apply wpt_fun_eq1; eauto.
       * auto.
     - destruct Hcase as (r&U&Hin&HU&->).
       symmetry. apply in_map_iff in Hin.
@@ -725,12 +725,12 @@ Section fubini_tonelli_lr.
       apply Integral_correct, ex_integral_left_section_measure.
       done.
     - rewrite Integral_wpt wpt_integral_plus.
-      setoid_rewrite wpt_plus_spec. 
+      setoid_rewrite wpt_plus_spec.
       eapply is_integral_ext.
       { intros x. rewrite Integral_plus; eauto. }
       apply is_integral_plus; rewrite -Integral_wpt; done.
     - rewrite Integral_wpt wpt_integral_scal.
-      setoid_rewrite wpt_scal_spec. 
+      setoid_rewrite wpt_scal_spec.
       eapply is_integral_ext.
       { intros x. rewrite Integral_scal; eauto. }
       apply is_integral_scal; rewrite -Integral_wpt; done.
@@ -812,7 +812,7 @@ Section fubini_tonelli_lr.
     assert (Himp: ∀ P Q : Prop, P ∧ (P → Q) → P ∧ Q) by intuition.
     assert (∀ i,
         measurable (λ x : A, Integral ν (λ y : B, Rmin (f (x, y)) (INR i))) F1 (borel _)).
-    { 
+    {
       intros i.
       apply (tonelli_lr_measurable (λ ab, Rmin (f ab) (INR i))).
       apply measurable_Rmin; measurable.
@@ -848,7 +848,7 @@ Section fubini_tonelli_lr.
         field_simplify in Hr1; try nra.
         feed pose proof (pos_INR' (S n)); auto. nra.
       }
-      clear -HF Hpos Hmeas Hmeas'. 
+      clear -HF Hpos Hmeas Hmeas'.
       apply measure_mono; auto.
       intros x Hneg.
       apply Classical_Pred_Type.not_all_not_ex.
@@ -859,14 +859,14 @@ Section fubini_tonelli_lr.
       intros ? (?&<-).
       left. apply Rnot_le_gt. eauto.
     }
-    intros k. apply Himp. 
+    intros k. apply Himp.
     split.
     { apply sigma_closed_unions => i; apply measurable_fun_ge; eauto. }
     intros Hmeas'.
     feed pose proof (ex_integral_Rmin (product_measure μ ν) f) as Hex; eauto.
     assert (Hlen: ∀ n , μ (λ x, INR (S k) <= Integral ν (λ y : B, Rmin (f (x, y)) (INR n)))
                          <= (v + 1) / INR (S k)).
-    { 
+    {
       intros n.
       specialize (Hex n).
       destruct Hex as (v'&His').
@@ -951,7 +951,7 @@ Section fubini_tonelli_lr.
         intros x Hex'. rewrite Rabs_right; last eauto.
         apply Integral_Rabs.
         right; split; eauto.
-        eapply fun_left_measurable; eauto. 
+        eapply fun_left_measurable; eauto.
       }
       * apply measurable_Rabs.
         apply tonelli_lr_measurable; eauto.
@@ -974,7 +974,7 @@ Section fubini_tonelli_lr.
       { apply measurable_minus; eauto. }
       eapply almost_everywhere_meas_mono; last eapply Hae.
       { apply measurable_fun_eq_inv; eauto.
-        * apply tonelli_lr_measurable; auto.  
+        * apply tonelli_lr_measurable; auto.
         * apply measurable_minus; eauto.
       }
       intros x (Hex1&Hex2).
@@ -1042,11 +1042,11 @@ Section fubini_tonelli_rl.
   Proof.
     intros Hmeas. eapply (measurable_ext _ _ (λ y : B, Integral μ (λ x, f (swap (y, x))))).
     { rewrite //=. }
-    apply (tonelli_lr_measurable _ (λ x, f (swap x))). 
+    apply (tonelli_lr_measurable _ (λ x, f (swap x))).
     eapply (measurable_comp); eauto.
     apply swap_measurable.
   Qed.
-  
+
   Lemma ex_integral_swap (f: A * B → R) :
     ex_integral (product_measure μ ν) f →
     ex_integral (product_measure ν μ) (λ x : B * A, f (swap x)).
@@ -1058,7 +1058,7 @@ Section fubini_tonelli_rl.
     ex_integral (product_measure μ ν) f →
     almost_everywhere_meas ν (λ y, ex_integral μ (λ x, f (x, y))).
   Proof.
-    intros Hex. 
+    intros Hex.
     feed pose proof (fubini_lr_integral_ae ν μ (λ x, f (swap x))).
     { by apply ex_integral_swap. }
     eapply almost_everywhere_meas_ext; eauto.

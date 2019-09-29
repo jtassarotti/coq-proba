@@ -13,7 +13,7 @@ Record cost (A: eqType) := mkCost {
     work : nat;
     span : nat
   }.
-  
+
 Definition cost A := (nat * nat * A)%type.
 Definition ldist_cost A := ldist (cost A).
 
@@ -53,7 +53,7 @@ apply: (iffP idP); rewrite /cost_eq_bool //=.
   apply /andP; split; auto.
   apply /andP; split; auto.
 Qed.
-  
+
 Canonical cost_eqMixin A := EqMixin (@eq_cost A).
 Canonical cost_eqType A := Eval hnf in EqType (cost _) (cost_eqMixin A).
 
@@ -62,7 +62,7 @@ Local Open Scope nat_scope.
 
 Global Instance cost_bind: MBind cost :=
   λ A B (f: A → cost B) x,
-  mkCost (work x + work (f (result x))) 
+  mkCost (work x + work (f (result x)))
          (span x + span (f (result x)))
          (result (f (result x))).
 
@@ -93,7 +93,7 @@ Global Instance ldist_cost_bind: MBind ldist_cost :=
   b ← f (result a);
   mret {| result := result b; work := work a + work b; span := span a + span b |}.
 Global Instance ldist_cost_ret: MRet ldist_cost :=
-  λ A x, mret {| result := x; work := 0; span := 0|}. 
+  λ A x, mret {| result := x; work := 0; span := 0|}.
 
 Lemma ldist_cost_bind_fold {A B} (f: A → ldist_cost B) (x: ldist_cost A):
   (a ← x;
@@ -107,9 +107,9 @@ Qed.
 Lemma ldist_cost_left_id {A B: eqType} (x: A) (f: A → ldist_cost B):
   mbind f (mret x) = f x.
 Proof.
-  rewrite /mbind/base.mbind/ldist_cost_bind. 
+  rewrite /mbind/base.mbind/ldist_cost_bind.
   rewrite ldist_left_id -[a in _ = a]ldist_right_id /mbind.
-  apply ldist_bind_ext => a. 
+  apply ldist_bind_ext => a.
   destruct a as [w s a] => //=.
 Qed.
 
@@ -122,7 +122,7 @@ Definition rpar3 {A B C} x y z : ldist_cost (A * B * C) :=
   a ← x;
   b ← y;
   c ← z;
-  mret {| result := (result a, result b, result c) ; 
+  mret {| result := (result a, result b, result c) ;
           work := work a + work b + work c;
           span := max (span a) (max (span b) (span c)) |}.
 
@@ -130,7 +130,7 @@ Definition par2 {A B} (a: cost A) (b: cost B) : cost (A * B) :=
   {| result := (result a, result b) ; work := work a + work b; span := max (span a) (span b) |}.
 
 Definition par3 {A B C} a b c : cost (A * B * C) :=
- {| result := (result a, result b, result c) ; 
+ {| result := (result a, result b, result c) ;
           work := work a + work b + work c;
           span := max (span a) (max (span b) (span c)) |}.
 
@@ -141,7 +141,7 @@ Fixpoint redcost {A} (l: list (cost A)) : cost (list A) :=
                    work := work a + work (redcost l);
                    span := max (span a) (span (redcost l)) |}
   end.
-  
+
 (* This is simplified in that the mapping function f needs to be deterministic *)
 Definition parmap {A B} (f: A → cost B) (x: list A): cost (list B) :=
   redcost (map f x).
@@ -187,19 +187,19 @@ Require Import Reals Fourier FunctionalExtensionality.
 Lemma ldist_cost_right_id {A: eqType} (m: ldist_cost A) :
   mbind mret m = m.
 Proof.
-  rewrite /mbind/ldist_cost_bind. 
+  rewrite /mbind/ldist_cost_bind.
   apply ldist_irrel=>//=.
   destruct m as [l pf1 pf2] => //=; clear pf1 pf2.
   induction l => //=. destruct a as (r, x) => //=.
-  destruct x as [w s a] => //=. 
+  destruct x as [w s a] => //=.
   rewrite ?Rmult_1_r; repeat f_equal => //; nify; lia.
 Qed.
 
-Lemma ldist_cost_assoc {A B C: eqType} (m: ldist_cost A) 
+Lemma ldist_cost_assoc {A B C: eqType} (m: ldist_cost A)
       (f: A → ldist_cost B) (g: B → ldist_cost C) :
   mbind g (mbind f m) = mbind (λ x, mbind g (f x)) m.
 Proof.
-  rewrite /mbind/base.mbind/ldist_cost_bind. 
+  rewrite /mbind/base.mbind/ldist_cost_bind.
   rewrite !ldist_assoc.
   apply ldist_bind_ext => x.
   destruct x.
@@ -211,13 +211,13 @@ Proof.
   apply ldist_bind_ext => x.
   destruct x.
   rewrite ldist_left_id.
-  rewrite //=. do 2 f_equal; rewrite addnA; done. 
+  rewrite //=. do 2 f_equal; rewrite addnA; done.
 Qed.
 
 Lemma ldist_cost_bind_semi_work {B C} (m: ldist_cost B) (g: nat → C) w1 s1:
   (x ← b ← m;
   mret {| work := w1 + work b; span := s1 + span b; result := result b|};
-  mret (g (work x))) = 
+  mret (g (work x))) =
   x ← m;
   mret (g (work x + w1)%nat).
 Proof.
@@ -234,7 +234,7 @@ Qed.
 Lemma ldist_cost_bind_semi_span {B C} (m: ldist_cost B) (g: nat → C) w1 s1:
   (x ← b ← m;
   mret {| work := w1 + work b; span := s1 + span b; result := result b|};
-  mret (g (span x))) = 
+  mret (g (span x))) =
   x ← m;
   mret (g (span x + s1)%nat).
 Proof.
@@ -250,7 +250,7 @@ Qed.
 
 Lemma ldist_cost_bind_drop_work {B C} (m: ldist_cost B) (h: B → ldist C) (g: nat → C):
   (x ← (x ← m; mret (h x)) ;
-  mret (g (work x))) = 
+  mret (g (work x))) =
   x ← m;
   mret (g (work x)%nat).
 Proof.
@@ -263,12 +263,12 @@ Proof.
   f_equal; auto.
 Qed.
 
-Lemma cost_bind_const {A B C: eqType} w0 s0 (h: ldist_cost A) (f: A → ldist_cost B) 
+Lemma cost_bind_const {A B C: eqType} w0 s0 (h: ldist_cost A) (f: A → ldist_cost B)
       (g: nat → C) (c: C):
   (∀ d', d' \in [seq (work i.2) | i <- outcomes h] → d' = w0) →
   (∀ d', d' \in [seq (span i.2) | i <- outcomes h] → d' = s0) →
-  pr_eq (rvar_comp (rvar_of_ldist (mbind f h)) (λ x, g (span x))) c = 
-  \big[Rplus/0]_(a <- undup [seq (result i.2) | i <- h]) 
+  pr_eq (rvar_comp (rvar_of_ldist (mbind f h)) (λ x, g (span x))) c =
+  \big[Rplus/0]_(a <- undup [seq (result i.2) | i <- h])
    (pr_eq (rvar_comp (rvar_of_ldist h) result) a
     * pr_eq (rvar_comp (rvar_of_ldist (f a)) (λ x, g (span x + s0)%nat)) c).
 Proof.
@@ -277,7 +277,7 @@ Proof.
   rewrite pr_mbind_ldist2. symmetry.
   eapply sum_reidx_surj1 with (h := λ x, {| work := w0; span := s0; result := x|}).
   - intros a0 Hin. symmetry.
-    rewrite -(pr_mbind_mret (f a0)). 
+    rewrite -(pr_mbind_mret (f a0)).
     rewrite ldist_cost_bind_semi_span; f_equal.
     rewrite /pr_eq pr_eq_alt_comp. rewrite pr_eq_alt.
     rewrite -?big_mkcondr.
@@ -285,7 +285,7 @@ Proof.
     rewrite /=. intros x.
     destruct x as ([w' s' a]&Hin') => //=.
     rewrite img_rvar_of_ldist' in Hin'.
-    rewrite mem_undup in Hin'. move /mapP in Hin'. 
+    rewrite mem_undup in Hin'. move /mapP in Hin'.
     destruct Hin' as [(r&[w''' s''' a'']) ? Heq]; subst.
     assert (s' = s0) as ->.
     { apply Hconsts. apply /mapP. eexists; eauto. rewrite //=. inversion Heq. congruence. }
@@ -297,7 +297,7 @@ Proof.
   - intros a0. rewrite !mem_undup.  move /mapP.
     intros [(r&a) ? Heq] _.
     split; auto. apply /mapP. exists (r, a); auto.
-    rewrite //=. f_equal; auto. 
+    rewrite //=. f_equal; auto.
     destruct a as [w s a]. rewrite //= in Heq.
     f_equal; auto.
     * symmetry. apply Hconstw. apply /mapP; eexists; eauto.
@@ -306,19 +306,19 @@ Proof.
     exists a. repeat split; auto.
     rewrite mem_undup. rewrite map_comp.
     apply /mapP. eexists; eauto.
-    f_equal. 
+    f_equal.
     * symmetry; apply Hconstw. rewrite map_comp. apply /mapP. eexists; eauto.
     * symmetry; apply Hconsts. rewrite map_comp. apply /mapP. eexists; eauto.
   - apply undup_uniq.
   - apply undup_uniq.
-  - intros ??.  congruence. 
+  - intros ??.  congruence.
 Qed.
 
-Lemma ldist_cost_rpair_span {B1 B2: eqType} {C: eqType} (m1: ldist_cost B1) (m2: ldist_cost B2) 
+Lemma ldist_cost_rpair_span {B1 B2: eqType} {C: eqType} (m1: ldist_cost B1) (m2: ldist_cost B2)
       (g: nat → C) (c: C):
   pr_eq (rvar_comp (rvar_of_ldist (rpar2 m1 m2))
                    (λ x, g (span x))) c =
-  pr_eq (rvar_comp (rvar_pair (rvar_comp (rvar_of_ldist m1) span) 
+  pr_eq (rvar_comp (rvar_pair (rvar_comp (rvar_of_ldist m1) span)
                               (rvar_comp (rvar_of_ldist m2) span))
                    (λ xy, g (max (fst xy) (snd xy))%nat)) c.
 Proof.
@@ -328,27 +328,27 @@ Proof.
   symmetry.
   rewrite {1}/pr_eq pr_eq_alt_comp.
   etransitivity.
-  { eapply eq_bigr => i _. rewrite pr_eq_rvar_pair. done. } 
+  { eapply eq_bigr => i _. rewrite pr_eq_rvar_pair. done. }
   rewrite -(big_map _ (λ x, true) (λ i, if g (max (span (fst i)) (span (snd i)))%nat == c then
-                                pr_eq _ (fst i) * pr_eq _ (snd i) 
-                                 else 
+                                pr_eq _ (fst i) * pr_eq _ (snd i)
+                                 else
                                    0)).
-              
+
   rewrite /index_enum.
   rewrite (eq_big_perm _ (img_pair_rv _ _ _ _)).
   rewrite  big_Rplus_allpair'.
-  rewrite -(big_map _ (λ x, true) (λ i, \big[Rplus/0]_(i' <- _) 
+  rewrite -(big_map _ (λ x, true) (λ i, \big[Rplus/0]_(i' <- _)
                                          (if (g (max (span (fst (i, _)))
                                                      (span (snd (i, _)))) == c)%nat
                                           then
                                             pr_eq _ (fst (i, _)) *
                                             pr_eq _ (snd (i, _))
                                           else
-                                            0))). 
+                                            0))).
   rewrite img_rvar_of_ldist.
-  apply eq_bigr => a _. 
+  apply eq_bigr => a _.
   etransitivity.
-  { eapply eq_bigr => i _. 
+  { eapply eq_bigr => i _.
     rewrite -[a in (if (_ : bool) then _ else a) = _](Rmult_0_r (pr_eq (rvar_of_ldist m1) a)).
     rewrite Rmult_comm -(Rmult_comm 0) -Rmult_if_distrib Rmult_comm. done.
   }
@@ -359,7 +359,7 @@ Proof.
                                           then
                                             pr_eq _ (snd (_, i))
                                           else
-                                            0))). 
+                                            0))).
   rewrite img_rvar_of_ldist.
   eapply eq_bigr => a' _.
     rewrite -[a in (if (_ : bool) then _ else a) = _](Rmult_0_r (pr_eq (rvar_of_ldist m2) a')).
@@ -372,14 +372,14 @@ Qed.
 Module tests.
 
 Local Open Scope nat_scope.
-  
+
 Definition incr (x: nat) : cost nat :=
   {| result := S x; work := 1; span := 1 |}.
 
 Eval compute in (parmap incr (1 :: 2 :: 3 :: [::])).
 
 Remark Hrange: (0 <= 1/2 <= 1)%R.
-Proof. split; fourier. Qed. 
+Proof. split; fourier. Qed.
 
 Program Definition foo  : ldist_cost (seq nat) :=
   x ← (y ← bernoulli (1/2) Hrange;

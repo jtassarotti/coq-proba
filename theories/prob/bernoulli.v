@@ -14,14 +14,14 @@ Proof.
   destruct (ssrnat.odd x) => //=.
 Qed.
 
-Definition bern_dist (p: R) (Hrange: 0 <= p <= 1) : distrib [countType of bool]. 
+Definition bern_dist (p: R) (Hrange: 0 <= p <= 1) : distrib [countType of bool].
 Proof.
   refine (mkDistrib _ (λ b, if (b : bool) then p else (1 - p)) _ _).
-  - intros [|]; nra. 
+  - intros [|]; nra.
   - apply Series_correct'.
     rewrite SeriesC_fin_big //= /index_enum.
     rewrite {1}[@Finite.enum]unlock //= ?big_cons ?big_nil //=; field.
-    * eexists; eapply SeriesF_is_seriesC. 
+    * eexists; eapply SeriesF_is_seriesC.
 Defined.
 
 Lemma pr_bern_dist_true p H: pr (bern_dist p H) (λ x, x == true) = p.
@@ -39,7 +39,7 @@ Qed.
 Definition bernoulli p H : rrvar (bern_dist p H) :=
   mkRvar _ (λ (b: bool), if b then 1 else 0).
 
-Lemma pr_eq_bernoulli_1 p H: pr_eq (bernoulli p H) 1 = p.  
+Lemma pr_eq_bernoulli_1 p H: pr_eq (bernoulli p H) 1 = p.
 Proof.
   rewrite /pr_eq /pr SeriesC_fin_big //= /index_enum.
   rewrite {1}[@Finite.enum]unlock //= ?big_cons ?big_nil eq_refl //=.
@@ -56,7 +56,7 @@ Qed.
 Lemma pr_eq_bernoulli_alt p H r: r ≠ 0 → r ≠ 1 → pr_eq (bernoulli p H) r = 0.
 Proof.
   rewrite /pr_eq /pr SeriesC_fin_big //= /index_enum.
-  rewrite {1}[@Finite.enum]unlock //= ?big_cons ?big_nil //=. 
+  rewrite {1}[@Finite.enum]unlock //= ?big_cons ?big_nil //=.
   intros Hneq0 Hneq1.
   case: ifP; move /eqP => Hneq; try nra.
   case: ifP; move /eqP => Hneq'; try nra.
@@ -65,7 +65,7 @@ Qed.
 Lemma Ex_bernoulli p H:
   Ex (bernoulli p H) = p.
 Proof.
-  rewrite Ex_fin_pt //= /index_enum {1}[@Finite.enum]unlock //= ?big_cons ?big_nil //=. 
+  rewrite Ex_fin_pt //= /index_enum {1}[@Finite.enum]unlock //= ?big_cons ?big_nil //=.
   field.
 Qed.
 
@@ -99,7 +99,7 @@ Proof.
     * rewrite pr_eq_bernoulli_alt //.
       destruct (pr_eq_ge_0 X r) as [Hge|Hnge] => //=.
       apply Rgt_not_le in Hge. exfalso; apply Hge.
-      etransitivity; first apply (pr_eq_le_sum_list X (1 :: 0 :: nil)). 
+      etransitivity; first apply (pr_eq_le_sum_list X (1 :: 0 :: nil)).
       **  intros Hin%seq_ext.mem_seq_legacy.
           inversion Hin as [|[]]; subst; auto.
       ** assert (seq.undup (1 :: 0 :: nil) = (1 :: 0 :: nil)) as Heq.
@@ -129,7 +129,7 @@ Section is_bernoulli_facts.
   Variable (X: rrvar Ω).
   Variable (p: R).
   Variable (Hbern: is_bernoulli X p).
-  
+
   Lemma is_bernoulli_eq_dist':
     eq_dist X (bernoulli p (is_bernoulli_range _ _ Hbern)).
   Proof. destruct Hbern; by apply (eq_dist_bernoulli X p (is_bernoulli_range _ _ Hbern)). Qed.
@@ -139,7 +139,7 @@ Section is_bernoulli_facts.
   Proof.
     eapply ex_Ex_eq_dist.
     - apply eq_dist_sym, is_bernoulli_eq_dist'.
-    - apply: ex_Ex_fin. 
+    - apply: ex_Ex_fin.
   Qed.
 
   Lemma Ex_is_bernoulli:

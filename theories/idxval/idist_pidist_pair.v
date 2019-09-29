@@ -16,7 +16,7 @@ Definition lsupport {A1 A2 Is1 Is2 P} (Icouple: idist_pidist_couplingP Is1 Is2 P
   { x : A1 |  ∃ i Hpf, ival.ind Icouple i = (exist _ (x, y) Hpf) ∧ ival.val Icouple i > 0 }.
 Definition rsupport {A1 A2 Is1 Is2 P} (Icouple: idist_pidist_couplingP Is1 Is2 P) (x: A1) :=
   { y : A2 |  ∃ i Hpf, ival.ind Icouple i = (exist _ (x, y) Hpf) ∧ ival.val Icouple i > 0 }.
-                 
+
 Lemma ip_subset_singleton {A1 A2} (I1 : ivdist A1) (Is2: pidist A2) P:
   (∃ ic : idist_pidist_couplingP I1 Is2 P, True) ↔ subset_couplingP (singleton I1) Is2 P.
 Proof.
@@ -36,12 +36,12 @@ Proof.
 Qed.
 
 Lemma ip_coupling_eq {A} (Is1 : ivdist A) (Is2: pidist A)
-      (Ic: idist_pidist_couplingP Is1 Is2 (λ x y, x = y)): In_pidist Is1 Is2. 
+      (Ic: idist_pidist_couplingP Is1 Is2 (λ x y, x = y)): In_pidist Is1 Is2.
 Proof.
   destruct Ic as [Ic Hp1 Hp2].
   apply In_pidist_le_singleton.
   etransitivity; last by eauto.
-  cut (eq_ivd Is1 Ic). 
+  cut (eq_ivd Is1 Ic).
   { intros Heq. setoid_rewrite Heq; reflexivity.  }
   by apply ival_coupling_eq.
 Qed.
@@ -72,7 +72,7 @@ Proof.
   destruct (ip_subset_singleton ((mbind f1 Is1)) (mbind f2 Is2) Q) as (_&Hc2).
   eapply ClassicalEpsilon.constructive_indefinite_description in Hc2 as (Hc&?);
     first by exact Hc.
-  eapply subset_coupling_proper. 
+  eapply subset_coupling_proper.
   { setoid_rewrite singleton_bind. reflexivity. }
   { reflexivity. }
   eapply subset_coupling_bind; intros; apply ip_subset_singleton; eauto.
@@ -87,12 +87,12 @@ Proof.
   exists I'; eauto.
   eapply ival_coupling_conseq; eauto.
 Qed.
-  
+
 
 Lemma ip_coupling_proper {A1 A2} (I1 I2 : ivdist A1) (Is1 Is2: pidist A2) P:
-  eq_ival I1 I2 → 
-  eq_pidist Is1 Is2 → 
-  idist_pidist_couplingP I1 Is1 P → 
+  eq_ival I1 I2 →
+  eq_pidist Is1 Is2 →
+  idist_pidist_couplingP I1 Is1 P →
   idist_pidist_couplingP I2 Is2 P.
 Proof.
   intros Heq Heqp [Ielem ? ?].
@@ -103,9 +103,9 @@ Proof.
 Qed.
 
 Lemma ip_coupling_proper' {A1 A2} (I1 I2 : ivdist A1) (Is1 Is2: pidist A2) P:
-  eq_ivd I1 I2 → 
-  eq_pidist Is1 Is2 → 
-  idist_pidist_couplingP I1 Is1 P → 
+  eq_ivd I1 I2 →
+  eq_pidist Is1 Is2 →
+  idist_pidist_couplingP I1 Is1 P →
   idist_pidist_couplingP I2 Is2 P.
 Proof.
   intros Heq Heqp [Ielem ? ?].
@@ -117,9 +117,9 @@ Qed.
 
 
 Lemma ip_coupling_proper_mono {A1 A2} (I1 I2 : ivdist A1) (Is1 Is2: pidist A2) P:
-  eq_ivd I1 I2 → 
-  le_pidist Is1 Is2 → 
-  idist_pidist_couplingP I1 Is1 P → 
+  eq_ivd I1 I2 →
+  le_pidist Is1 Is2 →
+  idist_pidist_couplingP I1 Is1 P →
   idist_pidist_couplingP I2 Is2 P.
 Proof.
   intros Heq Heqp [Ielem ? ?].
@@ -158,7 +158,7 @@ Proof.
   eapply le_pidist_support_coerce_aux; eauto.
   apply In_psupport_alt. exists Ielem; split; done.
 Qed.
-  
+
 Lemma ip_coupling_plus {A1 A2} p Hpf p' Hpf'
       (P : A1 → A2 → Prop) (Is1 Is1': ivdist A1) (Is2 Is2': pidist A2) :
   p = p' →
@@ -172,7 +172,7 @@ Proof.
   eapply ClassicalEpsilon.constructive_indefinite_description in Hc2 as (Hc&?);
     first exact Hc.
 
-  eapply subset_coupling_proper. 
+  eapply subset_coupling_proper.
   { setoid_rewrite singleton_plus. reflexivity. }
   { reflexivity. }
   eapply subset_coupling_plus; eauto; apply ip_subset_singleton; eexists; eauto.
@@ -186,7 +186,7 @@ Proof.
   exists Iwit; eauto.
   by apply pidist_union_le_l.
 Qed.
-  
+
 Lemma ip_coupling_union_r {A1 A2} I Is Is' (P: A1 → A2 → Prop):
   idist_pidist_couplingP I Is' P →
   idist_pidist_couplingP I (pidist_union Is Is') P.
@@ -219,7 +219,7 @@ Proof.
     assert (Is' = Ishd).
     { destruct Hin as [|[]]; done. }
     subst. eapply ip_coupling_proper; eauto.
-  - intros Ic Hin. rewrite //=. 
+  - intros Ic Hin. rewrite //=.
     rewrite //= in Hin.
     apply ClassicalEpsilon.constructive_indefinite_description in Hin.
     destruct Hin as (Is'&Hequiv&Hin).
@@ -252,7 +252,7 @@ Proof.
                                  (λ x y, x = y)) as Ic'.
   { eapply ip_coupling_bind; eauto => ???.
     apply ip_coupling_mret; auto. }
-                                    
+
   destruct Ic' as [I2 Hmem Ic'].
   apply ival_coupling_eq in Ic'.
   rewrite (ex_Ex_ival_fmap id f).
@@ -277,7 +277,7 @@ Proof.
                                  (λ x y, x = y)) as Ic'.
   { eapply ip_coupling_bind; eauto => ???.
     apply ip_coupling_mret; auto. }
-                                    
+
   destruct Ic' as [I2 Hmem Ic'].
   apply ival_coupling_eq in Ic'.
   transitivity (Ex_min (λ x, id (g x)) Is); first reflexivity.
@@ -293,7 +293,7 @@ Proof.
     transitivity (Ex_ival id I2); last first.
     { refl_right. f_equal. symmetry. eapply Ex_ival_proper; eauto.
       rewrite -ex_Ex_ival_fmap. eauto. }
-    
+
     apply In_pidist_le_singleton in Hmem.
     destruct Hmem as (I2'&Heq22'&?).
     transitivity (Ex_ival id I2'); last first.

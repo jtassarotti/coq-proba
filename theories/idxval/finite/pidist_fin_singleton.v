@@ -10,7 +10,7 @@ From discprob.idxval Require pidist_singleton.
 
 Definition fin_coerce {X} (I: ival X) : ival.ival X.
   unshelve (econstructor).
-  - exact (idx I). 
+  - exact (idx I).
   - exact (val I).
   - exact (ind I).
   - exact (val_nonneg I).
@@ -18,7 +18,7 @@ Defined.
 
 Definition fin_coerce_ivd {X} (I: ivdist X) : ival_dist.ivdist X.
   unshelve (econstructor).
-  - exact (fin_coerce I). 
+  - exact (fin_coerce I).
   - abstract (destruct I as [[] ?] => //=;
               apply prob.Series_correct';
               [ rewrite finite.SeriesC_SeriesF SeriesF_big_op; apply val_sum1 |
@@ -123,7 +123,7 @@ Proof.
 
     eapply ival.eq_ival_nondep_option_suffice.
     unshelve (eexists).
-    { 
+    {
       intros (i&ih).
       destruct (Rgt_dec (val I i) 0) as [Hgt|Hngt].
       * assert (h i = fin_coerce (f (ind I i))) as Heq.
@@ -136,7 +136,7 @@ Proof.
       * exact None.
     }
     unshelve (eexists).
-    { 
+    {
       intros (i&ifx).
       destruct (Rgt_dec (val I i) 0) as [Hgt|Hngt].
       * assert (h i = fin_coerce (f (ind I i))) as Heq.
@@ -193,7 +193,7 @@ Proof.
     subst. rewrite -Hin1' -Hin2'.
 
     eexists; split.
-    { rewrite -fin_coerce_ivdplus_unfold. reflexivity. } 
+    { rewrite -fin_coerce_ivdplus_unfold. reflexivity. }
     split; eauto.
 Qed.
 
@@ -201,12 +201,12 @@ Lemma fin_singleton_equiv_singleton {X} (I: ivdist X):
   eq_pidist (singleton I) (pidist_singleton.singleton (fin_coerce_ivd I)).
 Proof.
   split.
-  - intros I' <-. 
+  - intros I' <-.
     eexists; split.
-    * reflexivity. 
+    * reflexivity.
     * rewrite //=.
-  - intros I' <-. 
+  - intros I' <-.
     eexists; split.
-    * reflexivity. 
+    * reflexivity.
     * rewrite //=.
 Qed.

@@ -19,7 +19,7 @@ Section pspec.
   Context {A: Type}.
   Implicit Types m : pidist A.
   Implicit Types P : A → Prop.
-          
+
 Lemma pspec_mret (x: A) P:
   P x → pspec (mret x) P.
 Proof.
@@ -32,8 +32,8 @@ Lemma pspec_union m1 m2 P:
 Proof.
   intros HP1 HP2. intros a (I&i&Hin&?&?).
   destruct Hin.
-  * eapply HP1; eauto. eexists; eauto. 
-  * eapply HP2; eauto. eexists; eauto. 
+  * eapply HP1; eauto. eexists; eauto.
+  * eapply HP2; eauto. eexists; eauto.
 Qed.
 
 Lemma pspec_union_inv_l m1 m2 P:

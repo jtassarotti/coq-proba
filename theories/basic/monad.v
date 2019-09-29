@@ -19,7 +19,7 @@ Notation MBind := stdpp.base.MBind.
 Notation MRet := stdpp.base.MRet.
 Notation MJoin := stdpp.base.MJoin.
 Notation FMap := stdpp.base.FMap.
-Global Open Scope stdpp_scope. 
+Global Open Scope stdpp_scope.
 Notation "m ≫= f" := (mbind f m) (at level 60, right associativity) : stdpp_scope.
 Notation "( m ≫=)" := (λ f, mbind f m) (only parsing) : stdpp_scope.
 Notation "(≫= f )" := (mbind f) (only parsing) : stdpp_scope.

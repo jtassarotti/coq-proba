@@ -22,7 +22,7 @@ Proof.
   * setoid_rewrite Hp1. setoid_rewrite ivd_assoc; apply ivd_bind_congr; first by reflexivity.
     intros ((x&y)&Hpf). setoid_rewrite ivd_left_id => //=. reflexivity.
 Qed.
-    
+
 Lemma ivdist_coupling_eq {A} (Is1 Is2: ivdist A)
       (Ic: ivdist_couplingP Is1 Is2 (λ x y, x = y)): eq_ivd Is1 Is2.
 Proof.

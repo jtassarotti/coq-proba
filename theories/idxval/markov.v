@@ -122,7 +122,7 @@ Proof.
   rewrite (ex_Ex_ivd_max_const _ _ 1) => Hex.
   rewrite (ex_Ex_ivd_max_const _ _ 1).
   eapply ex_Ex_ival_le; last eassumption.
-  intros x => //=. 
+  intros x => //=.
   rewrite Rabs_right; last first.
   { apply Rle_ge. setoid_rewrite <-Rmax_r. apply Rabs_pos. }
   rewrite [a in _ <= a]Rabs_right; last first.
@@ -173,7 +173,7 @@ Proof.
   eapply (ex_Ex_ivd_moments_1 f ({| ivd_ival := I; val_sum1 := all_sum1 _ _ Hin |})); eauto.
   eapply Hex; eauto.
 Qed.
-  
+
 Lemma is_Ex_ival_variance {X} (f: X → R) (I: ivdist X) (μ: R):
   ex_Ex_ival (λ x, (f x)^2) I →
   is_Ex_ival (λ x, (f x - μ)^2) I (Ex_ival (λ x, (f x)^2) I - 2 * μ * Ex_ival f I + μ^2).
@@ -226,7 +226,7 @@ Proof.
   - intros (c&Hmax). exists (sqrt c + Rabs μ).
     intros x Hin. specialize (Hmax x Hin).
     assert (0 <= c).
-    { etransitivity; last eauto. apply Rabs_pos. } 
+    { etransitivity; last eauto. apply Rabs_pos. }
     apply sqrt_le_1_alt in Hmax.
     replace (Rabs ((f x - μ)^2)) with ((Rabs (f x - μ))^2) in Hmax; last first.
     { rewrite pow2_abs Rabs_pow2 //=. }

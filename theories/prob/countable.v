@@ -3,7 +3,7 @@ Require Import Reals Fourier Omega Psatz.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 From Coquelicot Require Import Rcomplements Rbar Series Lim_seq Hierarchy Markov.
 
-(* 
+(*
 
    The ssreflect library defines a notion of countable types, which
    are types A with a map pickle : A → nat such that pickle has a left inverse
@@ -30,19 +30,19 @@ Lemma countable_sum_le {A: countType} (f f': A → R) n :
 Proof.
   intros Hext. rewrite /countable_sum. destruct (pickle_inv) => //=; nra.
 Qed.
-  
+
 Lemma LPO_count {A: countType} (P: A → Prop):
       (∀ a, P a ∨ ¬ P a) → {a : A | P a} + {(∀ a, ¬ P a)}.
 Proof.
   set (P' := λ n, match (@unpickle A n) with
-                    | Some a => P a 
+                    | Some a => P a
                     | None => False
                   end).
   intros.
   destruct (LPO P') as [(n&HP)|Hnot].
   { intros n. rewrite /P'. destruct (unpickle n); auto. }
   - left. rewrite /P' in HP. destruct (unpickle n); eauto; done.
-  - right. intros a Ha. apply (Hnot (pickle a)). rewrite /P'. 
+  - right. intros a Ha. apply (Hnot (pickle a)). rewrite /P'.
     by rewrite pickleK.
 Qed.
 
@@ -76,8 +76,8 @@ Lemma pickle_inv_some_inj {A: countType} n n' a':
   n = n'.
 Proof.
   intros. transitivity (pickle a').
-  - by symmetry; apply pickle_inv_some_inv. 
-  - apply pickle_inv_some_inv. congruence. 
+  - by symmetry; apply pickle_inv_some_inv.
+  - apply pickle_inv_some_inv. congruence.
 Qed.
 
 Lemma pickle_inj {A: countType} (a a': A):
@@ -100,7 +100,7 @@ Proof.
   destruct (LPO (λ n, omap f (unpickle n) == Some y)) as [(n&HP)|Hfalse].
   { abstract (intros n => //=; rewrite /omap/obind/oapp//=;
               destruct (unpickle n); destruct (_ == _) => //; auto). }
-  - exact n. 
+  - exact n.
   - exfalso. move /exCP in Hex.
     abstract (edestruct Hex as (a&Heq);
               apply (Hfalse (pickle a)) => //=;
@@ -121,29 +121,29 @@ Lemma pickle_imgK {A: countType} {B: eqType} (f: A → B):
 Proof.
   rewrite /img_pickle/img_unpickle//=.
   intros (b&HexC) => //=.
-  destruct LPO as [(n&Heq')|]; 
+  destruct LPO as [(n&Heq')|];
     last by (exfalso; eapply img_pickle_subproof0; eauto; apply (elimT (exCP _))).
   destruct (unpickle n); rewrite //= in Heq'.
-  move /eqP in Heq'. inversion Heq'; subst. 
+  move /eqP in Heq'. inversion Heq'; subst.
   do 2!f_equal.
   apply bool_irrelevance.
 Qed.
 
-Definition img_choiceMixin {A: countType} {B: eqType} (f: A → B) := 
+Definition img_choiceMixin {A: countType} {B: eqType} (f: A → B) :=
   PcanChoiceMixin (pickle_imgK f).
-Canonical img_choiceType {A: countType} {B: eqType} {f: A → B} := 
+Canonical img_choiceType {A: countType} {B: eqType} {f: A → B} :=
   Eval hnf in ChoiceType (imgT f) (@img_choiceMixin A B f).
 
-Definition img_countMixin {A: countType} {B: eqType} (f: A → B) := 
+Definition img_countMixin {A: countType} {B: eqType} (f: A → B) :=
   PcanCountMixin (pickle_imgK f).
-Canonical img_countType {A: countType} {B: eqType} (f: A → B) := 
+Canonical img_countType {A: countType} {B: eqType} (f: A → B) :=
   Eval hnf in CountType (imgT f) (@img_countMixin A B f).
 
 (* Some facts about series over countable types *)
 
 Section countable_series_facts.
 Variable (A: countType).
-Implicit Types (a b: A → R). 
+Implicit Types (a b: A → R).
 
 (*
 Lemma countable_sum_finType {B: finType} (a: B → R):
@@ -215,9 +215,9 @@ Lemma is_seriesC_filter_pos a (P: pred A) (v: R):
   (∀ n, a n >= 0) →
   is_series (countable_sum a) v → ex_series (countable_sum (λ n, if P n then a n else 0)).
 Proof.
-  intros Hge Hconv. 
+  intros Hge Hconv.
   apply: ex_series_le; last by (exists v; eauto).
-  intros n. rewrite /norm//=/abs//=. 
+  intros n. rewrite /norm//=/abs//=.
   rewrite /countable_sum//=.
   destruct (pickle_inv) as [x|] => //=.
   - destruct (P x); rewrite Rabs_right => //=; try nra.
@@ -233,7 +233,7 @@ Lemma is_seriesC_filter_PQ a (P Q: pred A) (v: R):
 Proof.
   intros Hge Hconv Himp. apply ex_series_Rabs.
   apply: ex_series_le; last by (exists v; eauto).
-  intros n. rewrite /norm//=/abs//=. 
+  intros n. rewrite /norm//=/abs//=.
   rewrite /countable_sum//=.
   destruct (pickle_inv) as [x|] => //=.
   - specialize (Himp x); specialize (Hge x).
@@ -261,14 +261,14 @@ Qed.
 
 Lemma is_seriesC_filter_split a (P: pred A) (v: R):
   (∀ n, a n >= 0) →
-  is_series (countable_sum a) v → 
-  Series (countable_sum (λ n, if P n then a n else 0)) + 
+  is_series (countable_sum a) v →
+  Series (countable_sum (λ n, if P n then a n else 0)) +
   Series (countable_sum (λ n, if ~~ P n then a n else 0)) = v.
 Proof.
   intros.
   rewrite -Series_plus; try (eapply is_seriesC_filter_pos; eauto).
   rewrite -(is_series_unique (countable_sum a) v) //.
-  apply Series_ext => n. 
+  apply Series_ext => n.
   rewrite /countable_sum//=.
   destruct (pickle_inv) as [x|] => //=; last by nra.
   destruct (P x) => //=; nra.
@@ -276,30 +276,30 @@ Qed.
 
 Lemma is_seriesC_filter_union a (P Q: pred A) (v: R):
   (∀ n, a n >= 0) →
-  is_series (countable_sum (λ n, if P n || Q n then a n else 0)) v → 
-  Series (countable_sum (λ n, if P n then a n else 0)) + 
+  is_series (countable_sum (λ n, if P n || Q n then a n else 0)) v →
+  Series (countable_sum (λ n, if P n then a n else 0)) +
   Series (countable_sum (λ n, if Q n then a n else 0))
     - Series (countable_sum (λ n, if P n && Q n then a n else 0)) = v.
 Proof.
   intros Hge Hexists.
-  rewrite -Series_plus; try (eapply (is_seriesC_filter_PQ _ _ _ _ Hge Hexists); eauto; 
+  rewrite -Series_plus; try (eapply (is_seriesC_filter_PQ _ _ _ _ Hge Hexists); eauto;
                              try (intros n; destruct (P n), (Q n); auto)).
   rewrite -Series_minus; try (eapply (is_seriesC_filter_PQ _ _ _ _ Hge Hexists); eauto;
                              try (intros n; destruct (P n), (Q n); auto)).
-  - rewrite -(is_series_unique _ v Hexists). 
-    apply Series_ext => n. 
+  - rewrite -(is_series_unique _ v Hexists).
+    apply Series_ext => n.
     rewrite /countable_sum//=.
     destruct (pickle_inv) as [x|] => //=; last by nra.
     destruct (P x) => //=; nra.
-  - apply: (ex_series_le _ (countable_sum (λ n, scal 2 (if P n || Q n then a n else 0)))). 
-    + intros n. 
+  - apply: (ex_series_le _ (countable_sum (λ n, scal 2 (if P n || Q n then a n else 0)))).
+    + intros n.
       rewrite /countable_sum//=.
-      rewrite /norm//=/abs//=/scal//=/mult/=. 
+      rewrite /norm//=/abs//=/scal//=/mult/=.
       destruct (pickle_inv) as [x|] => //=.
       * specialize (Hge x). destruct (P x), (Q x) => //=; rewrite Rabs_right; nra.
-      * rewrite Rabs_right; nra. 
+      * rewrite Rabs_right; nra.
     + exists (scal 2 v).
-      apply (is_series_ext _ _ _ 
+      apply (is_series_ext _ _ _
               (λ n, Logic.eq_sym (countable_sum_scal 2 (λ x, if P x || Q x then a x else 0) n))).
       by apply: is_series_scal.
 Qed.
@@ -308,24 +308,24 @@ Lemma SeriesC_ext a b:
   (∀ n, a n = b n) →
   Series (countable_sum a) = Series (countable_sum b).
 Proof.
-  intros Hext. apply Series_ext => // n. rewrite /countable_sum. 
+  intros Hext. apply Series_ext => // n. rewrite /countable_sum.
   destruct (pickle_inv) => //=; nra.
 Qed.
 
 Lemma SeriesC_le a b:
-  (∀ n, 0 <= a n <= b n) → ex_series (countable_sum b) → 
+  (∀ n, 0 <= a n <= b n) → ex_series (countable_sum b) →
   Series (countable_sum a) <= Series (countable_sum b).
 Proof.
-  intros Hrange Hex. apply Series_le => // n. rewrite /countable_sum. 
+  intros Hrange Hex. apply Series_le => // n. rewrite /countable_sum.
   destruct (pickle_inv) => //=; nra.
 Qed.
 
 Lemma SeriesC_le' a b:
   (∀ n,  a n <= b n) →
-  ex_series (countable_sum a) → ex_series (countable_sum b) → 
+  ex_series (countable_sum a) → ex_series (countable_sum b) →
   Series (countable_sum a) <= Series (countable_sum b).
 Proof.
-  intros Hrange Hex1 Hex2. apply Series_le' => //= n. rewrite /countable_sum. 
+  intros Hrange Hex1 Hex2. apply Series_le' => //= n. rewrite /countable_sum.
   destruct (pickle_inv) => //=. nra.
 Qed.
 
@@ -342,7 +342,7 @@ Proof.
 Qed.
 
 Lemma ex_seriesC_le a b:
-  (∀ n, 0 <= a n <= b n) → ex_series (countable_sum b) → 
+  (∀ n, 0 <= a n <= b n) → ex_series (countable_sum b) →
   ex_series (countable_sum a).
 Proof.
   intros Hle Hex. unshelve (apply: ex_series_le; eauto).
@@ -424,7 +424,7 @@ Qed.
 Lemma is_seriesC_plus a b v1 v2:
   is_series (countable_sum a) v1 →
   is_series (countable_sum b) v2 →
-  is_series (countable_sum (λ x, a x + b x)) (v1 + v2). 
+  is_series (countable_sum (λ x, a x + b x)) (v1 + v2).
 Proof.
   intros. eapply is_series_ext.
   { intros n. rewrite countable_sum_plus. done. }

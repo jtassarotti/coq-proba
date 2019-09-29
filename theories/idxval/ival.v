@@ -13,7 +13,7 @@ Local Open Scope R_scope.
    the ival equivalence relation, I need to assume either:
     (a) We're only going to talk about indexed valuations on types with decidable equality
      or
-    (b) Functional choice axiom. 
+    (b) Functional choice axiom.
 
    Choice a still requires some annoying hacking to use properly, so I think for now
    I will go with b; I will do so by assuming ClassicalEpsilon, which is admittedly
@@ -36,7 +36,7 @@ Arguments val_nonneg {_}.
 
 Definition In_isupport {X: Type} (x: X) (I : ival X) :=
   ∃ i, ind I i = x ∧ val I i > 0.
-Definition isupport {X} I := { x : X | ∃ i, ind I i = x ∧ val I i > 0 }. 
+Definition isupport {X} I := { x : X | ∃ i, ind I i = x ∧ val I i > 0 }.
 
 Definition eq_ival {X} (I1 I2: ival X) :=
   ∃ h1: (support (val I1) → support (val I2)), ∃ h2: (support (val I2) → support (val I1)),
@@ -81,7 +81,7 @@ Lemma eq_ival_nondep_inj_surj'_helper {X} (I1 I2: ival X):
   eq_ival_nondep_inj_surj I1 I2.
 Proof.
   intros (h1&?&?&?&?).
-  exists h1; repeat split; eauto. 
+  exists h1; repeat split; eauto.
   intros. rewrite H2; eauto.
 Qed.
 
@@ -144,7 +144,7 @@ Proof.
   rewrite //=.
   eexists. Unshelve.
   all: swap 1 2.
-  { 
+  {
     intros (a&Hpf).
     specialize (Hr2 a).
     specialize (Hs a).
@@ -164,7 +164,7 @@ Proof.
       ** intros. cut (Some a' = Some a); first by (inversion 1). eapply Hr1a.
          destruct (Rgt_dec); auto.
       ** intros Hfalse ??. exfalso. rewrite //=. destruct Rgt_dec.
-         cut (0 > 0); first by nra. apply Hfalse. 
+         cut (0 > 0); first by nra. apply Hfalse.
          rewrite Hova; auto.
          auto.
     * intros. exfalso; apply Hr1a. destruct Rgt_dec; auto.
@@ -179,9 +179,9 @@ Proof.
       ** intros. cut (Some b' = Some b); first by (inversion 1). eapply Hr2b.
          destruct (Rgt_dec); auto.
       ** intros Hfalse ??. exfalso. rewrite //=. destruct Rgt_dec => //=.
-         
+
          apply Hr1a. apply Hovb. done.
-    * intros. exfalso; apply Hr2b. destruct Rgt_dec; auto. 
+    * intros. exfalso; apply Hr2b. destruct Rgt_dec; auto.
   - intros (a&Hpf).
     generalize (Hr1 a) as Hr1a.
     generalize (Hov a) as Hova.
@@ -189,7 +189,7 @@ Proof.
     destruct (h1 a) as [b |] => //=.
     * intros. destruct Rgt_dec as [Hgt|Hngt] => //=.
       specialize (Hoia Hgt). inversion Hoia; done.
-    * intros. exfalso. apply Hr1a; auto. 
+    * intros. exfalso. apply Hr1a; auto.
   - intros (a&Hpf).
     generalize (Hr1 a) as Hr1a.
     generalize (Hov a) as Hova.
@@ -197,7 +197,7 @@ Proof.
     destruct (h1 a) as [b |] => //=.
     * intros. destruct Rgt_dec as [Hgt|Hngt] => //=.
       specialize (Hova Hgt). inversion Hova; done.
-    * intros. exfalso. apply Hr1a; auto. 
+    * intros. exfalso. apply Hr1a; auto.
 Qed.
 
 Lemma eq_ival_inj_surj_suffice {X} (I1 I2: ival X):
@@ -315,8 +315,8 @@ Proof.
     case_eq (h1 a).
     * intros s Hh1.
       destruct ClassicalEpsilon.constructive_indefinite_description as (a'&Heq&Hgt).
-      f_equal. eapply Hinj; eauto. 
-      ** eapply Hgt. rewrite Hh1 //= in Hrange. apply Hrange; auto.  
+      f_equal. eapply Hinj; eauto.
+      ** eapply Hgt. rewrite Hh1 //= in Hrange. apply Hrange; auto.
       ** congruence.
     * intros Hneq. rewrite Hneq in Hrange. rewrite //= in Hrange.
       nra.
@@ -332,7 +332,7 @@ Proof.
   { intros x y; destruct (Rgt_dec); done. }
   assert (Hconv': ∀ x y, x > y → is_true (Rgt_dec x y)).
   { intros x y; destruct (Rgt_dec); done. }
-  rewrite /eq_ival. 
+  rewrite /eq_ival.
   exists (λ x, match x with exist a Hpf => exist _ (h1 a) (Hconv' _ _ (Hr1 a (Hconv _ _ Hpf))) end).
   exists (λ x, match x with exist a Hpf => exist _ (h2 a) (Hconv' _ _ (Hr2 a (Hconv _ _ Hpf))) end).
   repeat split; auto.
@@ -385,8 +385,8 @@ Lemma eq_ival_sym {X} (I1 I2: ival X): eq_ival I1 I2 → eq_ival I2 I1.
 Proof.
   intros (h1&h2&H12&H21&Hind&Hval).
   exists h2, h1. repeat split; try done.
-  - intros (x&i) => //=. rewrite -Hind H21 //=. 
-  - intros (x&i) => //=. rewrite -Hval H21 //=. 
+  - intros (x&i) => //=. rewrite -Hind H21 //=.
+  - intros (x&i) => //=. rewrite -Hval H21 //=.
 Qed.
 
 
@@ -399,8 +399,8 @@ Proof.
   repeat split; auto.
   * intros. rewrite Hs2'; auto.
   * intros. rewrite Hs2; auto.
-  * intros. rewrite Hind23 Hind12 //. 
-  * intros. rewrite Hval23 Hval12 //. 
+  * intros. rewrite Hind23 Hind12 //.
+  * intros. rewrite Hval23 Hval12 //.
 Qed.
 
 Definition iplus {X} (I1 I2: ival X) : ival X :=
@@ -411,7 +411,7 @@ Definition iplus {X} (I1 I2: ival X) : ival X :=
   |}.
 
 Definition iscale {X} (p: R) (I: ival X) : ival X.
-  refine 
+  refine
   {| idx := idx I;
      ind := ind I;
      val := (λ x, Rabs p * (val I x));
@@ -433,7 +433,7 @@ Proof.
   exists (λ P n, None).
   - intros ?? [].
   - intros ? [[]].
-  - intros ?? ? x. done. 
+  - intros ?? ? x. done.
 Qed.
 Canonical empty_choiceType := Eval hnf in ChoiceType Empty_set empty_choiceMixin.
 
@@ -455,7 +455,7 @@ Definition zero_ival {X: Type} :=
      ind := λ x, Empty_set_rect (λ x, X) x;
      val := Empty_set_rect (λ x, R);
      val_nonneg := Empty_set_rect (λ x, Empty_set_rec (λ x, R) x >= 0)
-  |}. 
+  |}.
 
 Section ival_props.
 Variable (X: Type).
@@ -465,7 +465,7 @@ Lemma Rabs_val I i: Rabs (val I i) = val I i.
 Proof.
   rewrite Rabs_right //=. apply val_nonneg; eauto.
 Qed.
-  
+
 Definition support_plus1 {I1 I2}: support (val (iplus I1 I2)) → (support (val I1) + support (val I2)).
 Proof.
   rewrite //=. intros ([a|b]&Hpf).
@@ -539,7 +539,7 @@ Proof.
             destruct (Rgt_dec (val I x) 0);
             destruct Rgt_dec; auto; nra).
 Defined.
-          
+
 Lemma iscale_0_l I:
   eq_ival (iscale 0 I) zero_ival.
 Proof.
@@ -558,7 +558,7 @@ Proof.
   - rewrite //=; intros (a&Hpf). exfalso. rewrite Rabs_R0 in Hpf.
     destruct Rgt_dec; auto; try nra.
 Qed.
-  
+
 Lemma iscale_eq_ival p I1 I1':
   eq_ival I1 I1' →
   eq_ival (iscale p I1) (iscale p I1').
@@ -568,14 +568,14 @@ Proof.
   * exists (λ x, support_scale2 p Hgt0 (h1 (support_scale1 p Hgt0 x))).
     exists (λ x, support_scale2 p Hgt0 (h1' (support_scale1 p Hgt0 x))).
     repeat split; auto.
-    ** intros a. rewrite //=. 
+    ** intros a. rewrite //=.
        specialize (Hs1 (support_scale1 p Hgt0 a)).
        destruct (h1 _) as (x&i) => //=.
        erewrite <-(eqtype.bool_irrelevance i _).
        rewrite Hs1 => //=.
        destruct a as (a&Hpf) => //=.
        f_equal; apply eqtype.bool_irrelevance.
-    ** intros b. rewrite //=. 
+    ** intros b. rewrite //=.
        specialize (Hs1' (support_scale1 p Hgt0 b)).
        destruct (h1' _) as (x&i) => //=.
        erewrite <-(eqtype.bool_irrelevance i _).
@@ -604,7 +604,7 @@ Proof. intros ?. apply eq_ival_refl. Qed.
 Global Instance eq_ival_Symmetry {X}: Symmetric (@eq_ival X).
 Proof. intros ??. apply eq_ival_sym. Qed.
 Global Instance eq_ival_Equivalence {X}: Equivalence (@eq_ival X).
-Proof. split; apply _. Qed. 
+Proof. split; apply _. Qed.
 
 Global Instance iplus_proper : Proper (@eq_ival X ==> @eq_ival X ==> @eq_ival X) (@iplus X).
 Proof. intros ?? ? ?? ?. apply @iplus_eq_ival; auto. Qed.
@@ -657,7 +657,7 @@ Proof.
   exists (λ x, x).
   exists (λ x, x).
   repeat split => //=; auto; intros;
-  repeat abs_simpl; nra. 
+  repeat abs_simpl; nra.
 Qed.
 
 Lemma iscale_distrib p I1 I2:
@@ -688,11 +688,11 @@ Proof.
                     repeat destruct Rgt_dec => //=; exfalso; nra).
   }
   repeat split.
-  - intros (i&Hgt). 
-    
+  - intros (i&Hgt).
+
   rewrite //=.
     assert (Rabs (p + q) > Rabs p).
-    { rewrite Rabs_right. SearchAbout Rabs Rplus. rewrite  
+    { rewrite Rabs_right. SearchAbout Rabs Rplus. rewrite
     nra.
 
 
@@ -704,9 +704,9 @@ Proof.
   { intros ([i|i]&Hgt). exists i => //=.
     rewrite //= in Hgt. repeat destruct Rgt_dec => //=. exfalso.
     assert (Rabs (p + q) > Rabs p).
-    { rewrite  
+    { rewrite
     nra.
-    
+
   etransitivity.
     * apply iscale_0_l.
     * setoid_rewrite iscale_0_l. setoid_rewrite iplus_0. reflexivity.
@@ -728,7 +728,7 @@ Proof.
 Qed.
 
 Lemma iscale_assoc p q I:
-  eq_ival (iscale p (iscale q I)) (iscale (p * q) I). 
+  eq_ival (iscale p (iscale q I)) (iscale (p * q) I).
 Proof.
   apply eq_ival_nondep_suffice.
   exists (λ x, x).
@@ -858,7 +858,7 @@ Defined.
 Definition eq_ival_equip {A} (m1 m2: ival A) P Hpf1 Hpf2:
   eq_ival m1 m2 → eq_ival (ival_equip m1 P Hpf1) (ival_equip m2 P Hpf2).
 Proof.
-  intros (h1&h2&Hh12&Hh21&Hind&Hval). 
+  intros (h1&h2&Hh12&Hh21&Hind&Hval).
   eexists.
   Unshelve. all: swap 1 2.
   { intros (im1&_).
@@ -887,9 +887,9 @@ Qed.
 (*
 Lemma ival_bind_P {A B} (m: ival A) (f: A → ival B) (P: A → Prop) f':
   ∀ Hpf: ∀ x, (∃ i, ind m i = x ∧ val m i > 0) → P x,
-  (∀ x, f (sval x) = f' x) → 
+  (∀ x, f (sval x) = f' x) →
   eq_ival (mbind f m) (mbind f' (ival_equip m _ Hpf)).
-Proof. 
+Proof.
   intros Hpf Heq.
   eexists.
   Unshelve. all: swap 1 2.
@@ -914,7 +914,7 @@ Proof.
   }
   eexists.
   Unshelve. all: swap 1 2.
-  { 
+  {
     intros (((im&Hgt')&ifm)&Hgt). simpl in *.
     unshelve (eexists).
     { exists im. clear Hgt. rewrite -Heq in ifm. rewrite //=. }
@@ -936,21 +936,21 @@ Proof.
     destruct (Heq _).
     f_equal.
     generalize i0.
-    clear 
+    clear
     rewrite Heq in s.
     assert (i = ival_bind_P_subproof A B m f x s i0) as ->.
-    { apply classical_proof_irrelevance. } 
+    { apply classical_proof_irrelevance. }
     done.
   - intros ((?&?)&?). done.
   - intros ((?&?)&?). done.
 Qed.
 *)
 
-  
+
 Lemma ival_bind_P {A B} (m: ival A) (f: A → ival B) (P: A → Prop):
   ∀ Hpf: ∀ x, (∃ i, ind m i = x ∧ val m i > 0) → P x,
   eq_ival (mbind f m) (mbind (λ x : {a: A | P a}, f (sval x)) (ival_equip m _ Hpf)).
-Proof. 
+Proof.
   eexists.
   Unshelve. all: swap 1 2.
   { intros ((im&ifm)&Hgt).
@@ -964,7 +964,7 @@ Proof.
   }
   eexists.
   Unshelve. all: swap 1 2.
-  { 
+  {
     intros (((im&Hgt')&ifm)&Hgt). simpl in *.
     exists (existT im ifm).
     rewrite //=.
@@ -974,7 +974,7 @@ Proof.
   - intros (((x&?)&s)&i0). simpl in *.
     apply sval_inj_pred => //=.
     assert (i = ival_bind_P_subproof A B m f x s i0) as ->.
-    { apply classical_proof_irrelevance. } 
+    { apply classical_proof_irrelevance. }
     done.
   - intros ((?&?)&?). done.
   - intros ((?&?)&?). done.
@@ -984,7 +984,7 @@ Lemma ival_bind_congr {A B} (m1 m2: ival A) (f1 f2: A → ival B) :
   eq_ival m1 m2 →
   (∀ a, eq_ival (f1 a) (f2 a)) →
   eq_ival (mbind f1 m1) (mbind f2 m2).
-Proof. 
+Proof.
   intros Hequiv.
   apply eq_ival_nondep_option_necc, eq_ival_nondep_option_symm in Hequiv
     as (h1&h2&?&?&Hlr&Hrl&Hind1&Hval1&Hind2&Hval2).
@@ -1014,7 +1014,7 @@ Proof.
     eexists.
     Unshelve.
     all: swap 1 2.
-    { 
+    {
       intros a.
       specialize (Hequivf a).
       apply eq_ival_nondep_option_necc, eq_ival_nondep_option_symm,
@@ -1024,7 +1024,7 @@ Proof.
     eexists.
     Unshelve.
     all: swap 1 2.
-    { 
+    {
       intros a.
       specialize (Hequivf a).
       apply eq_ival_nondep_option_necc, eq_ival_nondep_option_symm,
@@ -1042,7 +1042,7 @@ Proof.
   eexists.
   Unshelve.
   all: swap 1 2.
-  { 
+  {
     intros (im1&if1).
     destruct (Rgt_dec (val m1 im1) 0) as [Hgt|]; last by (exact None).
     specialize (Hind1 im1 Hgt).
@@ -1054,7 +1054,7 @@ Proof.
   eexists.
   Unshelve.
   all: swap 1 2.
-  { 
+  {
     intros (im2&if2).
     destruct (Rgt_dec (val m2 im2) 0) as [Hgt|]; last by (exact None).
     specialize (Hind2 im2 Hgt).
@@ -1070,7 +1070,7 @@ Proof.
     generalize (Hind2 im2) as Hind2x.
     generalize (Hval2 im2) as Hval2x.
     destruct (h2 im2) => //=; last first.
-    { intros. rewrite {1}Hval2x; eauto. } 
+    { intros. rewrite {1}Hval2x; eauto. }
     specialize (Hfval2 _ if2) => //=.
     destruct (hf2 _ if2) => //=; last first.
     { intros. rewrite //= in Hgt. rewrite //= in Hfval2.
@@ -1127,7 +1127,7 @@ Proof.
               (hf2 (ind m2 im2) (eq_rect_r (λ x : A, idx (f2 x)) if2
                                            (ival_bind_congr_subproof A m1 m2 im1 im2 (Hind1x Hgtm))))
               _ (hf2 (ind m1 im1) if2)) as Hdep.
-    { 
+    {
       clear -Hind1x.
       rewrite /eq_rect_r.
       generalize (Hind1x Hgtm) => Heq. inversion Heq as [Heq'].
@@ -1142,7 +1142,7 @@ Proof.
                   (eq_rect_r (λ x : A, idx (f2 x)) if2 (ival_bind_congr_subproof A m1 m2 im1 im2
                                                                                  (Hind1x Hgtm))))
       as [if1'|]; last first.
-    { 
+    {
       clear -Hfrlx Hgtf Hdep Hgtm Hind1x.
       specialize (Hind1x Hgtm).
       inversion Hind1x as [Heq].
@@ -1150,7 +1150,7 @@ Proof.
       rewrite Hfrlx // in Hdep.
       inversion Hdep.
     }
-    f_equal. subst. 
+    f_equal. subst.
     specialize (Hrlx Hgtm). inversion Hrlx. subst. f_equal.
     rewrite /eq_rect_r.
     specialize (Hind1x Hgtm). inversion Hind1x as [Heq].
@@ -1196,7 +1196,7 @@ Proof.
               (hf1 (ind m1 im1) (eq_rect_r (λ x : A, idx (f1 x)) if1
                                            (ival_bind_congr_subproof0 A m1 m2 im2 im1 (Hind2x Hgtm))))
               _ (hf1 (ind m2 im2) if1)) as Hdep.
-    { 
+    {
       clear -Hind2x.
       rewrite /eq_rect_r.
       generalize (Hind2x Hgtm) => Heq. inversion Heq as [Heq'].
@@ -1211,7 +1211,7 @@ Proof.
                   (eq_rect_r (λ x : A, idx (f1 x)) if1 (ival_bind_congr_subproof0 A m1 m2 im2 im1
                                                                                  (Hind2x Hgtm))))
       as [if2'|]; last first.
-    { 
+    {
       clear -Hfrlx Hgtf Hdep Hgtm Hind2x.
       specialize (Hind2x Hgtm).
       inversion Hind2x as [Heq].
@@ -1219,7 +1219,7 @@ Proof.
       rewrite Hfrlx // in Hdep.
       inversion Hdep.
     }
-    f_equal. subst. 
+    f_equal. subst.
     specialize (Hrlx Hgtm). inversion Hrlx. subst. f_equal.
     rewrite /eq_rect_r.
     specialize (Hind2x Hgtm). inversion Hind2x as [Heq].
@@ -1239,7 +1239,7 @@ Proof.
     generalize (Hflr _ if1) as Hfrlx.
     specialize (Hfval1 _ if1) => //=.
     specialize (Hfind1 _ if1) => //=.
-    destruct (hf1 _ if1) as [if2|] => //=; []. 
+    destruct (hf1 _ if1) as [if2|] => //=; [].
     intros. rewrite //=. etransitivity; last apply Hfind1 => //=.
     rewrite //=.
     f_equal.
@@ -1259,7 +1259,7 @@ Proof.
     generalize (Hflr _ if1) as Hfrlx.
     specialize (Hfval1 _ if1) => //=.
     specialize (Hfind1 _ if1) => //=.
-    destruct (hf1 _ if1) as [if2|] => //=; []. 
+    destruct (hf1 _ if1) as [if2|] => //=; [].
     intros. rewrite //=. f_equal; first by (apply Hval1x; auto).
     etransitivity; last apply Hfval1 => //=.
     rewrite //=.
@@ -1304,9 +1304,9 @@ Qed.
 
 Lemma ival_bind_P' {A B} (m: ival A) (f: A → ival B) (P: A → Prop) f':
   ∀ Hpf: ∀ x, (∃ i, ind m i = x ∧ val m i > 0) → P x,
-  (∀ x, eq_ival (f (sval x)) (f' x)) → 
+  (∀ x, eq_ival (f (sval x)) (f' x)) →
   eq_ival (mbind f m) (mbind f' (ival_equip m _ Hpf)).
-Proof. 
+Proof.
   intros Hpf Heq. etransitivity.
   eapply (ival_bind_P _ _ _ Hpf).
   eapply ival_bind_congr; first reflexivity.
@@ -1341,11 +1341,11 @@ Proof.
     Unshelve. all: swap 1 2.
     { intros (x&Hgt0). destruct Rgt_dec => //=. exfalso; eapply Hfalse; eauto. }
     repeat split => //=.
-    * intros ([]&?). 
-    * intros (?&Hgt). 
+    * intros ([]&?).
+    * intros (?&Hgt).
       exfalso. destruct Rgt_dec => //=. eapply Hfalse; eauto.
-    * intros ([]&?). 
-    * intros ([]&?). 
+    * intros ([]&?).
+    * intros ([]&?).
 Qed.
 
 Lemma zero_ival_fmap_inv {X Y: Type} (f: X → Y) (I: ival X):
@@ -1367,7 +1367,7 @@ Qed.
 
 Lemma ival_plus_bind {A B} (m1 m2: ival A) (f: A → ival B) :
   eq_ival (x ← iplus m1 m2; f x) (iplus (x ← m1; f x) (x ← m2; f x)).
-Proof. 
+Proof.
     eexists. Unshelve. all: swap 1 2.
     { intros (([i1|i2]&ih)&Hgt).
       * exists (inl (existT i1 ih)).
@@ -1391,21 +1391,21 @@ Qed.
 
 Lemma ival_zero_bind {A B} (f: A → ival B) :
   eq_ival (x ← zero_ival; f x) zero_ival.
-Proof. 
+Proof.
     eexists. Unshelve. all: swap 1 2.
     { intros (([]&?)&?). }
     eexists. Unshelve. all: swap 1 2.
     { intros ([]&?). }
     repeat split => //=.
     * intros (([]&?)&?).
-    * intros ([]&?). 
+    * intros ([]&?).
     * intros (([]&?)&?).
     * intros (([]&?)&?).
 Qed.
 
 Lemma ival_scale_bind {A B} r (m: ival A) (f: A → ival B) :
-  eq_ival (x ← iscale r m; f x) (iscale r (x ← m; f x)). 
-Proof. 
+  eq_ival (x ← iscale r m; f x) (iscale r (x ← m; f x)).
+Proof.
   destruct (Req_dec r 0) as [Heq0|Hneq0%Rabs_no_R0].
   { subst. setoid_rewrite iscale_0_l. apply ival_zero_bind. }
   specialize (Rabs_pos r) => Rpos.
@@ -1457,7 +1457,7 @@ Proof.
   - intros ((ii&[])&Hgt) => //=.
   - intros ((ii&[])&Hgt) => //=. nra.
 Qed.
-    
+
 Definition supp_idxOf {A} (I: ival A) : ival (support (val I)).
    refine (ival_equip (idxOf I) _ _).
    abstract (rewrite /idxOf//=; intros i (?&->&?); destruct Rgt_dec => //=).
@@ -1574,7 +1574,7 @@ Proof.
     apply Hinj; last (by congruence); eexists; split; eauto.
     { clear -Hgt1 Hgt2. rewrite //= in Hgt1 Hgt2. repeat destruct Rgt_dec => //=; auto. nra.  }
     { clear -Hgt1 Hgt2. rewrite //= in Hgt1 Hgt2. repeat destruct Rgt_dec => //=; auto. nra.  }
-  - intros (i2&Hgt). 
+  - intros (i2&Hgt).
     edestruct (Hsurj) as (v1&Hin&Heq).
     { exists i2; split; eauto.
       destruct Rgt_dec => //=.
@@ -1584,7 +1584,7 @@ Proof.
     { exists (existT i1 tt). rewrite //=. abstract (repeat destruct Rgt_dec => //=; nra). }
     rewrite //=.
     destruct ClassicalEpsilon.constructive_indefinite_description as (?&?&?).
-    apply sval_inj_pred => //=. 
+    apply sval_inj_pred => //=.
     apply Hind2. congruence.
   - intros ((i1&[])&Hgt) => //=.
     destruct ClassicalEpsilon.constructive_indefinite_description as (?&?&?) => //=.
@@ -1631,7 +1631,7 @@ Proof. intros ?. apply eq_ival_prob_refl. Qed.
 Global Instance eq_ival_prob_Symmetry {X}: Symmetric (@eq_ival_prob X).
 Proof. intros ??. apply eq_ival_prob_sym. Qed.
 Global Instance eq_ival_prob_Equivalence {X}: Equivalence (@eq_ival_prob X).
-Proof. split; apply _. Qed. 
+Proof. split; apply _. Qed.
 
 Lemma seriesC_partial_sum_bounded {X: countType} (h: X → R) r
       (Hseries: is_series (countable_sum h) r) (Hpos: ∀ x, h x >= 0) n:
@@ -1661,7 +1661,7 @@ Proof.
   { apply val_nonneg. }
   { intros. intuition. }
   { intros n. exists (h1 n). intuition. }
-  { intuition. } 
+  { intuition. }
 Qed.
 
 Lemma sval_comm_match {A: Type} (P: A → Prop) (Q: Prop) (fl: Q → sig P) (fr: ¬ Q → sig P)
@@ -1673,7 +1673,7 @@ Proof.
 Qed.
 
 Lemma sumbool_match_left {A: Type} (Q: Prop) (fl: Q → A) (fr: ¬ Q → A)
-      (Htest: {Q} + {¬Q}) (HQ: Q): 
+      (Htest: {Q} + {¬Q}) (HQ: Q):
   match Htest with | left Hpf => fl Hpf | right Hnfp => fr Hnfp end =
   fl HQ.
 Proof.
@@ -1702,7 +1702,7 @@ Proof.
   }
   { intros (y1&Hgt1_pred) (y2&Hgt2_pred) => //=.
     destruct (Rgt_dec (val Y y1) 0) as [Hgt1|Hngt1] => //=; last first.
-    { 
+    {
       intros Hex. exfalso.
       eapply Hngt1. eapply Hzero_contra; eauto.
     }
@@ -1724,12 +1724,12 @@ Proof.
     destruct (Rgt_dec (val X x1) 0) as [Hgt|Hngt] => //=.
     * apply sval_inj_pi. rewrite sval_comm_match => //=.
       rewrite sumbool_match_left.
-      { rewrite Hspec4 => //=. } 
+      { rewrite Hspec4 => //=. }
       { intros ?. transitivity (sval (h2 (h1 (gt_support_conv (val X) x1 Hgt)))); last first.
         { rewrite Hspec1 => //=. }
         f_equal. f_equal. apply sval_inj_pred => //=. }
   }
-  { 
+  {
     intros (x&Hgt) => //=.
     destruct (Rgt_dec (val Y x) 0) as [|Hngt].
     * rewrite //=. rewrite -Hspec4 -Hspec3 Hspec2 => //=.
@@ -1774,7 +1774,7 @@ Proof.
   intros Heq x Hex.
   set (f := (λ x' r, if ClassicalEpsilon.excluded_middle_informative (x' = x) then
                        r
-                     else 
+                     else
                        0)).
   eapply (eq_ival_series_fun_pos I1 I2 f); eauto.
   { rewrite /f; intros a; destruct ClassicalEpsilon.excluded_middle_informative; eauto. }
@@ -1798,11 +1798,11 @@ Proof.
   * intros. etransitivity.
     ** eapply eq_ival_to_eq_ival_prob. symmetry; eauto.
     ** etransitivity.
-       *** eauto. 
+       *** eauto.
        *** eapply eq_ival_to_eq_ival_prob; eauto.
   * intros. etransitivity.
     ** eapply eq_ival_to_eq_ival_prob. eauto.
     ** etransitivity.
-       *** eauto. 
+       *** eauto.
        *** eapply eq_ival_to_eq_ival_prob; symmetry; eauto.
 Qed.

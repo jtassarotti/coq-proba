@@ -13,7 +13,7 @@ Proof.
 Qed.
 
 Lemma exp_increasing_le: ∀ x y : R, x <= y → exp x <= exp y.
-Proof.                                            
+Proof.
   inversion 1.
   - left. by apply exp_increasing.
   - subst. reflexivity.

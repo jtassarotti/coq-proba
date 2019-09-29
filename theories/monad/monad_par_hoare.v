@@ -26,10 +26,10 @@ Lemma output_mbind_in {A B: eqType} b (m: ldist_cost A) (f: A → ldist_cost B):
   (b \in output (x ← m; f x)) →
   ∃ r a, ((r, a)) \in outcomes m ∧ (b \in output (f (result a))).
 Proof.
-  rewrite /mbind/ldist_cost_bind/output. 
+  rewrite /mbind/ldist_cost_bind/output.
   move /mapP => [[r b' Hin]] => //= ->.
   eapply (in_ldist_bind _ r b' m) in Hin as (r'&r''&c'&Hin1&Hin2&Heq).
-  exists r'', c'; split; first done. 
+  exists r'', c'; split; first done.
   eapply (in_ldist_bind _ r' b' (f (result c'))) in Hin1 as (?&?&?&Hin3&Hin4&?).
   subst. rewrite //= mem_seq1 in Hin3. move /eqP in Hin3. inversion Hin3; subst.
   apply /mapP; eauto.
@@ -71,28 +71,28 @@ Qed.
 
 Lemma fun_to_cspec {A: eqType} (m: ldist_cost A) (P: cost A → Prop):
   cspec m P → (∀ x, P ((rvar_of_ldist m) x)).
-Proof. 
+Proof.
   rewrite /cspec/coutput => Hspec /= x.
   apply /Hspec/mem_nth. rewrite size_map. inversion x. done.
 Qed.
 
 Lemma coutput_mbind_in {A B: eqType} b (m: ldist_cost A) (f: A → ldist_cost B):
   (b \in coutput (x ← m; f x)) →
-  ∃ r a, ((r, a) \in outcomes m) ∧ 
+  ∃ r a, ((r, a) \in outcomes m) ∧
          {| work := work b - work a;
             span := span b - span a;
-            result := result b|} \in coutput (f (result a)) 
+            result := result b|} \in coutput (f (result a))
                           ∧ (work b - (work a) + (work a) = work b)%nat
                           ∧ (span b - (span a) + (span a) = span b)%nat.
 Proof.
-  rewrite /mbind/ldist_cost_bind/output. 
+  rewrite /mbind/ldist_cost_bind/output.
   move /mapP => [[r b' Hin]] => //= ->.
   eapply (in_ldist_bind _ r b' m) in Hin as (r'&r''&a&Hin1&Hin2&Heq).
   eapply (in_ldist_bind _ r' b' (f (result a))) in Hin1 as (?&?&?&Hin3&Hin4&?).
   subst. rewrite //= mem_seq1 in Hin3. move /eqP in Hin3. inversion Hin3; subst.
-  exists r'', a; repeat split; first done. 
+  exists r'', a; repeat split; first done.
   - apply /mapP; eauto.
-    eexists; eauto => //=; f_equal; auto with *. 
+    eexists; eauto => //=; f_equal; auto with *.
     destruct x1 as [w r s] => //=;  f_equal; nify; omega.
   - rewrite //=; nify; omega.
   - rewrite //=; nify; omega.
@@ -100,7 +100,7 @@ Qed.
 
 Lemma cspec_mbind {A B: eqType} (f: A → ldist_cost B) m (P: cost A → Prop) (Q: cost B → Prop):
   cspec m P →
-  (∀ a, P a → cspec (f (result a)) 
+  (∀ a, P a → cspec (f (result a))
                     (λ nb, Q {| work := (work a + work nb)%nat;
                                 span := (span a + span nb)%nat;
                                 result :=  result nb|})) →
@@ -108,12 +108,12 @@ Lemma cspec_mbind {A B: eqType} (f: A → ldist_cost B) m (P: cost A → Prop) (
 Proof.
   intros Hinput Hbody nb Hin.
   edestruct (coutput_mbind_in nb m f) as (r&c&Hin'&Hout&Heq1&Heq2); eauto.
-  destruct nb as [nbw nbs nbr]. rewrite //= in Heq1 Heq2. rewrite -Heq1 -Heq2. 
-  rewrite addnC. 
-  rewrite (addnC _ (span c)). 
+  destruct nb as [nbw nbs nbr]. rewrite //= in Heq1 Heq2. rewrite -Heq1 -Heq2.
+  rewrite addnC.
+  rewrite (addnC _ (span c)).
   specialize (Hbody c).
   rewrite /cspec//= in Hbody. rewrite //= in Hout. rewrite //=.
-  assert (HP: P c).                                                   
+  assert (HP: P c).
   { apply Hinput. rewrite/ coutput. apply /mapP => //=. eauto. }
   eapply (Hbody HP {| work := nbw - work c;
                       span := nbs - span c;
@@ -122,7 +122,7 @@ Qed.
 
 Lemma cspec_mspec {A: eqType} (m: ldist_cost A) (P: A → Prop):
   mspec m P → cspec m (λ x, P (result x)).
-Proof. 
+Proof.
   rewrite /mspec/cspec/coutput/output => Hin y.
   move /mapP => [[c x] Hin' Heq].
   subst. apply Hin. apply /mapP. eauto.
@@ -134,19 +134,19 @@ Tactic Notation "cbind" open_constr(P) :=
     intros; eapply (@cspec_mbind _ _ f m P); auto
   end.
 
-Lemma Ex_bound {A : eqType} (X: ldist_cost A) f r: 
+Lemma Ex_bound {A : eqType} (X: ldist_cost A) f r:
   cspec X (λ x, f x <= r) →
-  Ex (rvar_comp (rvar_of_ldist X) f) <= r.    
+  Ex (rvar_comp (rvar_of_ldist X) f) <= r.
 Proof.
   intros Hcspec. rewrite Ex_fin_comp.
   eapply Rle_trans.
-  { 
-    eapply Rle_bigr => i _. 
+  {
+    eapply Rle_bigr => i _.
     apply Rmult_le_compat_l; last apply Hcspec.
     - apply Rge_le, ge_pr_0.
     - destruct i as (?&?) => //=. rewrite /coutput -mem_undup -img_rvar_of_ldist' //.
   }
-  rewrite -big_distrl //= (pr_sum_all (rvar_of_ldist X)) Rmult_1_l. fourier. 
+  rewrite -big_distrl //= (pr_sum_all (rvar_of_ldist X)) Rmult_1_l. fourier.
 Qed.
 
 Lemma mspec_rpar2 {A B: eqType} (m: ldist_cost A) (m': ldist_cost B) (P: A → Prop) (Q : B → Prop):
@@ -156,16 +156,16 @@ Lemma mspec_rpar2 {A B: eqType} (m: ldist_cost A) (m': ldist_cost B) (P: A → P
 Proof.
   intros Hspec1 Hspec2 b Hin.
   assert (fst b \in output m ∧ snd b \in output m') as (?&?).
-  { destruct b as (b1&b2). 
-    rewrite /output in Hin. move /mapP in Hin. destruct Hin as [rb Hin Heq]. 
-    destruct rb as (r&b). rewrite /rpar2 in Hin. 
+  { destruct b as (b1&b2).
+    rewrite /output in Hin. move /mapP in Hin. destruct Hin as [rb Hin Heq].
+    destruct rb as (r&b). rewrite /rpar2 in Hin.
     eapply in_ldist_bind in Hin as (?&?&a1&Hin&?&Hmult).
     eapply in_ldist_bind in Hin as (?&?&a2&Hin&?&Hmult').
     rewrite //= in Hin.
-    rewrite in_cons in Hin. rewrite in_nil in Hin. move /orP in Hin. 
+    rewrite in_cons in Hin. rewrite in_nil in Hin. move /orP in Hin.
     destruct Hin as [Hin|]; last done.
     move /eqP in Hin. inversion Hin; subst.
-    rewrite //= in Heq. 
+    rewrite //= in Heq.
     rewrite /output; split => //=; inversion Heq; subst; apply /mapP; eauto.
   }
   split.

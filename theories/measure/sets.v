@@ -27,7 +27,7 @@ Global Instance eq_prop_Symmetry {X}: Symmetric (@eq_prop X).
 Proof. rewrite /eq_prop => ?? Heq x. by rewrite Heq. Qed.
 Global Instance eq_prop_Equiv {X} : Equiv (X → Prop) := eq_prop.
 Global Instance eq_prop_Equivalence {X}: Equivalence (@eq_prop X).
-Proof. split; apply _. Qed. 
+Proof. split; apply _. Qed.
 
 Global Instance le_prop_proper {A: Type} : Proper (@eq_prop A ==> @eq_prop A ==> iff) (@le_prop A).
 Proof. firstorder. Qed.
@@ -75,7 +75,7 @@ Global Instance union_mono {A: Type} :
 Proof. firstorder. Qed.
 Global Instance union_proper {A: Type} :
   Proper (@eq_prop A ==> @eq_prop A ==> @eq_prop A) union := mono_proper2 union _.
-  
+
 Global Instance intersect_mono {A: Type} :
   Proper (@le_prop A ==> @le_prop A ==> @le_prop A) intersect.
 Proof. firstorder. Qed.
@@ -105,7 +105,7 @@ Lemma union_intersectF_l {A: Type} {I} (U : A → Prop) Vs :
 Proof.
   intros x; split.
   - intros [Hu|Hinter] => i; by [left|right].
-  - intros Hinter. 
+  - intros Hinter.
     destruct (Classical_Prop.classic (U x)); auto.
     * by left.
     * right => i. destruct (Hinter i); eauto.
@@ -114,7 +114,7 @@ Qed.
 
 Lemma intersect_union_l {A: Type} (U V Z: A → Prop) :
  U ∩ (V ∪ Z) ≡ (U ∩ V) ∪ (U ∩ Z).
-Proof. firstorder. Qed. 
+Proof. firstorder. Qed.
 
 Lemma intersect_unionF_l {A: Type} {I} (U : A → Prop) Vs :
   U ∩ (unionF Vs) ≡ unionF (λ i : I, U ∩ Vs i).
@@ -127,7 +127,7 @@ Qed.
 
 Global Instance union_assoc {A: Type} : Assoc (≡) (@union A).
 Proof. firstorder. Qed.
-  
+
 Global Instance intersect_assoc {A: Type} : Assoc (≡) (@intersect A).
 Proof. firstorder. Qed.
 
@@ -167,7 +167,7 @@ Proof.
   - intros Hneg. by apply Classical_Prop.not_and_or.
   - firstorder.
 Qed.
- 
+
 Lemma intersect_top {A: Type} (U: A → Prop) :
   U ∩ (λ _, True) ≡ U.
 Proof. firstorder. Qed.
@@ -190,11 +190,11 @@ Proof. firstorder. Qed.
 
 Lemma disjoint_empty_set_r {A: Type} (X: A → Prop):
   X ## ∅.
-Proof. firstorder. Qed. 
+Proof. firstorder. Qed.
 
 Lemma disjoint_set_minus {A: Type} (X Y: A → Prop) :
  (X ∖ Y) ## Y.
-Proof. firstorder. Qed. 
+Proof. firstorder. Qed.
 
 Lemma disjoint_elim {A: Type} (U1 U2: A → Prop) x :
   U1 ## U2 → U1 x → ¬ U2 x.
@@ -242,7 +242,7 @@ Proof.
     induction i using lt_wf_ind.
     * destruct (Classical_Prop.classic  (∃ i', (i' < i)%nat ∧ Us i' x)) as [(i'&(?&?))|Hne].
       ** eauto.
-      ** exists i; split; auto. intros i' ? HU. apply Hne; eauto. 
+      ** exists i; split; auto. intros i' ? HU. apply Hne; eauto.
   - clear. firstorder.
 Qed.
 
@@ -261,10 +261,10 @@ Proof.
   cut (∀ j k: nat, (j < k)%nat → (diff_below Us j ## diff_below Us k)).
   { intros Hlt j k Hneq. assert (j < k ∨ k < j)%nat as [|] by omega; eauto.
       rewrite disjoint_comm. eauto. }
-  intros j k Hlt. destruct k. omega. 
+  intros j k Hlt. destruct k. omega.
   rewrite //=. intros z. assert (Hle: (j <= k)%nat) by omega.
   rewrite /diff_below.
-  intros [Hdb1 Hdb2]. 
+  intros [Hdb1 Hdb2].
   exfalso. destruct Hdb2 as [Hsat Hfalse]. eapply Hfalse; eauto.
   destruct Hdb1; eauto.
 Qed.
@@ -284,7 +284,7 @@ Proof.
 Qed.
 End diff_below.
 
-  
+
 
 Definition eq_fun {A B} (f: A → B) (g: A → B) :=
   ∀ x, f x = g x.
@@ -296,7 +296,7 @@ Proof. rewrite /eq_fun //=. Qed.
 Global Instance eq_fun_Symmetry {X Y}: Symmetric (@eq_fun X Y).
 Proof. rewrite /eq_fun => ?? Heq x. by rewrite Heq. Qed.
 Global Instance eq_fun_Equivalence {X Y}: Equivalence (@eq_fun X Y).
-Proof. split; apply _. Qed. 
+Proof. split; apply _. Qed.
 
 Definition fun_inv {A B : Type} (f: A → B) : (B → Prop) → (A → Prop) :=
   λ U, λ a, U (f a).
@@ -364,7 +364,7 @@ Proof.
     subst. intros Hfalse. destruct Hfalse as (a&HU&Himg).
     eapply Hinj in Himg. subst; eauto.
   * rewrite /fun_img. intros Hcompl. apply Classical_Prop.NNPP.
-    intros Hnot. eapply Hcompl. 
+    intros Hnot. eapply Hcompl.
     apply Classical_Prop.NNPP. intros Hnot'. eapply Hnot.; eapply Hcompl.
     eapply H
 *)
@@ -393,7 +393,7 @@ Proof.
     assert (y = y').
     { eapply Hinj; eauto. congruence. }
     intros; subst; eauto.
-  - intros HU. 
+  - intros HU.
     destruct constructive_indefinite_description as (x'&?).
     exists x'; split; eauto.
 Qed.

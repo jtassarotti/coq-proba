@@ -11,7 +11,7 @@ Proof.
   unshelve (econstructor).
   { refine {| choices := λ I', ivd_ival I = I' |}.
     abstract (eexists; eauto). }
-  - abstract (intros I' <-; apply val_sum1). 
+  - abstract (intros I' <-; apply val_sum1).
 Defined.
 
 Definition In_pidist {X} (I: ivdist X) (Is: pidist X) : Prop :=
@@ -22,7 +22,7 @@ Lemma In_pidist_le_singleton {X} (I: ivdist X) Is:
 Proof.
   split.
   - rewrite /In_pidist/singleton//=. intros Hin I' <-. eauto.
-  - rewrite /In_pidist/singleton/le_pidist/le_pival//=. 
+  - rewrite /In_pidist/singleton/le_pidist/le_pival//=.
     intros Hle. apply Hle.
     rewrite /In. done.
 Qed.
@@ -78,7 +78,7 @@ Proof.
 
     eapply eq_ival_nondep_option_suffice.
     unshelve (eexists).
-    { 
+    {
       intros (i&ih).
       destruct (Rgt_dec (val I i) 0) as [Hgt|Hngt].
       * assert (h i = f (ind I i)) as Heq.
@@ -90,7 +90,7 @@ Proof.
       * exact None.
     }
     unshelve (eexists).
-    { 
+    {
       intros (i&ifx).
       destruct (Rgt_dec (val I i) 0) as [Hgt|Hngt].
       * assert (h i = f (ind I i)) as Heq.
@@ -183,4 +183,3 @@ Proof.
     rewrite //=.
   }
 Qed.
-  

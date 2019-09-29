@@ -52,10 +52,10 @@ Proof.
   intros [I1' Is2' Hirrel1 Hirrel2 Hcoup].
   destruct Hcoup as [I2 Hle Hcoup].
   exists I2.
-  * setoid_rewrite <-Hirrel2. 
+  * setoid_rewrite <-Hirrel2.
     eapply irrel_pidist_proper; first eassumption; try reflexivity.
   * apply ic_coupling_to_id in Hcoup.
-    destruct Hcoup as [Ic Hp1 Hp2]. 
+    destruct Hcoup as [Ic Hp1 Hp2].
     exists Ic; apply irrel_ivd_to_eq_ivd_prob.
     ** setoid_rewrite Hirrel1. setoid_rewrite Hp1. reflexivity.
     ** setoid_rewrite Hp2. reflexivity.

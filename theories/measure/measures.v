@@ -24,7 +24,7 @@ Definition le_sigma {A: Type} (F1 F2: sigma_algebra A) := le_prop F1 F2.
 Global Instance le_sigma_Transitive {X}: Transitive (@le_sigma X).
 Proof. rewrite /le_sigma => ??? Heq1 Heq2 x. intros. by apply Heq2, Heq1. Qed.
 Global Instance le_sigma_Reflexive {X}: Reflexive (@le_sigma X).
-Proof. rewrite /le_sigma //=. intros ??. done. Qed. 
+Proof. rewrite /le_sigma //=. intros ??. done. Qed.
 
 Global Instance eq_sigma_Transitive {X}: Transitive (@eq_sigma X).
 Proof. rewrite /eq_sigma/eq_prop => ??? Heq1 Heq2 x. by rewrite Heq1 Heq2.  Qed.
@@ -33,7 +33,7 @@ Proof. rewrite /eq_sigma. by apply eq_prop_Reflexive. Qed.
 Global Instance eq_sigma_Symmetry {X}: Symmetric (@eq_sigma X).
 Proof. rewrite /eq_sigma/eq_prop => ?? Heq x. by rewrite Heq. Qed.
 Global Instance eq_sigma_Equivalence {X}: Equivalence (@eq_sigma X).
-Proof. split; apply _. Qed. 
+Proof. split; apply _. Qed.
 *)
 
 Global Instance sigma_algebra_proper {A: Type} X : Proper (@eq_prop A ==> iff) (@sigma_sets A X).
@@ -57,10 +57,10 @@ Lemma union_pair_unionF {A: Type} (X Y: A → Prop) :
           (unionF (λ n : nat, match n with
                               | O => X
                               | S O => Y
-                              | _ => ∅ end)). 
+                              | _ => ∅ end)).
 Proof.
   rewrite /eq_prop/union/unionF; split.
-  * intros [?|?]; [exists O | exists (S O)]; auto. 
+  * intros [?|?]; [exists O | exists (S O)]; auto.
   * intros (n&H).
     destruct n; first by left.
     destruct n; first by right.
@@ -72,7 +72,7 @@ Lemma intersect_pair_intersectF {A: Type} (X Y: A → Prop) :
           (intersectF (λ n : nat, match n with
                               | O => X
                               | S O => Y
-                              | _ => (λ _, True) end)). 
+                              | _ => (λ _, True) end)).
 Proof.
   rewrite /eq_prop/intersect/intersectF; split.
   * intros [? ?] [|[|]]; auto.
@@ -91,13 +91,13 @@ Qed.
 Hint Resolve sigma_empty_set sigma_full sigma_closed_complements sigma_closed_unions.
 
 Lemma sigma_closed_pair_union {A: Type} (F: sigma_algebra A) X Y:
-  F X → F Y → F (X ∪ Y). 
+  F X → F Y → F (X ∪ Y).
 Proof.
   intros. rewrite union_pair_unionF.  apply sigma_closed_unions.
   intros [|[|]]; auto.
 Qed.
 
-Lemma range_union_S {A: Type} (Us: nat → A → Prop) n:  
+Lemma range_union_S {A: Type} (Us: nat → A → Prop) n:
   (λ x, ∃ i, (i <= S n)%nat ∧ Us i x) ≡ (λ x, ∃i, (i <= n)%nat ∧ Us i x) ∪ (Us (S n)).
 Proof.
   intros x; split.
@@ -117,14 +117,14 @@ Proof.
 Qed.
 
 Lemma sigma_closed_list_union {A: Type} (F: sigma_algebra A) l:
-  (∀ U, In U l → F U) → F (union_list l). 
+  (∀ U, In U l → F U) → F (union_list l).
 Proof.
   induction l => //=.
   intros. apply sigma_closed_pair_union; eauto.
 Qed.
 
 Lemma sigma_closed_pair_intersect {A: Type} (F: sigma_algebra A) X Y:
-  F X → F Y → F (X ∩ Y). 
+  F X → F Y → F (X ∩ Y).
 Proof.
   intros. rewrite intersect_pair_intersectF. apply sigma_closed_intersections.
   intros [|[|]]; auto.
@@ -137,7 +137,7 @@ Proof.
   rewrite set_minus_union_complement.
   apply sigma_closed_pair_intersect; auto.
 Qed.
-  
+
 Hint Resolve sigma_closed_pair_union sigma_closed_pair_intersect sigma_closed_set_minus.
 
 Definition intersection_sigma {A: Type} (I: Type) (U: I → sigma_algebra A) : sigma_algebra A.
@@ -150,7 +150,7 @@ Defined.
 
 Definition minimal_sigma {A: Type} (F: (A → Prop) → Prop) : sigma_algebra A :=
   intersection_sigma { F' : sigma_algebra A | le_prop F F' } sval.
-  
+
 Lemma minimal_sigma_ub {A: Type} (F : (A → Prop) → Prop) :
   le_prop F (minimal_sigma F).
 Proof.
@@ -187,7 +187,7 @@ Section measure_props.
   Context {F: sigma_algebra A}.
   Context (μ : @measure A F).
 
-  Lemma measure_additivity_Series U : 
+  Lemma measure_additivity_Series U :
         (∀ i, F (U i)) → disjointF U → μ (unionF U) = Series (λ x, μ (U x)).
   Proof.
     intros. symmetry; apply is_series_unique, measure_additivity => //=.
@@ -203,7 +203,7 @@ Section measure_props.
                                              | O => X
                                              | S O => Y
                                              | _ => ∅ end)).
-    { 
+    {
       rewrite /eq_prop/disjointF. intros i j.
       destruct i as [|[|]];
       destruct j as [|[|]] => //= Hneq.
@@ -239,7 +239,7 @@ Section measure_props.
   Lemma measure_sum_n_additivity Us n:
     (∀ i, (i <= n)%nat → F (Us i)) →
     disjointF Us →
-    μ (λ x, ∃ j, (j <= n)%nat ∧ Us j x) = sum_n (λ j, μ (Us j)) n. 
+    μ (λ x, ∃ j, (j <= n)%nat ∧ Us j x) = sum_n (λ j, μ (Us j)) n.
   Proof.
     intros Hin.
     induction n => //=.
@@ -249,7 +249,7 @@ Section measure_props.
       ** intros. exists O. split; auto.
     * intros Hdisj. rewrite sum_Sn /plus//= range_union_S.
       rewrite measure_finite_additivity.
-      { f_equal; eauto. } 
+      { f_equal; eauto. }
       ** apply sigma_closed_range_union. auto.
       ** apply Hin. auto.
       ** intros z (Hin1&Hin2). destruct Hin1 as (j&?&?).
@@ -272,7 +272,7 @@ Section measure_props.
   Proof.
     intros ?? Hle.
     cut (μ Y - μ X >= 0); first by nra.
-    rewrite -measure_set_minus //=. 
+    rewrite -measure_set_minus //=.
   Qed.
 
   Lemma measure_set_minus' X Y:
@@ -286,7 +286,7 @@ Section measure_props.
       * clear; firstorder.
     }
     rewrite measure_set_minus //=.
-    * cut (μ (Y ∩ X) <= μ X); first by nra. 
+    * cut (μ (Y ∩ X) <= μ X); first by nra.
       apply measure_mono; eauto.
       clear; firstorder.
     * eauto.
@@ -328,7 +328,7 @@ Section measure_props.
     Us j ⊆ Us k.
   Proof.
     intros Hsub. induction Hle.
-    - reflexivity. 
+    - reflexivity.
     - etransitivity; eauto.
   Qed.
 
@@ -354,7 +354,7 @@ Section measure_props.
            eapply Hfalse; eauto.
     }
     apply measure_additivity.
-    * apply diff_below_measurable; eauto. 
+    * apply diff_below_measurable; eauto.
     * apply diff_below_disjoint.
   Qed.
 
@@ -381,12 +381,12 @@ Section measure_props.
     rewrite measure_set_minus /Rminus; eauto.
     { rewrite Rplus_comm. intros. eapply is_lim_seq_opp_inv.
       eapply (is_lim_seq_plus_inv _ (λ _, μ (Us O)) _ (μ (Us O))).
-      * eapply is_lim_seq_ext; last eassumption. 
+      * eapply is_lim_seq_ext; last eassumption.
         intros n. rewrite /Vs => //=. rewrite measure_set_minus; first field; eauto.
         { induction n; first reflexivity. etransitivity; eauto. eapply Hdecr. }
       * apply is_lim_seq_const.
     }
-    - apply sigma_closed_intersections; auto. 
+    - apply sigma_closed_intersections; auto.
     - intros x; clear; firstorder.
   Qed.
 
@@ -396,17 +396,17 @@ Section measure_props.
   Proof.
     intros HF1 Hf2.
     assert (U1 ∪ U2 ≡ U1 ∪ (set_minus U2 U1)) as ->.
-    { split; clear; destruct (Classical_Prop.classic (U1 x)); firstorder. } 
+    { split; clear; destruct (Classical_Prop.classic (U1 x)); firstorder. }
     rewrite measure_finite_additivity; eauto using sigma_closed_set_minus.
     * apply Rplus_le_compat; apply measure_mono; eauto using sigma_closed_set_minus.
-      ** reflexivity. 
+      ** reflexivity.
       ** clear; firstorder.
     * apply disjoint_comm, disjoint_set_minus.
   Qed.
 
   Lemma measure_sum_n_subadditivity Us n:
     (∀ i, (i <= n)%nat → F (Us i)) →
-    μ (λ x, ∃ j, (j <= n)%nat ∧ Us j x) <= sum_n (λ j, μ (Us j)) n. 
+    μ (λ x, ∃ j, (j <= n)%nat ∧ Us j x) <= sum_n (λ j, μ (Us j)) n.
   Proof.
     intros Hin.
     induction n => //=.
@@ -534,13 +534,13 @@ Proof.
     split; intuition.
   - eapply sigma_proper; last eapply sigma_empty_set. rewrite /fun_inv.
     split.
-    * contradiction. 
+    * contradiction.
     * inversion 1.
 Qed.
 
 (* Any function f : A  → B on a measurable space A induces a sigma algebra on B *)
 Definition fun_sigma {A B: Type} (F: sigma_algebra A) (f: A → B) : sigma_algebra B.
-  refine {| sigma_sets := λ U, F (fun_inv f U) |}. 
+  refine {| sigma_sets := λ U, F (fun_inv f U) |}.
   - abstract (by intros ?? ->).
   - abstract (rewrite //=).
   - abstract (intros P HF; rewrite fun_inv_compl; auto).
@@ -551,7 +551,7 @@ Lemma measurable_intersection {I} {A B: Type} f (F1: sigma_algebra A) (F2 : I �
   (∃ i, measurable f F1 (F2 i)) →
   measurable f F1 (intersection_sigma _ F2).
 Proof.
-  intros HF2 U HminU. 
+  intros HF2 U HminU.
   cut (le_prop (intersection_sigma _ F2) (fun_sigma F1 f)).
   { intros Hle. by apply Hle. }
   intros V. rewrite /fun_sigma//=. intros Hin.
@@ -562,12 +562,12 @@ Lemma measurable_generating_sets {A B: Type} f (F1: sigma_algebra A) (F2 : (B �
   (∀ U, F2 U → F1 (fun_inv f U)) →
   measurable f F1 (minimal_sigma F2).
 Proof.
-  intros HF2 U HminU. 
+  intros HF2 U HminU.
   cut (le_prop (minimal_sigma F2) (fun_sigma F1 f)).
   { intros Hle. by apply Hle. }
   apply minimal_sigma_lub. rewrite /fun_sigma//=.
 Qed.
-  
+
 Definition almost_everywhere {A: Type} {F: sigma_algebra A} (μ : measure F) (U: A → Prop) :=
   ∃ V, F (compl V) ∧ μ (compl V) = 0 ∧ (∀ a, V a → U a).
 
@@ -592,11 +592,11 @@ Proof.
   - apply sigma_closed_complements in HF. rewrite compl_involutive in HF *.
     done.
 Qed.
-  
+
 Lemma almost_everywhere_conj {A F} (μ: measure F) (U1 U2: A → Prop):
   almost_everywhere μ U1 →
   almost_everywhere μ U2 →
-  almost_everywhere μ (U1 ∩ U2). 
+  almost_everywhere μ (U1 ∩ U2).
 Proof.
   intros (V1&HF1&Hmeas1&Himpl1).
   intros (V2&HF2&Hmeas2&Himpl2).
@@ -611,13 +611,13 @@ Proof.
     * etransitivity; first eapply measure_finite_subadditivity; eauto.
       nra.
     * apply Rge_le, measure_nonneg.
-  - firstorder. 
+  - firstorder.
 Qed.
 
 Lemma almost_everywhere_meas_conj {A F} (μ: measure F) (U1 U2: A → Prop):
   almost_everywhere_meas μ U1 →
   almost_everywhere_meas μ U2 →
-  almost_everywhere_meas μ (U1 ∩ U2). 
+  almost_everywhere_meas μ (U1 ∩ U2).
 Proof.
   intros (?&?)%aem_to_ae (?&?)%aem_to_ae.
   apply ae_to_aem; auto.
@@ -746,7 +746,7 @@ Definition disjoint_sum_sigma {A1 A2: Type} (F1: sigma_algebra A1) (F2: sigma_al
 Proof.
   refine {| sigma_sets := λ U, F1 (fun_inv inl U) ∧ F2 (fun_inv inr U) |}.
   - intros U1 U2 Heq. rewrite Heq. done.
-  - split; rewrite //=. 
+  - split; rewrite //=.
   - intros U (HF1&HF2).
     split.
     * apply sigma_closed_complements in HF1. eapply sigma_proper; eauto.
@@ -780,19 +780,19 @@ Proof.
   intros HUs Hdisj.
   apply: is_series_plus.
   - rewrite inv_union. apply measure_additivity.
-    * eapply HUs. 
+    * eapply HUs.
     * intros i j Hneq.
       intros z (Hin1&Hin2).
       eapply (Hdisj i j Hneq (inl z)).
       split; auto.
   - rewrite inv_union. apply measure_additivity.
-    * eapply HUs. 
+    * eapply HUs.
     * intros i j Hneq.
       intros z (Hin1&Hin2).
       eapply (Hdisj i j Hneq (inr z)).
       split; auto.
 Qed.
- 
+
 Definition disjoint_sum_measure {A1 A2: Type} {F1: sigma_algebra A1} {F2: sigma_algebra A2}
            (μ1: measure F1) (μ2: measure F2): measure (disjoint_sum_sigma F1 F2).
 Proof.
@@ -816,12 +816,12 @@ Proof.
   - abstract (intros ???; apply: is_series_scal; apply measure_additivity; eauto).
 Defined.
 
-Definition discrete_algebra (A: Type) : sigma_algebra A. 
+Definition discrete_algebra (A: Type) : sigma_algebra A.
 Proof.
   refine {| sigma_sets := λ _, True |}; abstract (auto).
 Defined.
 
-Definition trivial_measure0 {A: Type} (F: sigma_algebra A) : measure F. 
+Definition trivial_measure0 {A: Type} (F: sigma_algebra A) : measure F.
 Proof.
   refine {| measure_fun := λ _, 0 |}.
   - abstract (intro; nra).
@@ -829,7 +829,7 @@ Proof.
   - abstract (intros; by apply is_series_0).
 Defined.
 
-Definition pt_measure_fun := 
+Definition pt_measure_fun :=
   λ U : unit → Prop,
         match excluded_middle_informative (eq_prop U (λ _, True)) with
         | left _ => 1
@@ -848,7 +848,7 @@ Proof.
     { assert (unionF Us ()) as (i&Hsat). by apply HeqU.
       exists i. intros []; split; auto. }
     destruct Hex as (i&Hequiv).
-    assert (Helse: ∀ j, j ≠ i → Us j ≢ (λ _, True)). 
+    assert (Helse: ∀ j, j ≠ i → Us j ≢ (λ _, True)).
     {  intros j Hneq. intros Heq.
        eapply (Hdisj j i Hneq ()).
        split.
@@ -864,7 +864,7 @@ Proof.
   * eapply is_series_0.
     intros n. destruct excluded_middle_informative as [Heq|Hn]; auto.
     exfalso; eapply HneqU. intros []; split; auto.
-    intros. exists n. by eapply Heq. 
+    intros. exists n. by eapply Heq.
 Qed.
 
 Definition pt_measure : measure (discrete_algebra unit).
@@ -960,8 +960,8 @@ Proof.
   rewrite Heq. apply initial_algebra_meas. eauto.
 Qed.
 
-  
-  
+
+
 
 Definition initial_algebra1 {A: Type} {B: Type} (Y : sigma_algebra B) (f: A → B)
   : sigma_algebra A := @initial_algebra unit A B Y (λ _, f).
@@ -1009,7 +1009,7 @@ Lemma initial_algebra1_img {A B: Type} (Y: sigma_algebra B) (f: A → B) U:
   initial_algebra1 Y f U →
   Y (fun_img f U).
 Proof.
-  intros Hinit. 
+  intros Hinit.
   apply initial_algebra1_eq_min in Hinit.
   cut ((λ U : A → Prop, ∃ U' : B → Prop, U ≡ fun_inv f U' ∧ Y U') U).
   { intros Halt.  destruct Halt as (U'&Hequiv&?).
@@ -1017,7 +1017,7 @@ Proof.
     rewrite /fun_img. split.
     intros (x&HU&Heq).
     * subst. eapply Hequiv in HU. eauto.
-    * intros HU'z. 
+    * intros HU'z.
     setoid_rewrite Hequiv.
     rewrite /fun_ing.
     rewrite Hequiv.

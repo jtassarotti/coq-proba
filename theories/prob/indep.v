@@ -2,7 +2,7 @@ Require Export Reals Psatz Omega.
 From discprob.prob Require Export prob countable stochastic_order markov double.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop seq.
 
-(* TODO: can be generalized to consider case where the codomain of the rvar's are not all 
+(* TODO: can be generalized to consider case where the codomain of the rvar's are not all
    the same *)
 Definition independent {A} {B: eqType} {Ω: distrib A} (l: list (rvar Ω B)) :=
   ∀ lb, length lb = length l →
@@ -41,7 +41,7 @@ Lemma independent_tl {A} {B: eqType} {Ω: distrib A} (X: rvar Ω B) (lX: list (r
 Proof.
   intros Hindep => bl.
   rewrite (pr_total_prob X).
-  transitivity (Series (countable_sum (λ r : imgT X, pr_eq X (sval r) * 
+  transitivity (Series (countable_sum (λ r : imgT X, pr_eq X (sval r) *
       fold_right Rmult 1 (map (λ Xb : rvar Ω B * B, pr_eq Xb.1 Xb.2) (seq.zip lX bl))))).
   { apply Series_ext.
     intros n. rewrite /countable_sum; destruct (pickle_inv _) as [r|] => //=.
@@ -59,7 +59,7 @@ Proof.
     induction lb as [| b1 lb].
     { rewrite //=. }
     induction lb as [| b2 lb].
-    { rewrite //=. } 
+    { rewrite //=. }
     rewrite //= zip_nil //=.
     intros Hlen.
     rewrite Rmult_1_r -Hindep2.
@@ -104,14 +104,14 @@ Section joint_pr.
              S (@pickle [countType of imgT X2] (exist _ b (imgT_pr2 _ Hpf)))).
     - exact (O, O).
   Defined.
-        
-  Definition aprod := 
+
+  Definition aprod :=
     λ mn, match mn with
-          | (S m, S n) => 
+          | (S m, S n) =>
             match (@pickle_inv [countType of (imgT X1)] m),
                   (@pickle_inv [countType of (imgT X2)] n) with
-            | Some a, Some b => 
-              if P (sval a) && Q (sval b) then 
+            | Some a, Some b =>
+              if P (sval a) && Q (sval b) then
                 pr_eq X1 (sval a) * pr_eq X2 (sval b)
               else
                 0
@@ -122,20 +122,20 @@ Section joint_pr.
 
 Lemma aprod_double_summable: double_summable aprod.
 Proof.
-  exists 1 => n. 
+  exists 1 => n.
   rewrite /aprod.
-  set (a' := (λ mn, 
+  set (a' := (λ mn,
               match mn with
               | (S m, S n) =>
                 (countable_sum (λ a : imgT X1, if P (sval a) then pr_eq X1 (sval a) else 0)) m *
-                (countable_sum (λ a : imgT X2, if Q (sval a) then pr_eq X2 (sval a) else 0)) n 
+                (countable_sum (λ a : imgT X2, if Q (sval a) then pr_eq X2 (sval a) else 0)) n
               | _ => 0
-              end)). 
+              end)).
   transitivity (sum_n (λ j, sum_n (λ k, (a' (j, k))) n) n).
   { rewrite ?sum_n_bigop. rewrite /a'.
-    eapply Rle_bigr. intros (i&?) ?. 
-    rewrite ?sum_n_bigop. 
-    eapply Rle_bigr. intros (j&?) ?. 
+    eapply Rle_bigr. intros (i&?) ?.
+    rewrite ?sum_n_bigop.
+    eapply Rle_bigr. intros (j&?) ?.
     destruct i, j => //=; rewrite ?Rabs_R0; try reflexivity.
     rewrite ?/countable_sum/prod_pmf.
     destruct pickle_inv, pickle_inv => //=; rewrite ?Rabs_R0 ?Rmult_0_l ?Rmult_0_r;
@@ -149,19 +149,19 @@ Proof.
   * transitivity (sum_n (λ j, sum_n (λ k,
                 countable_sum (λ a : imgT X1, if P (sval a) then pr_eq X1 (sval a) else 0) j *
                 countable_sum (λ a : imgT X2, if Q (sval a) then pr_eq X2 (sval a) else 0) k) n) n).
-    { 
+    {
       right.
-      rewrite ?sum_n_bigop. 
+      rewrite ?sum_n_bigop.
       rewrite -(big_mkord (λ x, true) (λ i, sum_n (λ k, (a' (i, k))) (S n))).
-      rewrite big_nat_recl; last done. 
+      rewrite big_nat_recl; last done.
       rewrite {1}/a' sum_n_const Rmult_0_r Rplus_0_l.
 
       transitivity (\big[Rplus/0]_(0 <= i < S n) \big[Rplus/0]_(0 <= i' < S n)
                      (λ k : nat, a' (S i, S k)) (i')).
       { eapply eq_bigr => i' ?.
-        rewrite sum_n_bigop. 
+        rewrite sum_n_bigop.
         rewrite -(big_mkord (λ x, true) (λ i, (a' (_, i)))).
-        rewrite big_nat_recl; last done. 
+        rewrite big_nat_recl; last done.
         rewrite {1}/a' Rplus_0_l.
         rewrite /a'//=.
       }
@@ -193,15 +193,15 @@ Proof.
   case_eq (@pickle_inv [countType of imgT (λ x, (X1 x, X2 x))] n); last by nra.
   case_eq (@pickle_inv [countType of imgT (λ x, (X1 x, X2 x))] n'); last first.
   { intros Heq_none ((a&b)&Hpf) Heq_some => //=. }
-  intros ((a'&b')&Hpf') Heq' ((a&b)&Hpf) Heq Hneq0 => //=. 
+  intros ((a'&b')&Hpf') Heq' ((a&b)&Hpf) Heq Hneq0 => //=.
   inversion 1 as [[Hp1 Hp2]].
   assert (a = a').
-  { 
+  {
     apply (f_equal (@pickle_inv [countType of imgT X1])) in Hp1. rewrite ?pickleK_inv in Hp1.
     inversion Hp1; done.
   }
   assert (b = b').
-  { 
+  {
     apply (f_equal (@pickle_inv [countType of imgT X2])) in Hp2. rewrite ?pickleK_inv in Hp2.
     inversion Hp2; done.
   }
@@ -252,7 +252,7 @@ Lemma is_series_prod_row:
             (Series (λ j, Series (λ k, aprod (S j, S k)))).
 Proof.
   apply (is_series_ext (aprod \o σprod)).
-  { 
+  {
     intros n. rewrite /aprod/σprod/countable_sum/prod_pmf//=.
     destruct (pickle_inv _) as [s|] => //=.
     destruct s as ((a0, b0)&Hpf) => //=.
@@ -262,8 +262,8 @@ Proof.
                           (series_double_covering' _ _ σprod_inj σprod_cov aprod_double_summable)).
   cut (Series (λ j, Series (λ k, aprod (j, k))) =
       (Series (λ j : nat, Series (λ k : nat, aprod (S j, S k))))).
-  { 
-    intros <-. apply Series_correct. 
+  {
+    intros <-. apply Series_correct.
     eexists; eapply (series_double_covering _ _ σprod_inj σprod_cov aprod_double_summable); eauto.
   }
   rewrite Series_incr_1; last first.
@@ -339,13 +339,13 @@ Section exp.
              S (@pickle [countType of imgT X2] (exist _ b (imgT_pr2 _ _ _ _ _ _ _ Hpf)))).
     - exact (O, O).
   Defined.
-        
-  Definition aprod_exp := 
+
+  Definition aprod_exp :=
     λ mn, match mn with
-          | (S m, S n) => 
+          | (S m, S n) =>
             match (@pickle_inv [countType of (imgT X1)] m),
                   (@pickle_inv [countType of (imgT X2)] n) with
-            | Some a, Some b => 
+            | Some a, Some b =>
                 (sval a * pr_eq X1 (sval a)) * (sval b * pr_eq X2 (sval b))
             | _, _ => 0
           end
@@ -354,20 +354,20 @@ Section exp.
 
 Lemma aprod_exp_double_summable: double_summable aprod_exp.
 Proof.
-  exists (Ex (rvar_comp X1 abs) * (Ex (rvar_comp X2 abs))) => n. 
+  exists (Ex (rvar_comp X1 abs) * (Ex (rvar_comp X2 abs))) => n.
   rewrite /aprod_exp.
-  set (a' := (λ mn, 
+  set (a' := (λ mn,
               match mn with
               | (S m, S n) =>
                 (countable_sum (λ a : imgT X1, Rabs (sval a) * pr_eq X1 (sval a))) m *
                 (countable_sum (λ a : imgT X2, Rabs (sval a) * pr_eq X2 (sval a))) n
               | _ => 0
-              end)). 
+              end)).
   transitivity (sum_n (λ j, sum_n (λ k, (a' (j, k))) n) n).
   { rewrite ?sum_n_bigop. rewrite /a'.
-    eapply Rle_bigr. intros (i&?) ?. 
-    rewrite ?sum_n_bigop. 
-    eapply Rle_bigr. intros (j&?) ?. 
+    eapply Rle_bigr. intros (i&?) ?.
+    rewrite ?sum_n_bigop.
+    eapply Rle_bigr. intros (j&?) ?.
     destruct i, j => //=; rewrite ?Rabs_R0; try reflexivity.
     rewrite ?/countable_sum/prod_pmf.
     destruct pickle_inv, pickle_inv => //=; rewrite ?Rabs_R0 ?Rmult_0_l ?Rmult_0_r;
@@ -383,23 +383,23 @@ Proof.
     ** by apply ex_Ex_comp_abs.
     ** intros => //=.
     ** by apply ex_Ex_comp_abs.
-    ** intros => //=. 
+    ** intros => //=.
   * transitivity (sum_n (λ j, sum_n (λ k,
                 countable_sum (λ a : imgT X1, Rabs (sval a) * pr_eq X1 (sval a)) j *
                 countable_sum (λ a : imgT X2, Rabs (sval a) * pr_eq X2 (sval a)) k) n) n).
-    { 
+    {
       right.
-      rewrite ?sum_n_bigop. 
+      rewrite ?sum_n_bigop.
       rewrite -(big_mkord (λ x, true) (λ i, sum_n (λ k, (a' (i, k))) (S n))).
-      rewrite big_nat_recl; last done. 
+      rewrite big_nat_recl; last done.
       rewrite {1}/a' sum_n_const Rmult_0_r Rplus_0_l.
 
       transitivity (\big[Rplus/0]_(0 <= i < S n) \big[Rplus/0]_(0 <= i' < S n)
                      (λ k : nat, a' (S i, S k)) (i')).
       { eapply eq_bigr => i' ?.
-        rewrite sum_n_bigop. 
+        rewrite sum_n_bigop.
         rewrite -(big_mkord (λ x, true) (λ i, (a' (_, i)))).
-        rewrite big_nat_recl; last done. 
+        rewrite big_nat_recl; last done.
         rewrite {1}/a' Rplus_0_l.
         rewrite /a'//=.
       }
@@ -417,12 +417,12 @@ Proof.
     ** apply Rge_le, sum_n_partial_pos. intros n'.
        rewrite /countable_sum/oapp; destruct (pickle_inv _); try destruct (P _) => //=; try nra.
        apply Rle_ge, Rmult_le_0_compat.
-       *** apply Rabs_pos. 
+       *** apply Rabs_pos.
        *** apply Rge_le, pr_eq_ge_0.
     ** apply Rge_le, sum_n_partial_pos. intros n'.
        rewrite /countable_sum/oapp; destruct (pickle_inv _); try destruct (P _) => //=; try nra.
        apply Rle_ge, Rmult_le_0_compat.
-       *** apply Rabs_pos. 
+       *** apply Rabs_pos.
        *** apply Rge_le, pr_eq_ge_0.
     ** etransitivity; last apply Ex_sum_n_le_comp.
        { right.  apply sum_n_ext => n'. rewrite /countable_sum; destruct (pickle_inv _) => //=.
@@ -442,15 +442,15 @@ Proof.
   case_eq (@pickle_inv [countType of imgT (λ x, (X1 x, X2 x))] n); last by nra.
   case_eq (@pickle_inv [countType of imgT (λ x, (X1 x, X2 x))] n'); last first.
   { intros Heq_none ((a&b)&Hpf) Heq_some => //=. }
-  intros ((a'&b')&Hpf') Heq' ((a&b)&Hpf) Heq Hneq0 => //=. 
+  intros ((a'&b')&Hpf') Heq' ((a&b)&Hpf) Heq Hneq0 => //=.
   inversion 1 as [[Hp1 Hp2]].
   assert (a = a').
-  { 
+  {
     apply (f_equal (@pickle_inv [countType of imgT X1])) in Hp1. rewrite ?pickleK_inv in Hp1.
     inversion Hp1; done.
   }
   assert (b = b').
-  { 
+  {
     apply (f_equal (@pickle_inv [countType of imgT X2])) in Hp2. rewrite ?pickleK_inv in Hp2.
     inversion Hp2; done.
   }
@@ -498,7 +498,7 @@ Lemma is_series_prod_exp_row:
             (Series (λ j, Series (λ k, aprod_exp (S j, S k)))).
 Proof.
   apply (is_series_ext (aprod_exp \o σprod_exp)).
-  { 
+  {
     intros n. rewrite /aprod_exp/σprod_exp/countable_sum//=.
     destruct (pickle_inv _) as [s|] => //=.
     destruct s as ((a0, b0)&Hpf) => //=.
@@ -510,8 +510,8 @@ Proof.
                                                    aprod_exp_double_summable)).
   cut (Series (λ j, Series (λ k, aprod_exp (j, k))) =
       (Series (λ j : nat, Series (λ k : nat, aprod_exp (S j, S k))))).
-  { 
-    intros <-. apply Series_correct. 
+  {
+    intros <-. apply Series_correct.
     eexists; eapply (series_double_covering _ _ σprod_exp_inj σprod_exp_cov
                                             aprod_exp_double_summable); eauto.
   }
@@ -532,7 +532,7 @@ Lemma is_series_prod_exp_row_abs:
             (Series (λ j, Series (λ k, Rabs (aprod_exp (S j, S k))))).
 Proof.
   apply (is_series_ext (Rabs \o aprod_exp \o σprod_exp)).
-  { 
+  {
     intros n. rewrite /aprod_exp/σprod_exp/countable_sum//=.
     destruct (pickle_inv _) as [s|] => //=; last by rewrite Rabs_R0.
     destruct s as ((a0, b0)&Hpf) => //=.
@@ -548,8 +548,8 @@ Proof.
                                                    aprod_exp_double_summable)).
   cut (Series (λ j, Series (λ k, Rabs (aprod_exp (j, k)))) =
       (Series (λ j : nat, Series (λ k : nat, Rabs (aprod_exp (S j, S k)))))).
-  { 
-    intros <-. apply Series_correct. 
+  {
+    intros <-. apply Series_correct.
     eexists; eapply (series_double_covering_Rabs _ _ σprod_exp_inj σprod_exp_cov
                                             aprod_exp_double_summable); eauto.
   }
@@ -610,7 +610,7 @@ Proof.
   - apply indep2_ex_Ex_prod.
 Qed.
 End exp.
- 
+
 Arguments indep2_pred {_ _ _ _}.
 Arguments indep2_ex_Ex_prod {_ _}.
 Arguments indep2_Ex_prod {_ _}.
@@ -631,13 +631,13 @@ Lemma rvar_list_eq_foldr {A} {B: eqType} {Ω: distrib A}  (lX: list (rvar Ω B))
 Proof.
   intros Hlen.
   split.
-  - move /eqP => <-. 
-    clear. induction lX => //=; apply /andP; split; auto. 
+  - move /eqP => <-.
+    clear. induction lX => //=; apply /andP; split; auto.
   - clear -Hlen. revert bl Hlen. induction lX => bl Hlen //=.
     * destruct bl => //=.
     * destruct bl as [|b bl] => //=.
       move /andP => [Heq Hrec]. move /eqP in Heq. rewrite Heq.
-      apply /eqP. f_equal. 
+      apply /eqP. f_equal.
       apply /eqP. apply IHlX; eauto.
 Qed.
 
@@ -655,7 +655,7 @@ Qed.
 Lemma independent_rvar_list {A} {B: eqType} {Ω: distrib A}  (lX: list (rvar Ω B)) :
   independent lX →
   ∀ bl, length bl = length lX →
-  pr_eq (rvar_list lX) bl = 
+  pr_eq (rvar_list lX) bl =
   fold_right Rmult 1 (map (λ Xb, pr_eq (fst Xb) (snd Xb)) (seq.zip lX bl)).
 Proof.
   rewrite /independent. intros Hindep bl Hlen.
@@ -706,7 +706,7 @@ Lemma indep2_independent_cons {A} {B: eqType} {Ω: distrib A}  (X: rvar Ω B) (l
   independent (X :: lX).
 Proof.
   induction lX => //=.
-  - intros; apply independent_singleton. 
+  - intros; apply independent_singleton.
   - intros Hindep2 Hindep_tl.
     intros lb. destruct lb => //=. destruct lb; first by done.
     intros Hlen.
@@ -723,7 +723,7 @@ Lemma rvar_list_comp_ext {A} {B C: eqType} {Ω: distrib A} (lX: list (rvar Ω B)
   (rvar_comp (rvar_list lX) (map f)) =1 (rvar_list (map (rvar_comp^~f) lX)).
 Proof.
   induction lX => i //=.
-  f_equal. specialize (IHlX i). rewrite //= in IHlX. 
+  f_equal. specialize (IHlX i). rewrite //= in IHlX.
 Qed.
 
 Lemma indep2_ext {A} {B C: eqType} {Ω: distrib A} (X X': rvar Ω B) (Y Y': rvar Ω C):
@@ -747,7 +747,7 @@ Proof.
   - apply independent_nil.
   - rewrite map_cons. apply indep2_independent_cons.
     * eapply indep2_ext.
-      ** intros i. reflexivity. 
+      ** intros i. reflexivity.
       ** apply rvar_list_comp_ext.
       ** apply indep2_fn. by apply independent_indep2_tl.
     * apply IHl. eapply independent_tl; eauto.
@@ -785,7 +785,7 @@ Proof.
     * rewrite indep2_Ex_prod //.
       ** rewrite IHl //.
          *** eapply independent_tl; eauto.
-         *** intros; eapply Hex; by right. 
+         *** intros; eapply Hex; by right.
       ** rewrite prod_list_rrvar_alt.
          apply: (indep2_fn _ _ id (fold_right Rmult 1)).
          by apply independent_indep2_tl.

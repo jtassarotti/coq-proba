@@ -14,7 +14,7 @@ Local Notation "x ≥ y" := (Rge x y) (at level 70, no associativity).
 Lemma Rmult_eq_0_inv_r: ∀ r r1 r2 : R, (r ≠ 0 → r1 = r2) → r * r1 = r * r2.
 Proof.
   intros r r1 r2; case (Req_dec r 0).
-  - intros ->. by rewrite !Rmult_0_l. 
+  - intros ->. by rewrite !Rmult_0_l.
   - intros Hneq Heq. rewrite Heq //.
 Qed.
 
@@ -37,7 +37,7 @@ Proof.
 Qed.
 
 Lemma Rmult_le_0_compat x y: 0 ≤ x → 0 ≤ y → 0 ≤ x * y.
-Proof. 
+Proof.
   intros. rewrite -[a in a ≤ _](Rmult_0_l 0).
   apply Rmult_le_compat; eauto; try reflexivity.
 Qed.
@@ -110,7 +110,7 @@ Qed.
 
 Lemma open_open_set U:
   open U → open_set U.
-Proof. done. Qed. 
+Proof. done. Qed.
 
 Lemma disc_neighbourhood x (δ: posreal):
   neighbourhood (disc x δ) x.
@@ -148,11 +148,11 @@ Proof.
   exists (Z.to_nat (up (r * INR m))).
   exists m.
   split; first split; auto.
-  *  rewrite INR_IZR_INZ. 
+  *  rewrite INR_IZR_INZ.
      rewrite Z2Nat.id //=. apply (Rmult_lt_reg_r (INR m)); auto.
      rewrite /Rdiv Rmult_assoc. rewrite Rinv_l; last by nra.
      rewrite Rmult_1_r. done.
-  *  rewrite INR_IZR_INZ. 
+  *  rewrite INR_IZR_INZ.
      rewrite Z2Nat.id //=. apply (Rmult_lt_reg_r (INR m)); auto.
      rewrite /Rdiv Rmult_assoc. rewrite Rinv_l; last by nra.
      rewrite Rmult_1_r. rewrite Rmult_plus_distr_r.
@@ -169,7 +169,7 @@ Proof.
   intros Hpos Hneg.
   assert (∃ eps', 0 < eps' <= eps ∧ r + eps' < 0) as (eps'&Hr&?).
   { destruct (Rlt_dec eps (-r)) as [Hlt|Hnlt].
-    { exists eps; split; auto; try nra. } 
+    { exists eps; split; auto; try nra. }
     apply Rnot_lt_ge in Hnlt.
     exists (-r / 2); split; nra.
   }
@@ -209,7 +209,7 @@ Lemma Rmin_diff_eq x y:
 Proof.
   apply Rmin_case_strong; apply Rabs_case; nra.
 Qed.
-  
+
 Lemma Rmax_diff_eq x y:
   Rmax x y = (x + y) / 2 + Rabs(x - y) / 2.
 Proof.
@@ -223,16 +223,16 @@ Proof.
   apply: continuous_minus.
   * apply: continuous_scal.
     ** apply: continuous_plus.
-       *** apply: continuous_const. 
+       *** apply: continuous_const.
        *** apply: continuous_id.
-    ** apply: continuous_const. 
+    ** apply: continuous_const.
   * apply: continuous_scal.
     ** apply: continuous_comp.
        *** apply: continuous_minus.
-           **** apply: continuous_const. 
-           **** apply: continuous_id. 
+           **** apply: continuous_const.
+           **** apply: continuous_id.
        *** apply: continuous_abs.
-    ** apply: continuous_const. 
+    ** apply: continuous_const.
 Qed.
 
 Lemma continuous_Rmax_l x y: continuous (Rmax x) y.
@@ -242,16 +242,16 @@ Proof.
   apply: continuous_plus.
   * apply: continuous_scal.
     ** apply: continuous_plus.
-       *** apply: continuous_const. 
+       *** apply: continuous_const.
        *** apply: continuous_id.
-    ** apply: continuous_const. 
+    ** apply: continuous_const.
   * apply: continuous_scal.
     ** apply: continuous_comp.
        *** apply: continuous_minus.
-           **** apply: continuous_const. 
-           **** apply: continuous_id. 
+           **** apply: continuous_const.
+           **** apply: continuous_id.
        *** apply: continuous_abs.
-    ** apply: continuous_const. 
+    ** apply: continuous_const.
 Qed.
 
 Lemma archimed_pos r: 0 <= r → ∃ n, INR n <= r < INR (S n).
@@ -286,7 +286,7 @@ Proof.
   apply INR_le in Hpos.
   rewrite -minus_INR in Hdiff; auto.
   replace 1 with (INR 1) in Hdiff; auto.
-  apply INR_lt in Hdiff. 
+  apply INR_lt in Hdiff.
   omega.
 Qed.
 
@@ -340,7 +340,7 @@ Lemma Rbar_max_l: ∀ x y : Rbar, Rbar_le x (Rbar_max x y).
 Proof.
   destruct x, y => //=; try apply Rmax_l; reflexivity.
 Qed.
-  
+
 Lemma Rbar_max_r: ∀ x y : Rbar, Rbar_le y (Rbar_max x y).
   destruct x, y => //=; try apply Rmax_r; reflexivity.
 Qed.

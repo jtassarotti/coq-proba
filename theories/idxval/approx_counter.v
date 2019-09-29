@@ -37,13 +37,13 @@ Module counter.
     | 0 => mret init
     | S n' =>
       if P init then
-        pidist_union (mret init) 
+        pidist_union (mret init)
                      (b ← comp;
                       rep_upto_while f P n' comp (f init b))
       else
         mret init
     end.
-    
+
   Definition rep_upto {A B: Type} (f: A → B → A) (n: nat) (comp: pidist B) (init: A) :=
     rep_upto_while f (λ x, true) n comp init.
 
@@ -83,7 +83,7 @@ Module counter.
     | 0 => mret (approx_estimate k)
     | S n => i0 ← incr_flipn k;
              '(itotal, c) ← rep_upto_while_count (λ isum i, isum + i)%nat
-                                                 (λ isum, (isum <= pt)%nat) 
+                                                 (λ isum, (isum <= pt)%nat)
                                                  n
                                                  (incr_flipn k)
                                                  i0;
@@ -95,7 +95,7 @@ Module counter.
     | 0 => mret (approx_estimate k)
     | S n => i0 ← incr_flipn k;
              '(itotal, c) ← rep_while_count (λ isum i, isum + i)%nat
-                                                 (λ isum, (isum <= pt)%nat) 
+                                                 (λ isum, (isum <= pt)%nat)
                                                  n
                                                  (incr_flipn k)
                                                  i0;
@@ -112,14 +112,14 @@ Module counter.
     induction k => //= a.
     - reflexivity.
     - specialize (Himpl a). destruct (g1 a).
-      * rewrite //= in Himpl. rewrite Himpl. 
+      * rewrite //= in Himpl. rewrite Himpl.
         apply pidist_union_mono; first reflexivity.
         apply pidist_bind_congr_le; first reflexivity.
         eauto.
       * destruct (g2 a); last by reflexivity.
         apply pidist_union_le; reflexivity.
   Qed.
-    
+
   Lemma approx_pt_S_le_pidist pt n k:
     le_pidist (approx pt n k) (approx pt.+1 n k).
   Proof.
@@ -186,7 +186,7 @@ Module counter.
          (λ x : nat * nat, (x.1 <= pt)%N) n (incr_flipn k2) (i2, c2);
          approx pt (m2 - c) (k2 + Init.Nat.min 1 itotal)).
   Proof.
-    revert pt k1 k2 c1 c2 m1 m2 i1 i2. 
+    revert pt k1 k2 c1 c2 m1 m2 i1 i2.
     induction n as [n IH] using lt_wf_ind => pt k1 k2 c1 c2 m1 m2 i1 i2 Hlek Hle Hlei
                                                Hm1 Hm2.
     destruct n as [| n].
@@ -202,7 +202,7 @@ Module counter.
       case: ifP => Hle_pt2;
       rewrite //= in Hle_pt2.
       * apply Ex_min_bind_union.
-        ** setoid_rewrite pidist_left_id.  
+        ** setoid_rewrite pidist_left_id.
            simpl fst. simpl snd.
            subst.
            replace ((S n + c2)%coq_nat - c2)%nat with (S n); last by (nify; omega).
@@ -212,8 +212,8 @@ Module counter.
            destruct Hle' as [| k2' Hle']. (* Might want inversion instead of destruct here *)
            *** eapply Ex_min_bind_congr; first by reflexivity.
                intros i.
-               rewrite /rep_upto_while_count. 
-               eapply IH; nify; try omega. 
+               rewrite /rep_upto_while_count.
+               eapply IH; nify; try omega.
                destruct i1; simpl in *; omega.
                destruct i1.
                **** rewrite //=.  omega.
@@ -226,8 +226,8 @@ Module counter.
            destruct Hlek as [| k2' Hlek].
            *** eapply Ex_min_bind_congr; first by reflexivity.
                intros i.
-               rewrite /rep_upto_while_count. 
-               abstract (eapply IH; nify; try omega; 
+               rewrite /rep_upto_while_count.
+               abstract (eapply IH; nify; try omega;
                          destruct i1; destruct i2; destruct i; simpl in *; try omega).
            *** eapply Ex_min_pidist_plus_bind_le_l;
                eapply Ex_min_pidist_plus_bind_le_r;
@@ -250,7 +250,7 @@ Module counter.
       * move /negP in Hle_pt1.
         apply Ex_min_bind_union.
         ** setoid_rewrite pidist_left_id.
-           rewrite Hm1 Hm2. 
+           rewrite Hm1 Hm2.
            replace ((S n + c1)%coq_nat - c1) with (S ((n + c1)%coq_nat - c1)); last by (nify; omega).
            replace ((S n + c2)%coq_nat - c2) with (S ((n + c2)%coq_nat - c2)); last by (nify; omega).
         rewrite /approx_worst -/approx_worst.
@@ -267,7 +267,7 @@ Module counter.
           try (right; nify; omega). }
            *** rewrite Heq. subst. eapply Ex_min_bind_congr; first by reflexivity.
                intros i.
-               eapply IH; nify; try omega. 
+               eapply IH; nify; try omega.
            *** eapply Ex_min_pidist_plus_bind_le_l;
                eapply Ex_min_pidist_plus_bind_le_r;
                setoid_rewrite pidist_left_id;
@@ -307,7 +307,7 @@ Module counter.
           try (right; nify; omega). }
            *** rewrite Heq. subst. eapply Ex_min_bind_congr; first by reflexivity.
                intros i.
-               eapply IH; nify; try omega. 
+               eapply IH; nify; try omega.
            *** eapply Ex_min_pidist_plus_bind_le_l;
                eapply Ex_min_pidist_plus_bind_le_r;
                setoid_rewrite pidist_left_id;
@@ -317,7 +317,7 @@ Module counter.
   Lemma approx_worst_spec pt n k:
     Ex_min (approx_worst pt n k) ≤ Ex_min (approx pt n k).
   Proof.
-    destruct n. 
+    destruct n.
     - rewrite //=.  reflexivity.
     - rewrite /approx_worst -/approx_worst.
       rewrite /rep_while_count.
@@ -329,7 +329,7 @@ Module counter.
 
 
   Local Open Scope R.
-      
+
   Fixpoint Ex_approx_worst c n k curr :=
     match n with
     | 0 => match curr with
@@ -351,7 +351,7 @@ Module counter.
 
   Lemma Ex_approx_worst_spec_aux pt n k:
     (1 <= pt)%coq_nat →
-    (∀ i1 c1 m1, 
+    (∀ i1 c1 m1,
     (i1 <= pt)%coq_nat →
     (m1 = n + c1)%coq_nat →
     ( Ex_min (' (itotal, c)
@@ -362,8 +362,8 @@ Module counter.
     ( Ex_min (approx_worst pt n k) = Ex_approx_worst (S pt) n k 0).
   Proof.
     intros Hpt.
-    revert k. 
-    induction n as [n IH] using lt_wf_ind => k. 
+    revert k.
+    induction n as [n IH] using lt_wf_ind => k.
     destruct n as [| n].
     - split.
       * intros i1 c1 m1 Hlt Heq.
@@ -406,7 +406,7 @@ Module counter.
           destruct (IH Hltn (k + min 1 (S i1))%nat) as (_&IHr);
             last (rewrite (IHr); clear IHr); eauto;
             try (rewrite //=; nify; omega).
-          rewrite ?Min.min_idempotent ?subnn. 
+          rewrite ?Min.min_idempotent ?subnn.
           destruct i1.
           ** rewrite Min.min_idempotent. rewrite ?Min.min_r; last by omega.
           ** rewrite ?Min.min_l; last by omega. rewrite ?addn0; f_equal.
@@ -419,7 +419,7 @@ Module counter.
       setoid_rewrite pidist_left_id.
       rewrite Heq. replace (S n + c1)%coq_nat with (n + S c1)%coq_nat; last by (nify; omega).
       specialize (IH n).
-      assert (n < S n)%coq_nat as Hltn. 
+      assert (n < S n)%coq_nat as Hltn.
       { auto.  }
       destruct (IH Hltn k) as (IHl&_); last (rewrite [a in _ + (_ * a) = _](IHl _ (S c1)); clear IHl);
         try (rewrite //=; nify; omega);
@@ -442,13 +442,13 @@ Module counter.
         try (rewrite //=; nify; omega).
       destruct (IH Hltn k) as (IHl&_); last (rewrite (IHl _ O); clear IHl);
         try (rewrite //=; nify; omega).
-      rewrite //=. 
+      rewrite //=.
       rewrite subn1 //=. destruct pt; first by omega.
       done.
   Qed.
 
   Lemma Ex_approx_worst_spec_aux2 n k:
-    (∀ i1 c1 m1, 
+    (∀ i1 c1 m1,
     (i1 = 0 ∨ i1 = 1)%nat →
     (m1 = n + c1)%coq_nat →
     ( Ex_min (' (itotal, c)
@@ -510,7 +510,7 @@ Module counter.
     - edestruct (Ex_approx_worst_spec_aux (S pt) n k); eauto.
       nify. omega.
   Qed.
-    
+
 
   Remark simple_calculation: Ex_min (approx_worst 1 5 0) = 3.
   Proof.

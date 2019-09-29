@@ -18,7 +18,7 @@ Proof.
 Qed.
 
 Lemma sorted_cat {A: eqType} (l1 l2: seq A) (R: rel A):
-  sorted R l1 → sorted R l2 → 
+  sorted R l1 → sorted R l2 →
   (∀ n1 n2, n1 \in l1 → n2 \in l2 → R n1 n2) →
   sorted R (l1 ++ l2).
 Proof.
@@ -44,7 +44,7 @@ Proof.
     remember (b0 :: l0) as l eqn:Hl0. clear l0 Hl0.
     tbind (λ x, sval x \in a :: l).
     { intros (?&?) => //. }
-    intros (pv&Hin) _. 
+    intros (pv&Hin) _.
     tbind (λ x, lower (sval x) = [ seq n <- (a :: l) | ltn n pv] ∧
                 middle (sval x) = [ seq n <- (a :: l) | n == pv] ∧
                 upper (sval x) = [ seq n <- (a :: l) | ltn pv n]).
@@ -57,11 +57,11 @@ Proof.
     intros (spl&Hin'). intros (Hl&Hm&Hu). rewrite //= in Hl, Hm, Hu.
     tbind (λ x, (sorted leq (fst x) && perm_eq (lower spl) (fst x)) ∧
                 (sorted leq (snd x) && perm_eq (upper spl) (snd x))).
-    { rewrite //=. 
+    { rewrite //=.
       eapply (mspec_rpar2 _ _ (λ x, (sorted leq x && perm_eq (lower spl) x))
                               (λ x, (sorted leq x && perm_eq (upper spl) x))).
       - eapply (IH (size (lower spl))); auto.
-        rewrite Heq. 
+        rewrite Heq.
         move /andP in Hin'.
         destruct Hin' as (pf1&pf2); move /implyP in pf2.
         rewrite -(perm_eq_size pf1) //= ?size_cat -?plusE //;
@@ -69,7 +69,7 @@ Proof.
             ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=).
         rewrite //= in Hlt. omega.
       - eapply (IH (size (upper spl))); auto.
-        rewrite Heq. 
+        rewrite Heq.
         move /andP in Hin'.
         destruct Hin' as (pf1&pf2); move /implyP in pf2.
         rewrite -(perm_eq_size pf1) //= ?size_cat -?plusE //;
@@ -80,29 +80,29 @@ Proof.
     intros (ll&lu) (Hll&Hlu).
     move /andP in Hll. destruct Hll as (Hllsorted&Hllperm).
     move /andP in Hlu. destruct Hlu as (Hlusorted&Hluperm).
-    apply mspec_mret => //=. apply /andP; split. 
+    apply mspec_mret => //=. apply /andP; split.
     * apply sorted_cat; [| apply sorted_cat |]; auto.
       ** rewrite Hm. clear. induction l0 => //=.
          case: ifP; auto.
-         move /eqP => ->. rewrite //=. 
+         move /eqP => ->. rewrite //=.
          clear IHl0.
-         induction l0 => //=. 
+         induction l0 => //=.
          case: ifP; auto. move /eqP => -> //=. rewrite leqnn IHl0 //.
-      ** rewrite Hm => a' b'; rewrite mem_filter. 
+      ** rewrite Hm => a' b'; rewrite mem_filter.
          move /andP => [Heqpv Hin1 Hin2]. move /eqP in Heqpv.
          move: Hin2.
          rewrite -(perm_eq_mem Hluperm) Hu mem_filter.
-         move /andP => [Hgtpv ?]. move /ltP in Hgtpv. 
-         rewrite Heqpv. apply /leP. omega. 
-      ** intros a' b'. rewrite -(perm_eq_mem Hllperm) Hl mem_filter. 
-         move /andP => [Hgtpv ?]. move /ltP in Hgtpv. 
-         rewrite mem_cat. move /orP => []. 
-         *** rewrite Hm; rewrite mem_filter. 
+         move /andP => [Hgtpv ?]. move /ltP in Hgtpv.
+         rewrite Heqpv. apply /leP. omega.
+      ** intros a' b'. rewrite -(perm_eq_mem Hllperm) Hl mem_filter.
+         move /andP => [Hgtpv ?]. move /ltP in Hgtpv.
+         rewrite mem_cat. move /orP => [].
+         *** rewrite Hm; rewrite mem_filter.
              move /andP => [Heqpv ?]. move /eqP in Heqpv.
-             rewrite Heqpv. apply /leP. omega. 
+             rewrite Heqpv. apply /leP. omega.
          *** rewrite -(perm_eq_mem Hluperm) Hu mem_filter.
-             move /andP => [Hltpv ?]. move /ltP in Hltpv. 
-             apply /leP. omega. 
+             move /andP => [Hltpv ?]. move /ltP in Hltpv.
+             apply /leP. omega.
     * move /andP in Hin'. destruct Hin' as (Hperm&_).
       rewrite perm_eq_sym in Hperm.
       rewrite (perm_eq_trans Hperm) //.

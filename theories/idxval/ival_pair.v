@@ -17,8 +17,8 @@ Record idist_couplingP {A1 A2} (Is1: ivdist A1) (Is2: ivdist A2) (P: A1 → A2 �
      }.
 From mathcomp Require Import bigop.
 
-Lemma ic_coupling_to_id {A1 A2} (I1: ivdist A1) (I2: ivdist A2) P: 
-  ival_couplingP I1 I2 P → 
+Lemma ic_coupling_to_id {A1 A2} (I1: ivdist A1) (I2: ivdist A2) P:
+  ival_couplingP I1 I2 P →
   idist_couplingP I1 I2 P.
 Proof.
   intros [Ic Hproj1 Hproj2].
@@ -30,8 +30,8 @@ Proof.
     { intros ic. rewrite //=. exists (existT (sval ic) tt).
       { abstract (rewrite Rmult_1_r => //=; destruct ic => //=). }
     }
-    - apply val_nonneg. 
-    - apply val_nonneg. 
+    - apply val_nonneg.
+    - apply val_nonneg.
     - intros (n1&?) (n2&?) Heq. apply sval_inj_pred => //=.
       inversion Heq. auto.
     - intros ((n1&[])&Hpf) => //=.
@@ -59,12 +59,12 @@ Lemma ival_coupling_nondep_suffice {A1 A2} Is1 Is2 (P: A1 → A2 → Prop):
 Proof.
   intros [Ic Isupp Hp1 Hp2].
   exists (ival_equip Ic _ Isupp).
-  - setoid_rewrite Hp1.   
-    setoid_rewrite (ival_bind_P Ic). 
+  - setoid_rewrite Hp1.
+    setoid_rewrite (ival_bind_P Ic).
     eapply ival_bind_congr; first reflexivity.
     intros (a1&a2) => //=; reflexivity.
   - setoid_rewrite Hp2.
-    setoid_rewrite (ival_bind_P Ic). 
+    setoid_rewrite (ival_bind_P Ic).
     eapply ival_bind_congr; first reflexivity.
     intros (a1&a2) => //=; reflexivity.
 Qed.
@@ -72,7 +72,7 @@ Qed.
 Lemma ival_coupling_refl {A} (I: ival A) : ival_couplingP I I (λ x y, x = y).
 Proof.
   unshelve (eexists).
-  { refine (x ← I; mret (exist _ (x, x) _)). 
+  { refine (x ← I; mret (exist _ (x, x) _)).
     done. }
   - setoid_rewrite ival_bind_mret_mret. setoid_rewrite ival_right_id. reflexivity.
   - setoid_rewrite ival_bind_mret_mret. setoid_rewrite ival_right_id. reflexivity.
@@ -90,7 +90,7 @@ Proof.
   * setoid_rewrite Hp1. setoid_rewrite ival_assoc; apply ival_bind_congr; first by reflexivity.
     intros ((x&y)&Hpf). setoid_rewrite ival_left_id => //=. reflexivity.
 Qed.
-    
+
 Lemma ival_coupling_eq {A} (Is1 Is2: ival A)
       (Ic: ival_couplingP Is1 Is2 (λ x y, x = y)): eq_ival Is1 Is2.
 Proof.
@@ -155,8 +155,8 @@ Lemma ival_coupling_plus' {A1 A2} p
   ival_couplingP (iplus (iscale p I1) (iscale (1 - p) I1'))
     (iplus (iscale p I2) (iscale (1 - p) I2')) P.
 Proof.
-  intros [Ic Hp1 Hp2] [Ic' Hp1' Hp2']. 
-  exists (ival.iplus (ival.iscale p Ic) (ival.iscale (1 - p) Ic')). 
+  intros [Ic Hp1 Hp2] [Ic' Hp1' Hp2'].
+  exists (ival.iplus (ival.iscale p Ic) (ival.iscale (1 - p) Ic')).
   - setoid_rewrite ival.ival_plus_bind.
     setoid_rewrite ival.ival_scale_bind.
     setoid_rewrite Hp1.
@@ -223,18 +223,18 @@ Proof.
         split; [ by
         (abstract (rewrite //=; try destruct (h1 _); try destruct (h2 _); rewrite //=;
                    destruct Rgt_dec => //=)) |];
-        split; [ by 
+        split; [ by
         (abstract (rewrite //=; try destruct (h1 _); try destruct (h2 _); rewrite //=;
                    destruct Rgt_dec => //=)) |];
         abstract (
-        rewrite //=; 
+        rewrite //=;
         exists ((exist _ (existT (sval xy) tt) (Hgt_coerce xy)));
         exists ((exist _ (existT (sval xy) tt) (Hgt_coerce xy))); done)
         ).
-  - setoid_rewrite ival_bind_mret_mret. 
+  - setoid_rewrite ival_bind_mret_mret.
     symmetry.
     unshelve (eexists).
-    { 
+    {
       simpl. intros ((ic&?)&Hgt).
       simpl in h1.
       rewrite Rmult_1_r in Hgt.
@@ -248,7 +248,7 @@ Proof.
       destruct (h1' ix) as ((i1&?)&Hgt).
       simpl in Hgt.
       unshelve (eexists).
-      { unshelve (refine (existT _ tt)). 
+      { unshelve (refine (existT _ tt)).
         exists i1. rewrite Rmult_1_r in Hgt. done.
       }
       rewrite //=.
@@ -273,10 +273,10 @@ Proof.
     * rewrite //=. intros (((a&Hgt)&[])&?). destruct Hp1 as (Hinv1&Hinv1'&?&Hval).
       rewrite //=. destruct (Rmult_1_r _). rewrite /eq_rect_r //=.
       rewrite Hval //= !Rmult_1_r //.
-  -  setoid_rewrite ival_bind_mret_mret. 
+  -  setoid_rewrite ival_bind_mret_mret.
     symmetry.
     unshelve (eexists).
-    { 
+    {
       simpl. intros ((ic&?)&Hgt).
       simpl in h1.
       rewrite Rmult_1_r in Hgt.
@@ -290,7 +290,7 @@ Proof.
       destruct (h2' ix) as ((i1&?)&Hgt).
       simpl in Hgt.
       unshelve (eexists).
-      { unshelve (refine (existT _ tt)). 
+      { unshelve (refine (existT _ tt)).
         exists i1. rewrite Rmult_1_r in Hgt. done.
       }
       rewrite //=.
@@ -322,11 +322,11 @@ Lemma ival_coupling_equip {X} I1 (P: X → Prop) Hpf:
 Proof.
   unshelve eexists.
   refine ((x ← ival_equip I1 P Hpf; mret (exist _ (sval x, x) _))); auto.
-  - setoid_rewrite ival_bind_mret_mret. 
+  - setoid_rewrite ival_bind_mret_mret.
     rewrite /sval.
     etransitivity; first (symmetry; apply ival_right_id).
     apply ival_bind_P.
-  - setoid_rewrite ival_bind_mret_mret. 
+  - setoid_rewrite ival_bind_mret_mret.
     rewrite /sval.
     etransitivity; first (symmetry; apply ival_right_id).
     eapply ival_bind_congr; first reflexivity.
@@ -362,20 +362,20 @@ Proof.
 Qed.
 
 Lemma ival_coupling_support {X Y} I1 I2 (P: X → Y → Prop)
-  (Ic: ival_couplingP I1 I2 P) : 
+  (Ic: ival_couplingP I1 I2 P) :
   ival_couplingP I1 I2 (λ x y, ∃ Hpf: P x y,  In_isupport x I1 ∧ In_isupport y I2 ∧
                         In_isupport (exist _ (x, y) Hpf) Ic).
 Proof.
   destruct Ic as [Ic Hp1 Hp2].
   cut (ival_couplingP I1 I2 (λ x y, ∃ (Hpf: P x y), In_isupport (exist _ (x, y) Hpf) Ic)).
-  { intros. eapply ival_coupling_conseq; last eauto. 
-    intros x y (Hpf&Hin). 
+  { intros. eapply ival_coupling_conseq; last eauto.
+    intros x y (Hpf&Hin).
     destruct Hin as (ic&Hind&Hval).
     exists Hpf.
     repeat split; auto.
       - rewrite //=. symmetry in Hp1.
         destruct Hp1 as (h1&?&?&?&Hind1&Hval1).
-        unshelve (eexists). 
+        unshelve (eexists).
         { refine (sval (h1 _ )).
           exists (existT ic tt). rewrite //= Rmult_1_r. destruct Rgt_dec => //=.  }
         split; rewrite //=.
@@ -400,14 +400,14 @@ Proof.
     eapply ival_coupling_eq.
     eapply ival_coupling_bind; first eapply ival_coupling_equip.
     intros (xy&HP) ((xy'&HP')&Hin).
-    rewrite //=. 
+    rewrite //=.
     inversion 1; subst; auto. apply ival_coupling_refl.
   - setoid_rewrite Hp2.
     setoid_rewrite ival_bind_mret_mret.
     eapply ival_coupling_eq.
     eapply ival_coupling_bind; first eapply ival_coupling_equip.
     intros (xy&HP) ((xy'&HP')&Hin).
-    rewrite //=. 
+    rewrite //=.
     inversion 1; subst; auto. apply ival_coupling_refl.
 Qed.
 
@@ -417,16 +417,16 @@ Lemma ival_coupling_support_wit {X Y} (I1: ivdist X) (I2: ivdist Y) (P: X → Y 
            In_isupport (fst xy) I1 ∧ In_isupport (snd xy) I2 ∧ In_isupport (exist _ xy Hpf) Ic}.
 Proof.
   specialize (ival_coupling_support I1 I2 P Ic) => Ic'.
-  specialize (ival_idist_couplingP I1 I2 _ Ic') => Ic''. 
+  specialize (ival_idist_couplingP I1 I2 _ Ic') => Ic''.
   destruct Ic'' as [Ic'' ? ?].
   destruct (ivd_support_idx Ic'') as (i&?).
   destruct (ind Ic'' i) as ((x&y)&?); eauto.
 Qed.
 
 Lemma ival_coupling_proper {X Y} I1 I1' I2 I2' (P: X → Y → Prop) :
-  eq_ival I1 I1' → 
-  eq_ival I2 I2' → 
-  ival_couplingP I1 I2 P → 
+  eq_ival I1 I1' →
+  eq_ival I2 I2' →
+  ival_couplingP I1 I2 P →
   ival_couplingP I1' I2' P.
 Proof.
   intros Heq1 Heq2 [Ic Hp1 Hp2].

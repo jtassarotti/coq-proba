@@ -120,7 +120,7 @@ Section Ex_ival_properties.
     rewrite /ex_Ex_ival.
     intros. eapply ex_series_ext; last eassumption.
     intros n. apply countable_sum_ext => ?. rewrite ?Rabs_mult.
-    f_equal. by rewrite Rabs_Rabsolu. 
+    f_equal. by rewrite Rabs_Rabsolu.
   Qed.
 
   Lemma ex_Ex_ival_from_Rabs {X} f (I: ival X):
@@ -130,13 +130,13 @@ Section Ex_ival_properties.
     rewrite /ex_Ex_ival.
     intros. eapply ex_series_ext; last eassumption.
     intros n. apply countable_sum_ext => ?. rewrite ?Rabs_mult.
-    f_equal. by rewrite Rabs_Rabsolu. 
+    f_equal. by rewrite Rabs_Rabsolu.
   Qed.
 
   Lemma Ex_ival_iscale {X} f p (I: ival X) :
     Ex_ival f (iscale p I) =  Rabs p * (Ex_ival f I).
   Proof.
-    rewrite /Ex_ival. rewrite //=. 
+    rewrite /Ex_ival. rewrite //=.
     setoid_rewrite Rmult_comm.
     setoid_rewrite Rmult_assoc.
     rewrite SeriesC_scal_l => //=.
@@ -211,7 +211,7 @@ Section Ex_ival_properties.
     rewrite bigop_cond_non0.
     apply eq_bigl => //=.
     intros i. destruct Rgt_dec => //=.
-    destruct (val_nonneg I i) as [Hgt|Heq] => //=; try nra. 
+    destruct (val_nonneg I i) as [Hgt|Heq] => //=; try nra.
     rewrite Heq Rmult_0_r eq_refl //=.
   Qed.
    *)
@@ -227,7 +227,7 @@ Section Ex_ival_properties.
     intros. eapply Series_le'; eauto using ex_Ex_ival_ex_series.
     intros n. rewrite /countable_sum; destruct pickle_inv => //=; try nra.
     apply Rmult_le_compat_r.
-    * apply Rge_le, val_nonneg. 
+    * apply Rge_le, val_nonneg.
     * eauto.
   Qed.
 
@@ -283,13 +283,13 @@ Section Ex_ival_properties.
     * exists z. eapply is_series_ext; last eassumption.
       intros n. eapply countable_sum_ext.
       intros ii. f_equal. destruct (val_nonneg I ii) as [?|Heq0].
-      ** rewrite Hext //=. 
+      ** rewrite Hext //=.
       ** rewrite Heq0. nra.
     * eapply is_series_unique in His. rewrite -His.
       eapply is_series_ext; last eassumption.
       intros n. eapply countable_sum_ext.
       intros ii. destruct (val_nonneg I ii) as [?|Heq0].
-      ** rewrite Hext //=. 
+      ** rewrite Hext //=.
       ** rewrite Heq0. nra.
   Qed.
 
@@ -378,7 +378,7 @@ Section Ex_ival_properties.
     rewrite (is_Ex_ival_unique _ _ _ His).
     eapply is_Ex_ival_proper'; eauto.
   Qed.
-    
+
   Lemma Ex_ival_proper {X} f (I1 I2: ival X):
     eq_ival I1 I2 →
     ex_Ex_ival f I1 →
@@ -428,7 +428,7 @@ Section Ex_ival_properties.
   Proof.
     intros His.
     rewrite -(is_Ex_ival_unique _ _ _ His).
-    rewrite -Ex_ival_scal_l. apply Ex_ival_correct. 
+    rewrite -Ex_ival_scal_l. apply Ex_ival_correct.
     apply ex_Ex_ival_scal_l.
     eapply is_Ex_ival_ex; eauto.
   Qed.
@@ -462,13 +462,13 @@ Section Ex_ival_properties.
   Proof.
     intros His.
     rewrite -(is_Ex_ival_unique _ _ _ His).
-    rewrite -Ex_ival_negate. apply Ex_ival_correct. 
+    rewrite -Ex_ival_negate. apply Ex_ival_correct.
     apply ex_Ex_ival_negate, His.
   Qed.
 
   Lemma is_Ex_ival_bind_bounded {X Y} f (g: X → ival Y) (I: ival X) b:
     (∀ i, val I i > 0 → ∃ v, is_Ex_ival (λ x, Rabs (f x)) (g (ind I i)) v ∧ v <= b) →
-    ex_series (countable_sum (val I)) → 
+    ex_series (countable_sum (val I)) →
     ∃ v, is_series (countable_sum (λ i : idx I, Ex_ival f (g (ind I i)) * val I i)) v ∧
     is_Ex_ival f (mbind g I) v.
   Proof.
@@ -482,9 +482,9 @@ Section Ex_ival_properties.
       intros n. eapply countable_sum_ext => //= ?. rewrite Rabs_mult.
       f_equal. symmetry; apply Rabs_right; last apply val_nonneg. }
     feed pose proof (ival_dist.prod_pmf_sum g f I) as His_bind.
-    { eapply (ival_dist.aprod_double_summable g f v b); eauto. } 
+    { eapply (ival_dist.aprod_double_summable g f v b); eauto. }
     feed pose proof (ival_dist.ex_series_pmf_row g f I) as Hex_bind; eauto.
-    { eapply (ival_dist.aprod_double_summable g f v b); eauto. } 
+    { eapply (ival_dist.aprod_double_summable g f v b); eauto. }
     destruct Hex_bind as (?&His).
     eexists; split; eauto.
     rewrite /is_Ex_ival//=; split; eauto.
@@ -509,11 +509,11 @@ Section Ex_ival_properties.
     intros; eapply countable_sum_ext => ?.
     rewrite /ival_dist.prod_pmf //=. nra.
   Qed.
-    
+
   Lemma Ex_ival_bind_bounded {X Y} f (g: X → ival Y) (I: ival X) b:
     (∀ i, val I i > 0 → ∃ v, is_Ex_ival (λ x, Rabs (f x)) (g (ind I i)) v ∧ v <= b) →
-    ex_series (countable_sum (val I)) → 
-    Ex_ival f (mbind g I) = 
+    ex_series (countable_sum (val I)) →
+    Ex_ival f (mbind g I) =
     Series (countable_sum (λ i : idx I, Ex_ival f (g (ind I i)) * val I i)).
   Proof.
     intros Hgt Hex. apply is_Ex_ival_unique.
@@ -522,7 +522,7 @@ Section Ex_ival_properties.
   Qed.
 
   Lemma is_Ex_ival_bind_irrel {X Y} f (I: ival X) (m: ival Y) v:
-    is_series (countable_sum (val m)) 1 → 
+    is_series (countable_sum (val m)) 1 →
     is_Ex_ival f I v →
     is_Ex_ival f (mbind (λ x, I) m) v.
   Proof.
@@ -601,7 +601,7 @@ Section Ex_ival_properties.
     { eapply ival_dist.prod_pmf_sum_inv_ds; eauto. }
     specialize (Hex_bind i).
     eapply (ex_seriesC_scal_r _ (/(val I i))) in Hex_bind.
-    eapply ex_seriesC_ext; last eassumption. 
+    eapply ex_seriesC_ext; last eassumption.
     intros n => //=. rewrite ?Rabs_mult.
     rewrite (Rabs_right (val I i)); last apply val_nonneg.
     field. nra.
@@ -616,10 +616,10 @@ Section Ex_ival_properties.
     eapply (is_Ex_ival_proper f (x ← iplus (mret true) (mret false);
                                  if x then I1 else I2)).
     { setoid_rewrite ival_plus_bind.  apply iplus_proper; rewrite ival_left_id; reflexivity. }
-    feed pose proof (ex_Ex_ival_to_Rabs f I1) as Habs. 
+    feed pose proof (ex_Ex_ival_to_Rabs f I1) as Habs.
     { eapply is_Ex_ival_ex; eauto. }
     apply ex_Ex_ival_is in Habs as (v1'&?).
-    
+
     feed pose proof (ex_Ex_ival_to_Rabs f I2) as Habs.
     { eapply is_Ex_ival_ex; eauto. }
     apply ex_Ex_ival_is in Habs as (v2'&?).
@@ -692,7 +692,7 @@ Section Ex_ival_properties.
     ex_Ex_ival f2 (mbind h2 I) →
     Ex_ival f1 (mbind h1 I) ≤ Ex_ival f2 (mbind h2 I).
   Proof.
-    intros Hslice Hex1 Hex2. rewrite ?Ex_ival_bind_alt //=. 
+    intros Hslice Hex1 Hex2. rewrite ?Ex_ival_bind_alt //=.
     eapply SeriesC_le'.
     - intros i.
       destruct (val_nonneg I i) as [Hgt|Heq0]; last first.
@@ -762,9 +762,9 @@ Section Ex_ival_properties.
     Ex_ival f1 (mbind h1 I) = Ex_ival f2 (mbind h2 I).
   Proof.
     intros Hcontinue; apply Rle_antisym; apply Ex_ival_bind_le.
-    - intros a (?&?&?). 
+    - intros a (?&?&?).
       right; apply Hcontinue; eauto.
-    - intros a (?&?&?). 
+    - intros a (?&?&?).
       right; symmetry; apply Hcontinue; eauto.
   Qed.
    *)
@@ -791,7 +791,7 @@ Section Ex_ival_properties.
   Proof.
     intros. eapply is_Ex_ival_ex. eapply is_Ex_ival_ivdplus; eauto.
   Qed.
-    
+
   Lemma Ex_ival_ivdplus {X} f p Hpf (I1 I2: ivdist X) :
     ex_Ex_ival f I1 →
     ex_Ex_ival f I2 →
@@ -832,7 +832,7 @@ Section Ex_ival_properties.
     intros n => //=. rewrite Rabs_mult; f_equal. rewrite Rabs_right //=.
     apply val_nonneg.
   Qed.
-  
+
   Lemma ex_Ex_ival_bind_post_inv {X Y} f (I: ival X) (h: X → ival Y):
     (∀ x, f x >= 0) →
     (∀ x, val I x > 0 → ex_Ex_ival f (h (ind I x))) →
@@ -898,7 +898,7 @@ Section Ex_ival_properties.
     ex_Ex_ival g (x ← I; mret (f x)).
   Proof.
     split.
-    - rewrite /ex_Ex_ival //=. 
+    - rewrite /ex_Ex_ival //=.
       intros Hex. destruct Hex as (v&His).
       setoid_rewrite Rmult_1_r.
       unshelve (edestruct (@rearrange.countable_series_rearrange_covering_match_fun) as (His1&His2));
@@ -912,7 +912,7 @@ Section Ex_ival_properties.
       apply ex_Ex_ival_bind_post in Hex.
       setoid_rewrite Ex_ival_mret in Hex. eauto.
   Qed.
-               
+
 End Ex_ival_properties.
 
 Definition is_Ex_ivd {X} (f: X → R) (I: ivdist X) v := is_Ex_ival f I v.
@@ -1010,13 +1010,13 @@ Section Ex_ivd_properties.
 
   Lemma is_Ex_ivd_scale_const {X} f (I: ivdist X) k v:
     is_Ex_ivd f I v →
-    is_Ex_ivd (λ x, k * (f x)) I (k * v). 
+    is_Ex_ivd (λ x, k * (f x)) I (k * v).
   Proof.
-    rewrite /is_Ex_ivd/is_Ex_ival/ex_Ex_ival//=. 
+    rewrite /is_Ex_ivd/is_Ex_ival/ex_Ex_ival//=.
     intros (Hex&His).
     split.
     - setoid_rewrite Rmult_assoc.
-      setoid_rewrite Rabs_mult. 
+      setoid_rewrite Rabs_mult.
       apply ex_seriesC_scal_l; auto.
     - setoid_rewrite Rmult_assoc.
       apply: is_seriesC_scal_l; auto.
@@ -1066,11 +1066,11 @@ Section Ex_ivd_properties.
     bounded_fun f →
     ex_Ex_ival f I.
   Proof.
-    intros (c&HRabs). 
+    intros (c&HRabs).
     rewrite /ex_Ex_ival. eapply (ex_seriesC_le _ _ (λ i, Rabs c * val I i)).
     * intros n. split; first apply Rabs_pos.
       rewrite Rabs_mult Rabs_val. apply Rmult_le_compat_r.
-      ** apply Rge_le, val_nonneg. 
+      ** apply Rge_le, val_nonneg.
       ** transitivity c; eauto. apply Rabs_case; nra.
     * specialize (ex_Ex_ivd_const I c). rewrite /ex_Ex_ivd/ex_Ex_ival//=.
       setoid_rewrite Rabs_mult. setoid_rewrite Rabs_val.
@@ -1081,14 +1081,14 @@ Section Ex_ivd_properties.
     bounded_fun_on f (λ i, In_isupport i I) →
     ex_Ex_ival f I.
   Proof.
-    intros (c&HRabs). 
+    intros (c&HRabs).
     rewrite /ex_Ex_ival. eapply (ex_seriesC_le _ _ (λ i, Rabs c * val I i)).
     * intros n. split; first apply Rabs_pos.
       rewrite Rabs_mult Rabs_val.
       destruct (val_nonneg I n) as [|Heq]; last first.
       { rewrite ?Heq. nra. }
       apply Rmult_le_compat_r.
-      ** apply Rge_le, val_nonneg. 
+      ** apply Rge_le, val_nonneg.
       ** transitivity c; eauto.
          *** eapply HRabs. eexists; eauto.
          *** apply Rabs_case; nra.
@@ -1097,41 +1097,41 @@ Section Ex_ivd_properties.
       done.
   Qed.
 
-  Lemma Ex_ivd_bounded_below {X} f (I: ivdist X) c: 
+  Lemma Ex_ivd_bounded_below {X} f (I: ivdist X) c:
     (∀ x, c <= f x) →
     ex_Ex_ival f I →
     c <= Ex_ival f I.
   Proof.
-    intros. rewrite /Ex_ival. 
+    intros. rewrite /Ex_ival.
     rewrite -(Ex_ivd_const I c).
     rewrite /Ex_ivd/Ex_ival.
     apply SeriesC_le'.
     * intros; apply Rmult_le_compat_r.
-      ** apply Rge_le, val_nonneg. 
+      ** apply Rge_le, val_nonneg.
       ** eauto.
     * specialize (ex_Ex_ivd_const I c). rewrite /ex_Ex_ivd/ex_Ex_ival//=.
       apply ex_seriesC_Rabs.
     * eapply ex_seriesC_Rabs; eauto.
   Qed.
 
-  Lemma Ex_ivd_bounded_above {X} f (I: ivdist X) c: 
+  Lemma Ex_ivd_bounded_above {X} f (I: ivdist X) c:
     (∀ x, f x <= c) →
     ex_Ex_ival f I →
     Ex_ival f I <= c.
   Proof.
-    intros. rewrite /Ex_ival. 
+    intros. rewrite /Ex_ival.
     rewrite -(Ex_ivd_const I c).
     rewrite /Ex_ivd/Ex_ival.
     apply SeriesC_le'.
     * intros; apply Rmult_le_compat_r.
-      ** apply Rge_le, val_nonneg. 
+      ** apply Rge_le, val_nonneg.
       ** eauto.
     * eapply ex_seriesC_Rabs; eauto.
     * specialize (ex_Ex_ivd_const I c). rewrite /ex_Ex_ivd/ex_Ex_ival//=.
       apply ex_seriesC_Rabs.
   Qed.
 
-  Lemma Ex_ivd_bounded_fun {X} f (I: ivdist X) c: 
+  Lemma Ex_ivd_bounded_fun {X} f (I: ivdist X) c:
     (∀ x, Rabs (f x) <= c) →
     Rabs (Ex_ival f I) <= c.
   Proof.
@@ -1140,19 +1140,19 @@ Section Ex_ivd_properties.
       apply Ex_ivd_bounded_above; eauto.
       { intros x. transitivity (Rabs (f x)); eauto. apply Rabs_case; nra. }
       apply ex_Ex_ivd_bounded_fun; eexists; eauto.
-    - intros. 
+    - intros.
       apply Ropp_le_cancel. rewrite Ropp_involutive.
       apply Ex_ivd_bounded_below; eauto.
       { intros x. generalize (Habs x). apply Rabs_case; nra. }
       apply ex_Ex_ivd_bounded_fun; eexists; eauto.
   Qed.
 
-  Lemma Ex_ivd_bounded_supp_below {X} f (I: ivdist X) c: 
+  Lemma Ex_ivd_bounded_supp_below {X} f (I: ivdist X) c:
     (∀ x, In_isupport x I → c <= f x) →
     ex_Ex_ival f I →
     c <= Ex_ival f I.
   Proof.
-    intros Hle Hex. rewrite /Ex_ival. 
+    intros Hle Hex. rewrite /Ex_ival.
     rewrite -(Ex_ivd_const I c).
     rewrite /Ex_ivd/Ex_ival.
     apply SeriesC_le'.
@@ -1160,19 +1160,19 @@ Section Ex_ivd_properties.
       destruct (val_nonneg I n) as [|Heq]; last first.
       { rewrite ?Heq. nra. }
       apply Rmult_le_compat_r.
-      ** apply Rge_le, val_nonneg. 
+      ** apply Rge_le, val_nonneg.
       ** eapply Hle; eauto. eexists; eauto.
     * specialize (ex_Ex_ivd_const I c). rewrite /ex_Ex_ivd/ex_Ex_ival//=.
       apply ex_seriesC_Rabs.
     * eapply ex_seriesC_Rabs; eauto.
   Qed.
 
-  Lemma Ex_ivd_bounded_supp_above {X} f (I: ivdist X) c: 
+  Lemma Ex_ivd_bounded_supp_above {X} f (I: ivdist X) c:
     (∀ x, In_isupport x I → f x <= c) →
     ex_Ex_ival f I →
     Ex_ival f I <= c.
   Proof.
-    intros Hle Hex. rewrite /Ex_ival. 
+    intros Hle Hex. rewrite /Ex_ival.
     rewrite -(Ex_ivd_const I c).
     rewrite /Ex_ivd/Ex_ival.
     apply SeriesC_le'.
@@ -1180,14 +1180,14 @@ Section Ex_ivd_properties.
       destruct (val_nonneg I n) as [|Heq]; last first.
       { rewrite ?Heq. nra. }
       apply Rmult_le_compat_r.
-      ** apply Rge_le, val_nonneg. 
+      ** apply Rge_le, val_nonneg.
       ** eapply Hle; eauto. eexists; eauto.
     * eapply ex_seriesC_Rabs; eauto.
     * specialize (ex_Ex_ivd_const I c). rewrite /ex_Ex_ivd/ex_Ex_ival//=.
       apply ex_seriesC_Rabs.
   Qed.
 
-  Lemma Ex_ivd_bounded_supp_fun {X} f (I: ivdist X) c: 
+  Lemma Ex_ivd_bounded_supp_fun {X} f (I: ivdist X) c:
     (∀ x, In_isupport x I → Rabs (f x) <= c) →
     Rabs (Ex_ival f I) <= c.
   Proof.
@@ -1196,7 +1196,7 @@ Section Ex_ivd_properties.
       apply Ex_ivd_bounded_supp_above; eauto.
       { intros x. transitivity (Rabs (f x)); eauto. apply Rabs_case; nra. }
       apply ex_Ex_ivd_bounded_supp_fun; eexists; eauto.
-    - intros. 
+    - intros.
       apply Ropp_le_cancel. rewrite Ropp_involutive.
       apply Ex_ivd_bounded_supp_below; eauto.
       { intros x Hin. generalize (Habs x Hin). apply Rabs_case; intros; eauto; try nra. }
@@ -1204,7 +1204,7 @@ Section Ex_ivd_properties.
   Qed.
 
 End Ex_ivd_properties.
-  
+
 
 Definition Ex_pival {X} (f : X → R) (Is: pival X) : R → Prop :=
   λ r, ∃ I, Is I ∧ is_Ex_ival f I r.
@@ -1289,7 +1289,7 @@ Proof.
   destruct (Hle2 _ Hin) as (I'&Hin'&Heq).
   eapply ex_Ex_ival_proper'; last first.
   { eapply Hex; eauto. }
-  * by symmetry. 
+  * by symmetry.
   * eauto.
 Qed.
 
@@ -1302,7 +1302,7 @@ Proof.
   intros I Hin; eauto.
   generalize (Hex _ Hin) => Hex'.
   apply ex_Ex_ival_is in Hex' as (v&His).
-  eapply is_Ex_ival_ex. 
+  eapply is_Ex_ival_ex.
   eapply is_Ex_ival_proper_fun_support; last first.
   { eapply His; eauto. }
   intros. eapply Heq_fun.
@@ -1437,7 +1437,7 @@ Proof.
   rewrite /Ex_min in Hfin Hall.
   destruct (Glb_Rbar_correct (Ex_pidist f Is)) as (Hlb&Hglb).
   feed pose proof (Hglb (Rbar_plus (Ex_min f Is) eps)) as Hglb_alt.
-  - intros r (I&Hin&His). 
+  - intros r (I&Hin&His).
     apply Rbar_not_lt_le.
     intros Hlt. eapply Hall; split_and!; eauto.
     * eapply is_Ex_ival_ex; eauto.
@@ -1445,7 +1445,7 @@ Proof.
       { rewrite -Hfin //=. }
       apply Ex_min_spec1. apply Ex_pidist_spec1; eauto.
       eapply is_Ex_ival_ex; eauto.
-    * rewrite /Ex_min -Hfin //= in Hlt. 
+    * rewrite /Ex_min -Hfin //= in Hlt.
       rewrite (is_Ex_ival_unique _ _ _ His). nra.
   - rewrite /Ex_min -Hfin //= in Hglb_alt.
     nra.
@@ -1459,7 +1459,7 @@ Proof.
   destruct Is as [[Is Hne] Hsum].
   destruct Is as [| I Is].
   - rewrite //=. destruct Hne as (?&[]).
-  - rewrite /Ex_min/Ex_pidist//=. 
+  - rewrite /Ex_min/Ex_pidist//=.
     match goal with
     | [ |- context [ fold_left Rmin ?l ?x ] ] =>
       edestruct (fold_left_Rmin_witness1 l x) as [(r&Hin&<-)|(Hmin&Heq)]
@@ -1508,7 +1508,7 @@ Proof.
   - intros r Hlb.
     destruct (Glb_Rbar_correct (λ r, ∃ a, Ex_min f (Iss a) = r)) as (Hlb'&Hglb).
     apply Hglb.
-    intros r' (a'&<-). 
+    intros r' (a'&<-).
     apply Ex_min_spec2.
     intros r'' (I'&Hin'&Heq).
     eapply Hlb. exists I'; split; auto.
@@ -1692,14 +1692,14 @@ Proof.
         rewrite /mret/ival_ret. apply eq_ival_quasi_refl.
     }
     assert (eq_ival I (mbind (λ x, mret (h x)) I')) as ->.
-    { 
+    {
       rewrite Heq'.
       specialize (ival_bind_mret_mret (idxOf I') (ind I') h). intros Heq''.
       rewrite /monad.mret/monad.mbind in Heq''.  rewrite -Heq''.
       eapply ival_bind_congr; last reflexivity.
       symmetry. eapply eq_ival_idxOf.
     }
-    rewrite -ex_Ex_ival_fmap. 
+    rewrite -ex_Ex_ival_fmap.
     eapply Hex. eauto.
   - intros Hex I Hin.
     apply ex_Ex_ival_fmap.
@@ -1847,7 +1847,7 @@ Proof.
   intros ?? Heq ?? Heq'.
   erewrite Ex_min_eq_ext; last eauto.
     by apply Ex_min_eq_pidist.
-Qed. 
+Qed.
 
 Lemma Ex_min_fun_const c (Is: pidist X):
   Ex_min (λ _ : X, c) Is = c.
@@ -1900,7 +1900,7 @@ Proof.
   destruct Hin as (I1&I2&Hin1&Hin2&->).
   apply ex_Ex_ival_ivdplus; eauto.
 Qed.
-    
+
 (* TODO: move *)
 Lemma Rbar_mult_to_mult_pos c (k: R) Hgt:
   Rbar_mult c k = Rbar_mult_pos c {| pos := k; cond_pos := Hgt |}.
@@ -1950,7 +1950,7 @@ Proof.
     rewrite (Rbar_mult_to_mult_pos _ k Hgt).
     rewrite (Rbar_div_mult_pos_inv).
     apply Ex_min_spec1. exists I; split; auto.
-  - intros b His. 
+  - intros b His.
     apply Rgt_lt in Hgt.
     rewrite Rbar_mult_comm.
     rewrite (Rbar_mult_to_mult_pos _ k Hgt).
@@ -1998,7 +1998,7 @@ Proof.
   rewrite Rbar_plus_comm. rewrite -Ex_min_plus_const_r.
   apply Ex_min_eq_ext; intros; nra.
 Qed.
-  
+
 Lemma Ex_min_left_id {A} f (x : A) (h : A → pidist X):
    Ex_min f (x ← mret x; h x) = Ex_min f (h x).
 Proof. by setoid_rewrite pidist_left_id. Qed.
@@ -2026,7 +2026,7 @@ Proof.
   destruct Is as [[Is Hne] Hsum].
   destruct Is as [| I Is].
   - rewrite //=. destruct Hne as (?&[]).
-  - rewrite /Ex_max/Ex_pidist//=. 
+  - rewrite /Ex_max/Ex_pidist//=.
     match goal with
     | [ |- context [ fold_left Rmax ?l ?x ] ] =>
       edestruct (fold_left_Rmax_witness1 l x) as [(r&Hin&<-)|(Hmin&Heq)]
@@ -2071,7 +2071,7 @@ Proof.
   - intros r Hlb.
     destruct (Lub_Rbar_correct (λ r, ∃ a, Ex_max f (Iss a) = r)) as (Hlb'&Hglb).
     apply Hglb.
-    intros r' (a'&<-). 
+    intros r' (a'&<-).
     apply Ex_max_spec2.
     intros r'' (I'&Hin'&Heq).
     eapply Hlb. exists I'; split; auto.
@@ -2123,9 +2123,9 @@ Proof.
   - erewrite Ex_max_eq_pidist; first reflexivity.
     setoid_rewrite pidist_union_comm. setoid_rewrite pidist_union_le_id; eauto; reflexivity.
 Qed.
-  
+
 Global Instance Ex_max_mono f: Proper (@le_pidist X ==> Rbar_le) (Ex_max f).
-Proof. intros ??. apply Ex_max_le_pidist. Qed. 
+Proof. intros ??. apply Ex_max_le_pidist. Qed.
 
 Lemma Ex_max_eq_ext f1 f2 (Is: pidist X) :
   (∀ x, f1 x = f2 x) → Ex_max f1 Is = Ex_max f2 Is.
@@ -2146,7 +2146,7 @@ Proof.
   intros ?? Heq ?? Heq'.
   erewrite Ex_max_eq_ext; last eauto.
     by apply Ex_max_eq_pidist.
-Qed. 
+Qed.
 
 Lemma Ex_max_left_id {A} f (x : A) (h : A → pidist X):
    Ex_max f (x ← mret x; h x) = Ex_max f (h x).
@@ -2186,7 +2186,7 @@ Proof.
   intros Hsupp. rewrite ?Ex_max_neg_min. f_equal.
   apply Ex_min_eq_ext_supp. intros. f_equal; eauto.
 Qed.
-  
+
 Lemma Ex_max_le_ext {X} f1 f2 (Is: pidist X):
   (∀ x, f1 x ≤ f2 x) →
   ex_Ex_extrema f2 Is →
@@ -2206,10 +2206,10 @@ Lemma Ex_max_scale_const {X} f (Is: pidist X) k:
 Proof.
   rewrite ?Ex_max_neg_min.
   transitivity (Rbar_mult ( - k) ((Ex_min (λ x : X, - f x) Is))).
-  { replace (Finite (- k)) with (Rbar_opp (k)); auto. 
+  { replace (Finite (- k)) with (Rbar_opp (k)); auto.
     rewrite Rbar_mult_opp_l.
     setoid_rewrite Ropp_mult_distr_r.
-    rewrite Ex_min_scale_const //=. 
+    rewrite Ex_min_scale_const //=.
   }
   replace (Finite (- k)) with (Rbar_opp k); auto.
   rewrite Rbar_mult_opp_l.
@@ -2221,7 +2221,7 @@ Lemma Ex_max_plus_const_r {X} f (Is: pidist X) k:
 Proof.
   rewrite ?Ex_max_neg_min.
   transitivity (Rbar_plus (Rbar_opp (Ex_min (λ x : X, - f x) Is)) (- - k)).
-  { replace (Finite (- - k)) with (Rbar_opp (- k)); auto. rewrite Rbar_plus_opp. 
+  { replace (Finite (- - k)) with (Rbar_opp (- k)); auto. rewrite Rbar_plus_opp.
     f_equal.
     setoid_rewrite Ropp_plus_distr.
     apply Ex_min_plus_const_r.
@@ -2270,7 +2270,7 @@ Proof.
   { exists I; split; eauto. }
   eapply (Rbar_lt_le_trans _ (Ex_ival f2 I + eps)).
   { rewrite //=. nra. }
-  eapply Ex_min_spec2. 
+  eapply Ex_min_spec2.
   intros r' (I'&Hin&His). rewrite //=.
   apply Rnot_lt_le.
   intros Hlt.
@@ -2314,12 +2314,12 @@ Proof.
       edestruct (pival_mbind_in_inv_idxOf _ _ _ Hin) as (Ix&h&Hinx&Hhspec&Heq).
       edestruct (pival_mbind_in_alt2_idxOf m g1 Ix) as (I'&Heq'&Hin'); auto.
       { Unshelve. all: swap 1 2.
-        { intros i. 
+        { intros i.
           destruct (Rgt_dec (val Ix i) 0) as [Hgt|Hngt]; last exact zero_ival.
-          specialize (Hlef (ind Ix i)). 
+          specialize (Hlef (ind Ix i)).
           specialize (Hhspec _ Hgt).
           assert (In_psupport (ind Ix i) m) as Hsupp.
-          { do 2 eexists; split; eauto. } 
+          { do 2 eexists; split; eauto. }
           feed pose proof (Ex_min_pair_bound_witness f1 f2 (g1 (ind Ix i)) (g2 (ind Ix i)) (h i)
                                                 Hhspec eps Hpos) as Hwit.
           { apply Ex_ival_correct.
@@ -2350,7 +2350,7 @@ Proof.
 
       rewrite -(Ex_ivd_plus_const f2
                                   {| ivd_ival := I; val_sum1 := all_sum1 _ _ Hin  |}
-                                  eps); last first. 
+                                  eps); last first.
       { eapply is_Ex_ival_ex; eauto. }
       feed pose proof (is_Ex_ivd_plus_const f2 {| ivd_ival := I;
                                                   val_sum1 := all_sum1 _ _ Hin  |}
@@ -2361,8 +2361,8 @@ Proof.
       { eapply is_Ex_ival_ex; eauto. }
       symmetry in Heq'.
       rewrite (Ex_ival_proper _ _ _ Heq'); last first.
-      { apply Hex_Ex. eauto. } 
-     
+      { apply Hex_Ex. eauto. }
+
       eapply Ex_ival_bind_le.
       { intros a Hdom.
         destruct Rgt_dec as [Hgt|Hn] => //=; last first.
@@ -2385,7 +2385,7 @@ Proof.
       { eapply ex_Ex_ival_proper; eauto.
         eapply is_Ex_ival_ex; eauto. }
 Qed.
-  
+
 Lemma Ex_min_bind_congr {A Y1 Y2} (m1 m2: pidist A) (f1: Y1 → R) (f2: Y2 → R)
       (g1: A → pidist Y1) (g2: A → pidist Y2):
   eq_pidist m1 m2 →
@@ -2393,7 +2393,7 @@ Lemma Ex_min_bind_congr {A Y1 Y2} (m1 m2: pidist A) (f1: Y1 → R) (f2: Y2 → R
   (∀ a, Rbar_le (Ex_min f1 (g1 a)) (Ex_min f2 (g2 a))) →
   Rbar_le (Ex_min f1 (mbind g1 m1)) (Ex_min f2 (mbind g2 m2)).
 Proof.
-  intros Heq. 
+  intros Heq.
   setoid_rewrite Heq.
   intros. apply Ex_min_bind_le; eauto.
 Qed.
@@ -2410,7 +2410,7 @@ Proof.
                                            Ex_min f (h x) <= Ex_ival f (hmin x)
                                            <= Ex_min f (h x) + eps)
    as Hhminfun.
-  { 
+  {
     intros eps Hpos.
     unshelve (eexists).
     { intros x. specialize (Ex_min_spec_witness f (h x) eps) => Hwit.
@@ -2490,7 +2490,7 @@ Proof.
   intros Hfin1 Hfin_all Hex.
   eapply Ex_min_spec2.
   intros r (I&Hin&His).
-  rewrite -(is_Ex_ival_unique _ _ _ His).  
+  rewrite -(is_Ex_ival_unique _ _ _ His).
   rewrite -Hfin1 //=.
   edestruct (pival_mbind_in_inv_idxOf Is h I) as (Ialt&h'&Hin'&Hhspec'&Heq'); eauto.
   symmetry in Heq'.
@@ -2499,14 +2499,14 @@ Proof.
   transitivity (Ex_ival (λ x, Ex_min f (h x)) Ialt).
   { feed pose proof (Ex_min_spec1' (λ x, Ex_min f (h x))  Ialt Is) as Hle; eauto.
     rewrite -Hfin1 //= in Hle. }
-  
+
   rewrite (Ex_ival_proper _ Ialt _ (eq_ival_idxOf Ialt)); eauto.
   assert (ex_Ex_ival (λ x : X, Ex_min f (h x))
                      (idxOf Ialt ≫= (λ x : idx Ialt, monad.mret (ind Ialt x)))).
-  { 
+  {
     eapply ex_Ex_ival_proper.
     * eapply eq_ival_idxOf.
-    * apply Hex; eauto. 
+    * apply Hex; eauto.
   }
   assert (ex_Ex_ival f (idxOf Ialt ≫= [eta h'])).
   { eapply ex_Ex_ival_proper; try eassumption.
@@ -2517,8 +2517,8 @@ Proof.
       feed pose proof (Ex_min_spec1' f (h' x) (h (ind Ialt x))) as Hle; eauto.
       { apply (ex_Ex_ival_bind_inv _ _ (idxOf Ialt)); auto. }
       rewrite -Hfin_all //= in Hle.
-    * eapply ex_Ex_ival_bind_post; eauto. 
-    * eapply ex_Ex_ival_bind_post; eauto. 
+    * eapply ex_Ex_ival_bind_post; eauto.
+    * eapply ex_Ex_ival_bind_post; eauto.
 Qed.
 
 Lemma Ex_min_bind_post {X Y} f (h: X → pidist Y) (Is: pidist X):
@@ -2539,7 +2539,7 @@ Lemma Ex_min_comp {X Y} f (g: Y → R) (Is: pidist X):
   ex_Ex_extrema (λ x, g (f x)) Is →
  Ex_min (λ x, g (f x)) Is = Ex_min g (x ← Is; mret (f x)).
 Proof.
-  intros Hfin Hex. 
+  intros Hfin Hex.
   symmetry.
   assert ((Ex_min (λ x : X, Ex_min g (mret (f x))) Is) =
           (Ex_min (λ x, g (f x)) Is)) as Hex_eq.
@@ -2609,7 +2609,7 @@ Proof.
   transitivity (Ex_min f (x ← singleton (ivdplus p Hpf (mret true) (mret false));
                           if x then Is1 else Is2)).
   { eapply Ex_min_proper; first done.
-    * rewrite singleton_plus. 
+    * rewrite singleton_plus.
       setoid_rewrite pidist_plus_bind.
       apply pidist_plus_proper.
       ** rewrite singleton_mret pidist_left_id //=.
@@ -2727,7 +2727,7 @@ Proof.
   { rewrite //=. eapply all_sum1; eauto. }
   apply is_Ex_ival_mret.
 Qed.
-      
+
 Lemma Ex_min_bind_const {A Y1} (m1: pidist A) (f1: Y1 → R)
       (g1: A → pidist Y1)  (k: R):
   ex_Ex_extrema f1 (m1 ≫= g1) →
@@ -2736,7 +2736,7 @@ Lemma Ex_min_bind_const {A Y1} (m1: pidist A) (f1: Y1 → R)
 Proof.
   intros Hex Hconst.
   transitivity (Ex_min id (x ← m1; mret k)).
-  { 
+  {
     apply Rbar_le_antisym.
     - eapply Ex_min_bind_congr; first reflexivity; auto.
       intros. rewrite Hconst Ex_min_mret. reflexivity.
@@ -2760,7 +2760,7 @@ Lemma Ex_min_bind_const_le {A Y1} (m1: pidist A) (f1: Y1 → R)
 Proof.
   intros Hex Hconst.
   transitivity (Ex_min id (x ← m1; mret k)).
-  { 
+  {
     eapply Ex_min_bind_congr; first reflexivity; eauto.
     intros. rewrite Ex_min_mret. eauto.
   }
@@ -2779,9 +2779,9 @@ Lemma Ex_min_bind_const_ge {A Y1} (m1: pidist A) (f1: Y1 → R)
 Proof.
   intros Hconst.
   transitivity (Ex_min id (x ← m1; mret k)); last first.
-  { 
+  {
     eapply Ex_min_bind_congr; first reflexivity.
-    * apply ex_Ex_extrema_bind_irrel_const. 
+    * apply ex_Ex_extrema_bind_irrel_const.
     * intros. rewrite Ex_min_mret. eauto.
   }
   rewrite Ex_min_bind_post.
@@ -2811,18 +2811,18 @@ Proof.
   apply is_glb_Rbar_unique.
   split.
   intros r (I&Hin&His).
-  - 
+  -
   - intros b Hlb. apply Ex_min_spec2.
    intros r (I&Hin&His).
     edestruct (pival_mbind_in_inv_idxOf m (λ _, Is)) as (I'&h'&Hin'&Hhspec&Heq); eauto.
     rewrite -Heq in His * => His.
     rewrite -(is_Ex_ival_unique _ _ _ His).
-    rewrite /Ex_ival. 
+    rewrite /Ex_ival.
     assert (Ex_min f Is ≠ p_infty).
     { intros Hp.
       destruct (ivd_support_idx {| ivd_ival := idxOf I'; val_sum1 := all_sum1 _ _ Hin'|})
         as (i&Hgt).
-      rewrite //= in i Hgt. 
+      rewrite //= in i Hgt.
   rewrite -Hfin.
   apply Rbar_le_antisym.
   - apply Ex_min_bind_const_le; eauto; intros. rewrite Hfin. reflexivity.
@@ -2867,7 +2867,7 @@ Proof.
   { exists I; split; eauto. }
   eapply (Rbar_le_lt_trans _ (Ex_ival f2 I - eps)); last first.
   { rewrite //=. nra. }
-  eapply Ex_max_spec2. 
+  eapply Ex_max_spec2.
   intros r' (I'&Hin&His). rewrite //=.
   apply Rnot_lt_le.
   intros Hlt.
@@ -2902,7 +2902,7 @@ Proof.
   - apply Ex_min_bind_const_ge; eauto; intros. rewrite Hfin. reflexivity.
 Qed.
 *)
-  
+
 Lemma Ex_max_bind_congr {A Y1 Y2} (m1 m2: pidist A) (f1: Y1 → R) (f2: Y2 → R)
       (g1: A → pidist Y1) (g2: A → pidist Y2):
   eq_pidist m1 m2 →
@@ -2910,7 +2910,7 @@ Lemma Ex_max_bind_congr {A Y1 Y2} (m1 m2: pidist A) (f1: Y1 → R) (f2: Y2 → R
   (∀ a, Rbar_le (Ex_max f1 (g1 a)) (Ex_max f2 (g2 a))) →
   Rbar_le (Ex_max f1 (mbind g1 m1)) (Ex_max f2 (mbind g2 m1)).
 Proof.
-  intros Heq Hex. 
+  intros Heq Hex.
   setoid_rewrite Heq.
   intros. by apply Ex_max_bind_le.
 Qed.
@@ -2944,8 +2944,8 @@ Lemma Ex_max_pidist_plus {X} f p Hpf (Is1 Is2 : pidist X):
 Proof.
   intros Hfin1 Hfin2 Hex. rewrite Ex_max_neg_min Ex_min_pidist_plus.
   { rewrite -Rbar_plus_opp -?Rbar_mult_opp_r -?Ex_max_neg_min //=. }
-  { apply is_finite_Ex_max_to_min; auto. } 
-  { apply is_finite_Ex_max_to_min; auto. } 
+  { apply is_finite_Ex_max_to_min; auto. }
+  { apply is_finite_Ex_max_to_min; auto. }
   apply ex_Ex_extrema_negate; auto.
 Qed.
 
@@ -3035,7 +3035,7 @@ Proof.
     rewrite Ropp_involutive //=.
   }
 Qed.
-    
+
 Lemma Ex_max_bounded_supp_fun_finite {X} f (Is: pidist X):
   bounded_fun_on f (λ x, In_psupport x Is) →
   is_finite (Ex_max f Is).
@@ -3084,7 +3084,7 @@ Qed.
 
 Hint Resolve Pr_psupp_bounded Pr_isupp_bounded.
 
-Lemma ex_Pr {X} (A: X → Prop) (Is: ivdist X): 
+Lemma ex_Pr {X} (A: X → Prop) (Is: ivdist X):
   ex_Ex_ival (λ x, if ClassicalEpsilon.excluded_middle_informative (A x) then 1 else 0) Is.
 Proof. apply ex_Ex_ivd_bounded_supp_fun; auto. Qed.
 

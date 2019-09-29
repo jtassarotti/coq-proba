@@ -48,7 +48,7 @@ Section Ex_ival_properties.
     rewrite /Ex_ival big_distrr //=.
     apply eq_bigr => ?. nra.
   Qed.
-   
+
   Lemma Ex_ival_sum_support' {X} (I: ival X) f P :
     \big[Rplus/0]_(i : idx I | P i) (f i * val I i)
       = \big[Rplus/0]_(i : support (val I) | P (sval i)) (f (sval i) * val I (sval i)).
@@ -83,7 +83,7 @@ Section Ex_ival_properties.
     rewrite bigop_cond_non0.
     apply eq_bigl => //=.
     intros i. destruct Rgt_dec => //=.
-    destruct (val_nonneg I i) as [Hgt|Heq] => //=; try nra. 
+    destruct (val_nonneg I i) as [Hgt|Heq] => //=; try nra.
     rewrite Heq Rmult_0_r eq_refl //=.
   Qed.
 
@@ -127,7 +127,7 @@ Section Ex_ival_properties.
     - intros x1 x2.  intros Heq%(f_equal h2).
       by rewrite ?Hinv in Heq.
   Qed.
-    
+
   Lemma Ex_ival_proper {X} f (I1 I2: ival X):
     eq_ival I1 I2 →
     Ex_ival f I1 = Ex_ival f I2.
@@ -150,10 +150,10 @@ Section Ex_ival_properties.
     rewrite /index_enum {1}[@Finite.enum]unlock //=.
     rewrite /tag_enum big_flatten //= big_map.
     etransitivity.
-    eapply eq_bigr => i ?. 
+    eapply eq_bigr => i ?.
     { rewrite ?big_map /=.
       etransitivity; first eapply eq_bigr => j ?.
-      { 
+      {
         rewrite -Rmult_assoc Rmult_comm -Rmult_assoc.
         done.
       }
@@ -213,12 +213,12 @@ Section Ex_ival_properties.
     Ex_ival f1 (mbind h1 I) = Ex_ival f2 (mbind h2 I).
   Proof.
     intros Hcontinue; apply Rle_antisym; apply Ex_ival_bind_le.
-    - intros a (?&?&?). 
+    - intros a (?&?&?).
       right; apply Hcontinue; eauto.
-    - intros a (?&?&?). 
+    - intros a (?&?&?).
       right; symmetry; apply Hcontinue; eauto.
   Qed.
-    
+
   Lemma Ex_ival_ivdplus {X} f p Hpf (I1 I2: ivdist X) :
     Ex_ival f (ivdplus p Hpf I1 I2 : ival X) = p * Ex_ival f I1 + (1 - p) * Ex_ival f I2.
   Proof.

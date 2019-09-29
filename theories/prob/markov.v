@@ -3,7 +3,7 @@ From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigo
 Require Export Reals Psatz.
 
 (* There are some refinements to this that can be proved:
-   e.g.: we only needf to assume X x >= 0 for x such that Ω x > 0 *) 
+   e.g.: we only needf to assume X x >= 0 for x such that Ω x > 0 *)
 
 Lemma markov {A} {Ω: distrib A} (X: rrvar Ω) a :
   (∀ x, X x >= 0) →
@@ -23,8 +23,8 @@ Proof.
   * apply ex_Ex_scal_l, ex_Ex_indicator.
   * intros x. rewrite //=.
     destruct Rge_dec => //=.
-    ** nra. 
-    ** rewrite Rmult_0_r. apply Rge_le; auto. 
+    ** nra.
+    ** rewrite Rmult_0_r. apply Rge_le; auto.
 Qed.
 
 Lemma chebyshev {A} {Ω: distrib A} (X: rrvar Ω) a :

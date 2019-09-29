@@ -13,7 +13,7 @@ Proof.
   - induction 1 => //=.
     * apply /andP; split.
       ** apply /negP => Hin.
-         rewrite mem_seq_legacy -elem_of_list_In in Hin *. 
+         rewrite mem_seq_legacy -elem_of_list_In in Hin *.
          done.
       ** auto.
   - induction l => //=.

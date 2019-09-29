@@ -18,7 +18,7 @@ Local Open Scope nat_scope.
    do not make use of the information field.
 
    Since we are going to analyze non-balancing binary search trees,
-   we do not need to track any extra information, so we will just 
+   we do not need to track any extra information, so we will just
    instantiate this generic machinery taking the information type
    to be unit. *)
 
@@ -49,7 +49,7 @@ Proof.
     - destruct t2; auto; try inversion 1.
     - destruct t2; auto; try inversion 1. }
   apply: (iffP idP); rewrite //=.
-  - destruct t2; auto; try (inversion 1; done). 
+  - destruct t2; auto; try (inversion 1; done).
     move /andP => [].
     move /andP => [].
     move /eqP => ?; subst.
@@ -57,8 +57,8 @@ Proof.
   - inversion 1; subst.
     apply /andP; split; auto.
     apply /andP; split; auto.
-    * by apply /IHt1_1. 
-    * by apply /IHt1_2. 
+    * by apply /IHt1_1.
+    * by apply /IHt1_2.
 Qed.
 Canonical tree_eqMixin := EqMixin (@eq_tree).
 Canonical tree_eqType := Eval hnf in EqType tree (tree_eqMixin).
@@ -68,7 +68,7 @@ Fixpoint height (t: tree) :=
   match t with
     | Leaf => 0
     | Node _ Leaf v Leaf => 0
-    | Node _ tl v tr => 
+    | Node _ tl v tr =>
       S (max (height tl) (height tr))
   end.
 
@@ -90,39 +90,39 @@ Lemma add_spec': ∀ t x y,
     InT y (add x t) ↔ y = x ∨ InT y t.
 Proof.
   induction t using tree_ind.
-  - rewrite //= => x y; split. 
+  - rewrite //= => x y; split.
     * inversion 1; subst; auto.
-    * destruct 1 as [|Hinl]; subst. 
+    * destruct 1 as [|Hinl]; subst.
       ** by econstructor.
-      ** by inversion Hinl. 
+      ** by inversion Hinl.
   - rewrite //= => x y.
     specialize (Nat.compare_eq x t3).
     destruct (Nat.compare x t3).
-    * intros -> => //; split; auto. 
+    * intros -> => //; split; auto.
       inversion 1; auto. subst. econstructor; done.
     * intros _. split.
       ** inversion 1; subst.
          *** right. econstructor; done.
-         *** edestruct (proj1 (IHt1 x y)); eauto. right. 
+         *** edestruct (proj1 (IHt1 x y)); eauto. right.
              eapply (InLeft); eauto.
-         *** right. eapply (InRight); eauto. 
+         *** right. eapply (InRight); eauto.
       ** inversion 1 as [Heq|Hin].
          *** subst. apply InLeft; eapply IHt1; firstorder.
-         *** inversion Hin; subst. 
+         *** inversion Hin; subst.
              **** econstructor; eauto.
              **** apply InLeft. apply IHt1; firstorder.
              **** apply InRight. done.
     * intros _. split.
       ** inversion 1; subst.
          *** right. econstructor; done.
-         *** right. eapply (InLeft); eauto. 
-         *** edestruct (proj1 (IHt2 x y)); eauto. right. 
+         *** right. eapply (InLeft); eauto.
+         *** edestruct (proj1 (IHt2 x y)); eauto. right.
              eapply (InRight); eauto.
       ** inversion 1 as [Heq|Hin].
          *** subst. apply InRight; eapply IHt2; firstorder.
-         *** inversion Hin; subst. 
+         *** inversion Hin; subst.
              **** econstructor; eauto.
-             **** apply InLeft. done. 
+             **** apply InLeft. done.
              **** apply InRight. apply IHt2; firstorder.
 Qed.
 
@@ -141,11 +141,11 @@ Proof.
     destruct (Nat.compare x v) => //=.
     * intros. econstructor; eauto.
     * intros. econstructor; eauto.
-      intros y. rewrite add_spec'. intros [Heq|Hin]; subst. 
+      intros y. rewrite add_spec'. intros [Heq|Hin]; subst.
       ** inversion Hspec; done.
       ** apply Hlt; done.
     * intros. econstructor; eauto.
-      intros y. rewrite add_spec'. intros [Heq|Hin]; subst. 
+      intros y. rewrite add_spec'. intros [Heq|Hin]; subst.
       ** inversion Hspec; done.
       ** apply Hgt; done.
 Qed.
@@ -173,12 +173,12 @@ Fixpoint add_list (l: list nat) (t: tree) :=
 Lemma add_list_rec x (l: list nat) (tl tr: tree) :
   add_list l (Node tt tl x tr) =
   Node tt (add_list [seq i <- l | i < x] tl) x (add_list [seq i <- l | i > x] tr).
-Proof.  
+Proof.
   revert x tl tr.
   induction l as [| a l] => x tl tr.
   - rewrite //=.
   - rewrite //=.
-    specialize (Nat.compare_spec a x) => Hspec.   
+    specialize (Nat.compare_spec a x) => Hspec.
     destruct (a ?= x); inversion Hspec; subst.
     * case: ifP; first (intros; nify; exfalso; omega); auto.
     * do 2 (case: ifP; move /ltP); try (intros; omega); [].
@@ -190,18 +190,18 @@ Qed.
 Lemma add_list_rec_empty a (l: list nat):
   add_list (a :: l) Leaf =
   Node tt (add_list [seq i <- l | i < a] Leaf) a (add_list [seq i <- l | i > a] Leaf).
-Proof.  
+Proof.
   rewrite //= add_list_rec //.
 Qed.
 
 Definition add_list_random : list nat → tree → ldist tree.
   refine(Fix (measure_wf lt_wf size) (fun _ => tree → ldist tree)
-  (fun l add_list_random => 
+  (fun l add_list_random =>
      λ t,
      match l as l' return (l = l' → ldist tree) with
      | [::] => λ eq, mret t
      | [::a] => λ eq, mret (add a t)
-     | (a :: b :: l') => λ eq, 
+     | (a :: b :: l') => λ eq,
                          p ← draw_next a (b :: l');
                          add_list_random (rem (sval p) (a :: b :: l')) _ (add (sval p) t)
      end (Init.Logic.eq_refl))); rewrite /MR; auto.
@@ -213,7 +213,7 @@ Lemma alr_unfold_aux l t:
   match l as l' return (l = l' → ldist tree) with
     | [::] => λ eq, mret t
     | [:: a] => λ eq, mret (add a t)
-    | (a :: b :: l') => λ eq, 
+    | (a :: b :: l') => λ eq,
       p ← draw_next a (b :: l');
       add_list_random (rem (sval p) (a :: b :: l')) (add (sval p) t)
   end (Init.Logic.eq_refl).
@@ -228,13 +228,13 @@ Lemma alr_unfold l t:
       p ← draw_next a l;
       add_list_random (rem (sval p) (a :: l)) (add (sval p) t)
   end).
-Proof. 
+Proof.
   rewrite alr_unfold_aux. destruct l => //. destruct l => //.
 Qed.
 
 Lemma size_filter_lt {A: eqType} (l: seq A) (P: pred A):
   (∃ i, i \in l ∧ ~ P i) → (size [seq i <- l | P i] < size l)%nat.
-Proof.  
+Proof.
   induction l => //=.
   - intros (i&Hin&Hnot). rewrite in_nil in Hin. done.
   - intros Hin. case: ifP.
@@ -242,14 +242,14 @@ Proof.
       assert (size [seq i <- l | P i] < size l)%nat.
       { apply IHl. edestruct Hin as (i&Hin'&?).  exists i. split; auto. rewrite in_cons in Hin'.
         move /orP in Hin'. destruct Hin' as [Heq|?]; auto. move /eqP in Heq; subst; auto.
-      } 
+      }
       nify. omega.
-    * intros. rewrite size_filter. specialize (count_size P l). rewrite //=. 
+    * intros. rewrite size_filter. specialize (count_size P l). rewrite //=.
 Qed.
 
 Lemma size_filter_le {A: eqType} (l: seq A) (P: pred A):
   (size [seq i <- l | P i] <= size l)%coq_nat.
-Proof.  
+Proof.
   rewrite size_filter.
   specialize (count_size P l). intros; nify. rewrite //=.
 Qed.
@@ -268,23 +268,23 @@ Proof.
   - rewrite alr_unfold; rewrite rand_perm_list_unfold.
     rewrite (ldist_assoc (draw_next a (b :: l))).
     apply eq_dist_ldist_bind_ext. intros (x&Hin). rewrite /sval.
-    rewrite (ldist_assoc (rand_perm_list _)). 
+    rewrite (ldist_assoc (rand_perm_list _)).
     eapply eq_dist_trans; first eapply IH; try eauto.
     { rewrite size_rem //; subst; rewrite //=. }
-    apply eq_dist_ldist_bind_ext. intros l'. 
+    apply eq_dist_ldist_bind_ext. intros l'.
     rewrite ldist_left_id //=.
 Qed.
-  
+
 
 (* Here we give a version that looks closer to the kind of recursion in quicksort,
    and which matches the format needed for the span2 lemma *)
 Definition rand_tree_rec : list nat → ldist tree.
   refine(Fix (measure_wf lt_wf size) (fun _ => ldist tree)
-  (fun l rand_tree_rec => 
+  (fun l rand_tree_rec =>
      match l as l' return (l = l' → ldist tree) with
      | [::] => λ eq, mret Leaf
      | [::a] => λ eq, mret (Node tt Leaf a Leaf)
-     | (a :: b :: l') => λ eq, 
+     | (a :: b :: l') => λ eq,
                          p ← draw_next a (b :: l');
 
                          tl ← rand_tree_rec [seq i <- (a :: b :: l') | (i < sval p)%nat] _;
@@ -302,7 +302,7 @@ Lemma rt_unfold_aux l:
   match l as l' return (l = l' → ldist tree) with
      | [::] => λ eq, mret Leaf
      | [::a] => λ eq, mret (Node tt Leaf a Leaf)
-     | (a :: b :: l') => λ eq, 
+     | (a :: b :: l') => λ eq,
                          p ← draw_next a (b :: l');
 
                          tl ← rand_tree_rec [seq i <- (a :: b :: l') | (i < sval p)%nat];
@@ -323,7 +323,7 @@ Lemma rt_unfold l:
                          tr ← rand_tree_rec [seq i <- (a :: l) | (i > sval p)%nat];
                          mret (Node tt tl (sval p) tr)
   end).
-Proof. 
+Proof.
   rewrite rt_unfold_aux. destruct l => //. destruct l => //.
 Qed.
 
@@ -351,7 +351,7 @@ Proof.
                                                    (add_list (snd ls) Leaf)))).
     eapply eq_dist_trans; last first.
     { eapply eq_dist_ldist_bind_congr; last done.
-      apply eq_dist_sym. by eapply rand_perm_list_split, rem_uniq. } 
+      apply eq_dist_sym. by eapply rand_perm_list_split, rem_uniq. }
     rewrite ?ldist_assoc.
     eapply eq_dist_trans; last first.
     { eapply eq_dist_ldist_bind_ext => x0.

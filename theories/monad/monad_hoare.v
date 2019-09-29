@@ -28,7 +28,7 @@ Lemma output_mbind_in {A B: eqType} b (m: ldist A) (f: A → ldist B):
   (b \in output (x ← m; f x)) →
   ∃ r a, ((r, a)) \in outcomes m ∧ (b \in output (f a)).
 Proof.
-  rewrite /mbind/output. 
+  rewrite /mbind/output.
   move /mapP => [[r b' Hin]] => //= ->.
   eapply (in_ldist_bind _ r b' m) in Hin as (r'&r''&c'&Hin1&Hin2&Heq).
   exists r'', c'; split; auto. apply /mapP; eauto.
@@ -53,14 +53,14 @@ Tactic Notation "tbind" open_constr(P) :=
 
 Lemma fun_to_mspec {A: eqType} (m: ldist A) (P: A → Prop):
   mspec m P → (∀ x, P ((rvar_of_ldist m) x)).
-Proof. 
+Proof.
   rewrite /mspec/output => Hspec /= x.
   apply /Hspec/mem_nth. rewrite size_map. inversion x. done.
 Qed.
 
 Lemma mspec_range_eq_dist {A: eqType} (m1 m2: ldist A) (P: pred A):
   mspec m1 P →
-  mspec m2 P → 
+  mspec m2 P →
   (∀ a, P a → pr_eq (rvar_of_ldist m1) a = pr_eq (rvar_of_ldist m2) a) →
   eq_dist (rvar_of_ldist m1) (rvar_of_ldist m2).
 Proof.
@@ -83,24 +83,24 @@ Lemma mspec_eq_dist_ldist_bind_ext {A B: eqType} m P (f g: A → ldist B):
   eq_dist (rvar_of_ldist (mbind f m)) (rvar_of_ldist (mbind g m)).
 Proof.
   intros Hspec.
-  rewrite /eq_dist => Heq b. rewrite ?pr_mbind_ldist1. 
+  rewrite /eq_dist => Heq b. rewrite ?pr_mbind_ldist1.
   eapply eq_bigr => a _. rewrite Heq; first done.
   apply Hspec. rewrite /output.
   rewrite -mem_undup -img_rvar_of_ldist'.
   destruct a as (x&Hin) => //=.
 Qed.
 
-Lemma Ex_bound {A : eqType} (X: ldist A) f r: 
+Lemma Ex_bound {A : eqType} (X: ldist A) f r:
   mspec X (λ x, f x <= r) →
-  Ex (rvar_comp (rvar_of_ldist X) f) <= r.    
+  Ex (rvar_comp (rvar_of_ldist X) f) <= r.
 Proof.
   intros Hmspec. rewrite Ex_fin_comp.
   eapply Rle_trans.
-  { 
-    eapply Rle_bigr => i _. 
+  {
+    eapply Rle_bigr => i _.
     apply Rmult_le_compat_l; last apply Hmspec.
     - apply Rge_le, ge_pr_0.
     - destruct i as (?&?) => //=. rewrite /output -mem_undup -img_rvar_of_ldist' //.
   }
-  rewrite -big_distrl //= (pr_sum_all (rvar_of_ldist X)) Rmult_1_l. fourier. 
+  rewrite -big_distrl //= (pr_sum_all (rvar_of_ldist X)) Rmult_1_l. fourier.
 Qed.

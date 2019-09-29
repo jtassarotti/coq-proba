@@ -8,7 +8,7 @@ Local Open Scope nat_scope.
 
 Definition compare (x y: nat) := (* cost (compare_nat x y (x < y) (y < x) (x == y)) := *)
   (1, ltngtP x y).
-  
+
 Record splitting (A: Type) := mkSplit { lower : seq A; middle: seq A; upper : seq A}.
 Arguments mkSplit {_}.
 Arguments lower {_}.
@@ -37,7 +37,7 @@ Fixpoint partition (n: nat) (l: list nat) : cost (splitting nat) :=
     | [::] => mret {| lower := [::]; middle := [::]; upper := [::]|}
     | m :: l =>
       spl ← partition n l;
-      let '(ll, leq, lu) := (lower spl, middle spl, upper spl) in 
+      let '(ll, leq, lu) := (lower spl, middle spl, upper spl) in
       (cmp ← compare m n;
       match cmp with
         | CompareNatLt _ => mret (mkSplit (m :: ll) leq lu)
@@ -71,7 +71,7 @@ Proof.
   move /eqP in HeqP; subst; rewrite ltnn in Hcmp; done.
 Qed.
 
-Definition partition' (n: nat) (l: list nat) : 
+Definition partition' (n: nat) (l: list nat) :
   cost { x : splitting nat | perm_eq (lower x ++ middle x ++ upper x) l &&
                              ((n \in l) ==> (0 < size (middle x)))}.
 Proof.
@@ -93,14 +93,14 @@ Require Import Reals Fourier FunctionalExtensionality.
 Program Definition unif n : ldist_cost { x : nat | (leq x n) } :=
   mklDist [ seq (1/(INR (n.+1)), (O, exist _ (nat_of_ord i) _)) | i <- enum 'I_(n.+1) ] _ _.
 Next Obligation. intros n i => //=. rewrite -ltnS. done. Qed.
-Next Obligation. 
+Next Obligation.
   intros n.
   apply /allP => r.
   rewrite -map_comp //= (@eq_map _ _ _ (λ x, 1 / INR (S n))); last by done.
   rewrite (nat_of_ord_map_iota (S n) (λ x, 1 / INR (S n))).
   rewrite //=. induction (iota 1 n) => //=.
   - rewrite in_cons. move /orP => [Heq|Hin]; eauto.
-    move /eqP in Heq. rewrite Heq. 
+    move /eqP in Heq. rewrite Heq.
     destruct (Rle_dec) as [|Hn]; [ by auto | exfalso; apply Hn].
     left. apply Rdiv_lt_0_compat; first fourier.
     destruct n; first fourier.
@@ -108,7 +108,7 @@ Next Obligation.
     cut (INR 0 < INR (S n)); intros; first by fourier.
     apply lt_INR. omega.
   - rewrite in_cons. move /orP => [Heq|Hin]; eauto.
-    move /eqP in Heq. rewrite Heq. 
+    move /eqP in Heq. rewrite Heq.
     destruct (Rle_dec 0 (1 / _)) as [|Hn]; [ by auto | exfalso; apply Hn].
     left. apply Rdiv_lt_0_compat; first fourier.
     destruct n; first by fourier.
@@ -120,11 +120,11 @@ Next Obligation.
   intros n.
   rewrite -map_comp //= (@eq_map _ _ _ (λ x, 1 / INR (S n))); last by done.
   rewrite (nat_of_ord_map_iota (S n) (λ x, 1 / INR (S n))).
-  cut (∀ o k, \big[Rplus/0]_(a<-[seq (1 / INR n.+1) | i <- iota k o]) a 
+  cut (∀ o k, \big[Rplus/0]_(a<-[seq (1 / INR n.+1) | i <- iota k o]) a
             = INR (o) / INR (n.+1)).
-  { 
+  {
     intros Hcut. specialize (Hcut (n.+1) O). rewrite //= in Hcut.
-    rewrite Hcut. apply /eqP => //=. field. 
+    rewrite Hcut. apply /eqP => //=. field.
     apply Rgt_not_eq.
     destruct n; first fourier.
     replace 0 with (INR O) by auto.
@@ -132,9 +132,9 @@ Next Obligation.
     apply lt_INR; omega.
   }
   induction o => k.
-  - rewrite big_nil. replace (INR 0) with 0 by auto. rewrite /Rdiv Rmult_0_l //. 
+  - rewrite big_nil. replace (INR 0) with 0 by auto. rewrite /Rdiv Rmult_0_l //.
   - rewrite big_cons. rewrite (S_INR o).
-    rewrite Rdiv_plus_distr IHo. ring. 
+    rewrite Rdiv_plus_distr IHo. ring.
 Qed.
 
 Program Definition draw_pivot (a : nat) (l: list nat) : ldist_cost { x : nat | x \in (a :: l) } :=
@@ -144,23 +144,23 @@ Next Obligation. intros a l (?&?) => //=. rewrite mem_nth //. Qed.
 
 Definition qs : list nat → ldist_cost (list nat).
   refine(Fix (measure_wf lt_wf size) (fun _ => ldist_cost (list nat))
-  (fun l qs => 
+  (fun l qs =>
   match l as l' return (l = l' → ldist_cost (list nat)) with
     | [::] => λ eq, mret ([::])
     | [::a] => λ eq, mret ([::a])
-    | (a :: b :: l') => λ eq, 
+    | (a :: b :: l') => λ eq,
       p ← draw_pivot a (b :: l');
       spl ← dist_ret _ (partition' (sval p) l);
-      lls ← qs (lower (sval spl)) _;                   
+      lls ← qs (lower (sval spl)) _;
       lus ← qs (upper (sval spl)) _;
       mret (lls ++ (middle (sval spl)) ++ lus)
   end (Init.Logic.eq_refl))); rewrite /MR; auto.
-  - abstract (destruct spl as (spl&pf) => //=; move /andP in pf; 
+  - abstract (destruct spl as (spl&pf) => //=; move /andP in pf;
     destruct pf as (pf1&pf2); move /implyP in pf2;
     rewrite -(perm_eq_size pf1) //= ?size_cat -?plusE;
     assert (0 < size (middle spl))%coq_nat by
     ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=); omega).
-  - abstract (destruct spl as (spl&pf) => //=; move /andP in pf; 
+  - abstract (destruct spl as (spl&pf) => //=; move /andP in pf;
     destruct pf as (pf1&pf2); move /implyP in pf2;
     rewrite -(perm_eq_size pf1) //= ?size_cat -?plusE;
     assert (0 < size (middle spl))%coq_nat by
@@ -173,7 +173,7 @@ Lemma easy_fix_eq:
     ∀ x : A, Fix Rwf P F x = F x (λ (y : A) (_ : R y x), Fix Rwf P F y).
 Proof.
   intros. apply Init.Wf.Fix_eq.
-  intros. assert (f = g) as ->; last done. 
+  intros. assert (f = g) as ->; last done.
   apply functional_extensionality_dep => ?.
   apply functional_extensionality_dep => ?. done.
 Qed.
@@ -183,17 +183,17 @@ Lemma qs_unfold_aux l:
   match l as l' return (l = l' → ldist_cost (list nat)) with
     | [::] => λ eq, mret ([::])
     | [:: a] => λ eq, mret ([:: a])
-    | (a :: b :: l') => λ eq, 
+    | (a :: b :: l') => λ eq,
       p ← draw_pivot a (b :: l');
       spl ← dist_ret _ (partition' (sval p) l);
-      lls ← qs (lower (sval spl));                   
+      lls ← qs (lower (sval spl));
       lus ← qs (upper (sval spl));
       mret (lls ++ (middle (sval spl)) ++ lus)
   end (Init.Logic.eq_refl).
 Proof. rewrite /qs easy_fix_eq; done. Qed.
 
 Lemma qs_unfold l:
-  qs l = 
+  qs l =
   (match l as l
   with
     | [::] => mret ([::])
@@ -201,10 +201,10 @@ Lemma qs_unfold l:
     | (a :: l) =>
       p ← draw_pivot a l;
       spl ← dist_ret _ (partition' (sval p) (a :: l));
-      lls ← qs (lower (sval spl));                   
+      lls ← qs (lower (sval spl));
       lus ← qs (upper (sval spl));
       mret (lls ++ (middle (sval spl)) ++ lus)
   end).
-Proof. 
+Proof.
   rewrite qs_unfold_aux. destruct l => //. destruct l => //.
 Qed.

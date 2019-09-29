@@ -4,7 +4,7 @@ Import Omega.
 
 Lemma undup_map {A B: eqType} (l: seq A) (f: A → B):
   undup [seq f x | x <- l] = undup [seq f x | x <- undup l].
-Proof.  
+Proof.
   induction l as [| a l] => //=.
   symmetry. case: ifP.
   * intros Hin. apply (map_f f) in Hin.
@@ -15,13 +15,13 @@ Proof.
        move /mapP in Hin'. destruct Hin' as [a' ? ?]; subst.
        case: ifP; auto.
        intros Hfalse. exfalso. move /mapP in Hfalse. apply Hfalse.
-       exists a'. 
+       exists a'.
        *** rewrite -mem_undup; done.
        *** auto.
     ** intros Hnin'.
        case: ifP; last by (intros; f_equal; eauto).
        intros Hfalse. move /mapP in Hnin'. exfalso. apply Hnin'.
-       move /mapP in Hfalse. destruct Hfalse as [a' ? ?]. 
+       move /mapP in Hfalse. destruct Hfalse as [a' ? ?].
        exists a'.
        *** rewrite mem_undup; done.
        *** auto.
@@ -29,26 +29,26 @@ Qed.
 
 Lemma nth_legacy {A: Type} (d: A) l x:
   nth d l x = List.nth x l d.
-Proof.  
+Proof.
   revert x; induction l => //=; destruct x => /= //.
 Qed.
 
 Lemma nth_error_nth1 {A: Type} (d: A) l x:
   x < length l →
   List.nth_error l x = Some (nth d l x).
-Proof.  
+Proof.
   revert l.
   induction x.
-  - rewrite //=. destruct l; auto. rewrite //=. omega. 
+  - rewrite //=. destruct l; auto. rewrite //=. omega.
   - intros l Hlt0; destruct l.
       ** rewrite //= in Hlt0. omega.
-      ** rewrite //=. eapply IHx. rewrite //= in Hlt0. omega. 
+      ** rewrite //=. eapply IHx. rewrite //= in Hlt0. omega.
 Qed.
 
 Lemma nth_error_nth2 {A: Type} (d: A) l x v:
-  List.nth_error l x = Some v → 
+  List.nth_error l x = Some v →
   nth d l x = v.
-Proof.  
+Proof.
   revert x.
   induction l => //=.
   - destruct x; rewrite //=.
@@ -62,20 +62,20 @@ Proof. induction l => //=. Qed.
 
 Lemma map_legacy {A B: Type} (f: A → B) l:
   map f l = List.map f l.
-Proof.  
+Proof.
   induction l => //=.
 Qed.
 
 Lemma mem_seq_legacy {A: eqType} (x: A) (l: seq A):
   x \in l ↔ In x l.
-Proof.  
+Proof.
   split.
   - induction l.
     * inversion 1.
     * move /orP => [Heq|Htail].
       ** move /eqP in Heq. by left.
       ** right. auto.
-  - induction l; inversion 1. 
+  - induction l; inversion 1.
     * apply /orP; left; subst; auto.
     * apply /orP; right; subst; auto.
 Qed.
@@ -100,7 +100,7 @@ Lemma fold_left_Rmin_mono_init l x x':
   fold_left Rmin l x <= fold_left Rmin l x'.
 Proof.
   revert x x'. induction l => //=.
-  intros. eapply IHl. 
+  intros. eapply IHl.
   apply Rle_min_compat_r; auto.
 Qed.
 
@@ -183,7 +183,7 @@ Lemma fold_left_Rmax_mono_init l x x':
   fold_left Rmax l x <= fold_left Rmax l x'.
 Proof.
   revert x x'. induction l => //=.
-  intros. eapply IHl. 
+  intros. eapply IHl.
   apply Rle_max_compat_r; auto.
 Qed.
 
@@ -308,7 +308,7 @@ Lemma fold_left_Zmax_mono_init l x x':
   fold_left Zmax l x <= fold_left Zmax l x'.
 Proof.
   revert x x'. induction l => //=.
-  intros. eapply IHl. 
+  intros. eapply IHl.
   apply Z.max_le_compat_r; auto.
 Qed.
 
@@ -342,7 +342,7 @@ Proof.
          *** intros ? [|]; eauto.
              **** subst. omega.
              **** eapply Z.lt_le_trans; first eapply Hlt; eauto.
-                  rewrite Z.max_l; omega. 
+                  rewrite Z.max_l; omega.
          *** destruct Hlt as (?&->). rewrite Z.max_l; omega.
       ** left. move: Hlt. rewrite Z.max_r; last by omega => Hlt.
          intros. exists a; split; first by left.
@@ -376,7 +376,7 @@ Lemma fold_left_Pmax_mono_init l x x':
   fold_left Pmax l x <= fold_left Pmax l x'.
 Proof.
   revert x x'. induction l => //=.
-  intros. eapply IHl. 
+  intros. eapply IHl.
   apply Pos.max_le_compat_r; auto.
 Qed.
 
@@ -412,7 +412,7 @@ Proof.
          *** intros ? [|]; eauto.
              **** subst. zify; omega.
              **** eapply Pos.lt_le_trans; first eapply Hlt; eauto.
-                  rewrite Pos.max_l; zify; omega. 
+                  rewrite Pos.max_l; zify; omega.
          *** destruct Hlt as (?&->). rewrite Pos.max_l; zify; omega.
       ** left. move: Hlt. rewrite Pos.max_r; last by (zify; omega) => Hlt.
          intros. exists a; split; first by left.

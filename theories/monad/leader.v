@@ -14,7 +14,7 @@ Fixpoint leader_elect (rounds: nat) (players: nat) : ldist (nat * nat) :=
     match players with
       | O => mret (rounds, O)
       | 1 => mret (rounds, S O)
-      | S (S _) => 
+      | S (S _) =>
         (surv ← binomial players;
          (if sval surv == O then
             (* no one survived, so all current players repeat in next round *)
@@ -32,7 +32,7 @@ Lemma leader_elect_unfold (rounds: nat) (players: nat):
     match players with
       | O => mret (rounds, O)
       | 1 => mret (rounds, S O)
-      | S (S _) => 
+      | S (S _) =>
         (surv ← binomial players;
          (if sval surv == O then
             leader_elect rounds' players

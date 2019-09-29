@@ -19,7 +19,7 @@ Proof.
   - right. apply pr_eq_pred' => x.
     destruct (Rge_dec) as [Hge|Hnge] => //=.
     * apply Rgt_lt in Ht.
-      apply Rge_le in Hge. 
+      apply Rge_le in Hge.
       apply (Rmult_le_compat_l t) in Hge; last by nra.
       apply exp_increasing_le in Hge.
       destruct (Rge_dec) as [?|Hnge'] => //=.
@@ -27,7 +27,7 @@ Proof.
     * destruct (Rge_dec) as [Hge|Hnge'] => //=.
       exfalso. apply Hnge.
       apply Rge_le, exp_le_embedding in Hge.
-      apply Rmult_le_reg_l in Hge;  auto. 
+      apply Rmult_le_reg_l in Hge;  auto.
   - apply markov => //=.
     * intros. apply Rle_ge; left; apply exp_pos.
     * intros. apply Rlt_gt; apply exp_pos.
@@ -79,7 +79,7 @@ Proof.
     *
       rewrite /Rdiv -Rpower_mult_distr.
       assert (Hpow_opp': ∀ x y, 0 < x → Rpower (/ x) y = / Rpower x y).
-      { 
+      {
         intros x y.
         rewrite -Rpower_Ropp.
         rewrite /Rpower.
@@ -96,21 +96,21 @@ Proof.
       }
       apply Rmult_le_compat_r.
       ** left. apply Rinv_0_lt_compat, exp_pos.
-      ** rewrite /Rpower. rewrite fold_right_plus_mult exp_fold_plus. 
+      ** rewrite /Rpower. rewrite fold_right_plus_mult exp_fold_plus.
          rewrite ?seq_ext.map_legacy ?map_map => //=.
-         apply fold_right_map_Rmult_le => X Hin. 
+         apply fold_right_map_Rmult_le => X Hin.
          destruct (Hbern X Hin) as (p&HXbern).
          rewrite (EGF_is_bernoulli _ p HXbern (ln (1 + δ))).
-         rewrite (Ex_is_bernoulli _ p HXbern). 
+         rewrite (Ex_is_bernoulli _ p HXbern).
          rewrite exp_ln; last by nra.
          destruct (is_bernoulli_range _ _ HXbern) as (?&?).
          split.
          *** nra.
-         *** ring_simplify. 
+         *** ring_simplify.
              rewrite ln_exp. rewrite Rplus_comm. apply exp_ineq1_le. nra.
-      ** auto. 
+      ** auto.
       ** apply exp_pos.
-      ** by apply Rinv_0_lt_compat. 
+      ** by apply Rinv_0_lt_compat.
     * by apply indep_fn.
     * intros ? (X&Heq&Hin)%in_map_iff.
       rewrite -Heq. destruct (Hbern _ Hin) as (p&HXbern).
@@ -127,14 +127,14 @@ Proof.
     rewrite (Ex_is_bernoulli _ _ HXbern).
     destruct (is_bernoulli_range _ _ HXbern) as (?&?).
     rewrite -[a in a <= _]Rplus_0_r. apply Rplus_le_compat; auto.
-    eapply IHlX. intros. apply Hbern. by right. 
+    eapply IHlX. intros. apply Hbern. by right.
   - intros X Hin.
     destruct (Hbern X) as (p&HXbern); auto.
     eapply is_bernoulli_ex_Ex with (f := id); eauto.
 Qed.
 
 
-      
+
 Lemma non_decr_function_le: ∀ (f : R → R) (a b : Rbar) (df : R → R),
        (∀ x : R, Rbar_le a x → Rbar_le x b → is_derive f x (df x))
        → (∀ x : R, Rbar_le a x → Rbar_le x b → df x >= 0)
@@ -149,14 +149,14 @@ Proof.
     assert (continuous f x').
     apply: ex_derive_continuous; eauto.
     econstructor. eapply Hderiv; eauto.
-    * eapply Rbar_le_trans; eauto. 
+    * eapply Rbar_le_trans; eauto.
     * eapply Rbar_le_trans; eauto. rewrite /Rbar_le; auto.
     * by apply continuity_pt_filterlim.
   - rewrite //= in Heq.
     assert (df c >= 0).
     { apply Hderiv_non_neg.
-      * rewrite Rmin_left in Hrange1'; auto. eapply Rbar_le_trans; eauto. 
-      * rewrite Rmax_right in Hrange2'; auto. eapply Rbar_le_trans; eauto. 
+      * rewrite Rmin_left in Hrange1'; auto. eapply Rbar_le_trans; eauto.
+      * rewrite Rmax_right in Hrange2'; auto. eapply Rbar_le_trans; eauto.
         rewrite /Rbar_le //=.
     }
     nra.
@@ -187,13 +187,13 @@ Proof.
          apply Rle_ge.
          assert (x < 1/2 ∨ x = 1/2 ∨ 1/2 < x) as [Hlt|[Heq|Hgt]] by nra.
          {
-           transitivity (f' 0). 
-             { right. rewrite /f'. rewrite Rplus_0_r ln_1. field. } 
+           transitivity (f' 0).
+             { right. rewrite /f'. rewrite Rplus_0_r ln_1. field. }
              apply non_decr_function_le with (a := 0) (b := x) (df := f'').
            *** rewrite /Rbar_le //=. intros x' ??; rewrite /f'/f''. AutoDerive.auto_derive.
-               **** repeat split; auto; try nra. 
+               **** repeat split; auto; try nra.
                **** field. nra.
-           *** rewrite /Rbar_le //=. intros x' ??; rewrite /f'/f''. 
+           *** rewrite /Rbar_le //=. intros x' ??; rewrite /f'/f''.
                field_simplify; last by nra.
                apply Rle_ge. replace (0 / 1) with 0 by nra.
                apply Rdiv_le_0_compat; nra.
@@ -202,15 +202,15 @@ Proof.
            *** rewrite //=. reflexivity.
          }
          { rewrite /f'. subst. interval. }
-         { 
+         {
            transitivity (f' 1).
            { rewrite /f'. interval. }
-           cut (- f' x <= - f' 1); first by (intros; nra). 
+           cut (- f' x <= - f' 1); first by (intros; nra).
            apply non_decr_function_le with (f := λ x, - f' x) (a := 1/2) (b := 3/2) (df := λ x, - f'' x).
            *** rewrite /Rbar_le //=. intros x' ??; rewrite /f'/f''. AutoDerive.auto_derive.
-               **** repeat split; auto; try nra. 
+               **** repeat split; auto; try nra.
                **** field. nra.
-           *** rewrite /Rbar_le //=. intros x' ??; rewrite /f'/f''. 
+           *** rewrite /Rbar_le //=. intros x' ??; rewrite /f'/f''.
                field_simplify; last by nra.
                apply Rle_ge. replace (0 / 1) with 0 by nra.
                apply Rdiv_le_0_compat; nra.

@@ -9,15 +9,15 @@ Require Import Reals Psatz Omega.
    different algebraic hierarchy. We now define a compatibility layer
    to connect the Coquelicot hierarchy for R to the one assumed by
    ssreflect. *)
-   
+
 Section RAddLaw.
 Import Monoid.
 
 Lemma Rplus_associative: associative  Rplus.
 Proof. intros ???; apply: Hierarchy.plus_assoc. Qed.
-Lemma Rplus_left_id: left_id R0 Rplus. 
+Lemma Rplus_left_id: left_id R0 Rplus.
 Proof. intros ?. apply: Hierarchy.plus_zero_l. Qed.
-Lemma Rplus_right_id: right_id R0 Rplus. 
+Lemma Rplus_right_id: right_id R0 Rplus.
 Proof. intros ?. apply: Hierarchy.plus_zero_r. Qed.
 Lemma Rplus_commutative: commutative Rplus.
 Proof. intros ?. apply: Hierarchy.plus_comm. Qed.
@@ -75,22 +75,22 @@ Proof.
       ** eapply IHq; eauto.
          *** intros a'. rewrite in_nil. done.
          *** intros ?? HQ Hbad. eapply Hnin0; auto. rewrite in_cons. apply /orP. by right.
-  - rewrite big_cons. 
+  - rewrite big_cons.
     case: ifP => [HP | HnP].
-    * apply HPQ in HP as (?&Hin); auto using mem_head. 
+    * apply HPQ in HP as (?&Hin); auto using mem_head.
       rewrite (big_rem (h a)) //= Hin.
       f_equal.
-      ** eauto using HFF', mem_head. 
+      ** eauto using HFF', mem_head.
       ** eapply IHp; auto using rem_uniq.
          *** intros. apply HFF'.
-             rewrite in_cons. apply /orP. by right. 
+             rewrite in_cons. apply /orP. by right.
          *** intros a' Hin' HP'.
              rewrite rem_filter //; split.
              **** rewrite mem_filter. apply /andP.
                   split.
                   ***** rewrite /predC1 //=.
                         apply /eqP => Heq. apply Hinj in Heq; eauto.
-                        move:Huniq. rewrite cons_uniq. 
+                        move:Huniq. rewrite cons_uniq.
                         move/andP. intros (Hnin'&?).
                         subst. move: Hnin'. move /negP. auto.
                    ***** eapply HPQ; eauto. rewrite in_cons. apply /orP. by right.
@@ -99,15 +99,15 @@ Proof.
              eapply Hnin0; auto.
              intros (a'&Hin'&HP'&Ha').
              eapply Hneq. exists a'. split; auto.
-             move:Hin'. rewrite in_cons. 
+             move:Hin'. rewrite in_cons.
              move/orP=>[Heq|?].
              **** exfalso. rewrite -Ha' in Hneq'.
-                  move:Hneq'. move/eqP. move:Heq. move/eqP. intros ->.  done. 
+                  move:Hneq'. move/eqP. move:Heq. move/eqP. intros ->.  done.
              **** auto.
-         *** move:Huniq. rewrite cons_uniq. move/andP. firstorder. 
+         *** move:Huniq. rewrite cons_uniq. move/andP. firstorder.
     * eapply IHp; auto.
       ** intros. apply HFF'.
-         rewrite in_cons. apply /orP. by right. 
+         rewrite in_cons. apply /orP. by right.
       ** intros a' Hin' HP'.
          eapply HPQ; auto.
          rewrite in_cons. apply /orP. by right.
@@ -134,10 +134,10 @@ Proof.
   - rewrite big_nil.
     clear Huniq Huniq'.
     induction q as [|b q].
-    * rewrite big_nil. nra. 
+    * rewrite big_nil. nra.
     * rewrite big_cons.
       case: ifP => [?|?].
-      ** rewrite -[a in a <= _]Rplus_0_r. apply Rplus_le_compat. 
+      ** rewrite -[a in a <= _]Rplus_0_r. apply Rplus_le_compat.
          *** eapply Rge_le, Hnin0; auto; first apply mem_head.
              intros (a'&?&?&?). done.
          *** eapply IHq; eauto.
@@ -146,22 +146,22 @@ Proof.
       ** eapply IHq; eauto.
          *** intros a'. rewrite in_nil. done.
          *** intros ?? HQ Hbad. eapply Hnin0; auto. rewrite in_cons. apply /orP. by right.
-  - rewrite big_cons. 
+  - rewrite big_cons.
     case: ifP => [HP | HnP].
-    * apply HPQ in HP as (?&Hin); auto using mem_head. 
+    * apply HPQ in HP as (?&Hin); auto using mem_head.
       rewrite (big_rem (h a)) //= Hin.
       apply Rplus_le_compat.
-      ** eauto using HFF', mem_head. 
+      ** eauto using HFF', mem_head.
       ** eapply IHp; auto using rem_uniq.
          *** intros. apply HFF'.
-             rewrite in_cons. apply /orP. by right. 
+             rewrite in_cons. apply /orP. by right.
          *** intros a' Hin' HP'.
              rewrite rem_filter //; split.
              **** rewrite mem_filter. apply /andP.
                   split.
                   ***** rewrite /predC1 //=.
                         apply /eqP => Heq. apply Hinj in Heq; eauto.
-                        move:Huniq. rewrite cons_uniq. 
+                        move:Huniq. rewrite cons_uniq.
                         move/andP. intros (Hnin'&?).
                         subst. move: Hnin'. move /negP. auto.
                   ***** eapply HPQ; eauto. rewrite in_cons. apply /orP. by right.
@@ -170,15 +170,15 @@ Proof.
              eapply Hnin0; auto.
              intros (a'&Hin'&HP'&Ha').
              eapply Hneq. exists a'. split; auto.
-             move:Hin'. rewrite in_cons. 
+             move:Hin'. rewrite in_cons.
              move/orP=>[Heq|?].
              **** exfalso. rewrite -Ha' in Hneq'.
-                  move:Hneq'. move/eqP. move:Heq. move/eqP. intros ->.  done. 
+                  move:Hneq'. move/eqP. move:Heq. move/eqP. intros ->.  done.
              **** auto.
-         *** move:Huniq. rewrite cons_uniq. move/andP. firstorder. 
+         *** move:Huniq. rewrite cons_uniq. move/andP. firstorder.
     * eapply IHp; auto.
       ** intros. apply HFF'.
-         rewrite in_cons. apply /orP. by right. 
+         rewrite in_cons. apply /orP. by right.
       ** intros a' Hin' HP'.
          eapply HPQ; auto.
          rewrite in_cons. apply /orP. by right.
@@ -202,14 +202,14 @@ Lemma sum_reidx_map_sym (p: seq A) (q: seq B) (P: A -> bool) Q (h : A -> B) (F: 
 Proof.
   intros HFF' Hnin0a Hnin0b Huniq Huniq' Hinj.
   transitivity (\big[Rplus/0]_(i <- p | P i && (h i \in q) && (Q (h i))) (F i)).
-  { symmetry.  
+  { symmetry.
     eapply (sum_reidx_map _ _ (fun a => P a && (h a \in q) && Q (h a))
                               P (fun x => x)); auto.
     - intros a Hin. by do 2 move /andP => [].
-    - intros a Hin HP Hfalse. apply Hnin0a; auto. intros (?&?). apply Hfalse. 
+    - intros a Hin HP Hfalse. apply Hnin0a; auto. intros (?&?). apply Hfalse.
       exists a; repeat split; auto.
-      apply /andP; split; auto. 
-      apply /andP; split; auto. 
+      apply /andP; split; auto.
+      apply /andP; split; auto.
   }
   eapply (sum_reidx_map _ _ _ _ h); auto.
   - intros a Hin. move /andP => []. move /andP => []. auto.
@@ -240,7 +240,7 @@ Lemma sum_reidx_surj2 (p: seq A) (q: seq B) P Q (h : A -> B) (F: A -> R) (F': B 
   \big[Rplus/0]_(i <- q | Q i) (F' i).
 Proof.
   intros ?? Hsurj ???. eapply sum_reidx_surj1; eauto.
-  intros b Hinb HQ. specialize (Hsurj b Hinb HQ). 
+  intros b Hinb HQ. specialize (Hsurj b Hinb HQ).
   move: Hsurj. move /hasP => [x ?]. move /andP => [HP Heq].
   exists x. repeat split; eauto. apply /eqP. done.
 Qed.
@@ -258,15 +258,15 @@ Proof.
 Qed.
 
 Lemma bigop_cond_non0 {A} (f: A → R) (p: seq A) P:
-  \big[Rplus/0]_(i <- p | P i) (f i) = 
+  \big[Rplus/0]_(i <- p | P i) (f i) =
   \big[Rplus/0]_(i <- p | P i && (f i != 0)) (f i).
 Proof.
   induction p as [| a p].
-  - rewrite ?big_nil //. 
-  - rewrite ?big_cons. 
+  - rewrite ?big_nil //.
+  - rewrite ?big_cons.
     case: (P a) => //=.
     case: ifP.
-    * intros. f_equal; eauto.  
+    * intros. f_equal; eauto.
     * move /eqP => ->. nra.
 Qed.
 
@@ -277,28 +277,28 @@ Proof.
   intros Hcond.
   induction p as [| a p].
   - rewrite ?big_nil //. reflexivity.
-  - rewrite ?big_cons. specialize (Hcond a). 
+  - rewrite ?big_cons. specialize (Hcond a).
     move: Hcond. case: (P a).
-    * intros ->; auto. nra. 
+    * intros ->; auto. nra.
     * case: (Q a).
       ** intros. specialize (Rabs_pos (f a)). nra.
-      ** done. 
+      ** done.
 Qed.
 
 Lemma sum_n_bigop (f: nat → R) n:
   sum_n f n = \big[Rplus/0]_(i < S n) (f i).
-Proof. 
-  induction n. 
-  - rewrite sum_O big_ord_recl big_ord0 /=. nra. 
+Proof.
+  induction n.
+  - rewrite sum_O big_ord_recl big_ord0 /=. nra.
   - rewrite sum_Sn big_ord_recr IHn. rewrite /plus//=.
 Qed.
 
 Lemma sum_n_m_bigop (f: nat → R) n m:
   sum_n_m f n m = \big[Rplus/0]_(n <= i < S m) (f i).
-Proof. 
+Proof.
   revert n. induction m => n.
-  - induction n => //=. 
-    * specialize (sum_O f). rewrite /sum_n => ->. 
+  - induction n => //=.
+    * specialize (sum_O f). rewrite /sum_n => ->.
       rewrite big_mkord big_ord_recl big_ord0 //=. nra.
     * rewrite sum_n_m_zero; last by lia.
       rewrite big_geq; try (nify; lia). done.
@@ -396,7 +396,7 @@ Proof.
   intros Hle (i&Hin&HP&Hlt).
   induction p as [| a p].
   - rewrite in_nil in Hin. exfalso; auto.
-  - rewrite in_cons in Hin. move /orP in Hin. destruct Hin as [Heq|Hin]. 
+  - rewrite in_cons in Hin. move /orP in Hin. destruct Hin as [Heq|Hin].
     * move /eqP in Heq; subst. rewrite ?big_cons HP.
       apply Rplus_lt_le_compat; first done.
       apply Rle_bigr; auto.
@@ -424,7 +424,7 @@ Qed.
 
 Lemma big_INR {A: finType} F:
   (\big[Rplus/0]_(i : A) INR (F i) = INR (\sum_(i : A) (F i))).
-Proof.      
+Proof.
   elim: (index_enum _) => [| hd tl IH].
   - rewrite 2!big_nil => //=.
   - by rewrite 2!big_cons IH -plus_INR.
@@ -442,15 +442,15 @@ Lemma sum_index_ordinal_P_aux {A} (f: A → R) (l: seq A) r P P':
   (∀ i, (i < size l)%nat → P i = P' (nth r l i)) →
   \big[Rplus/0%R]_(a in 'I_(size l) | P a) nth 0 [seq (f i) | i <- l] a =
   \big[Rplus/0%R]_(a<-l | P' a) (f a).
-Proof.  
+Proof.
     revert r P P'.
     induction l as [| a l] => r P P' HP.
-    - rewrite //= big_nil big_ord0 //. 
+    - rewrite //= big_nil big_ord0 //.
     - transitivity (\big[Rplus/0%R]_(0<= a' < S (size l) | P a') nth 0 ([seq (f i)| i <- a :: l]) a').
       { by rewrite big_mkord. }
       rewrite big_mkcond [a in _ = a]big_mkcond //= big_cons big_mkcond big_ltn //=.
       f_equal.
-      * specialize (HP 0%nat). rewrite HP //=. 
+      * specialize (HP 0%nat). rewrite HP //=.
       * rewrite big_add1 //=. rewrite -big_mkcond -big_mkcond -(IHl r (λ i, P (S i)) P').
         ** rewrite big_mkord. done.
         ** intros. rewrite (HP (S i)) //=.
@@ -460,8 +460,8 @@ Lemma sum_index_ordinal_P {A} (f: A → R) (l: seq (A)) r (P: 'I_(size l) → bo
   (∀ i, P i = P' (nth r l i)) →
   \big[Rplus/0%R]_(a in 'I_(size l) | P a) nth 0 [seq (f i) | i <- l] a =
   \big[Rplus/0%R]_(a<-l | P' a) (f a).
-Proof.  
-  set (P'' := λ (n: nat), 
+Proof.
+  set (P'' := λ (n: nat),
               match lt_dec n (size l) with
                 | left Pf => P (Ordinal ((introT ltP Pf)))
                 | _ => true
@@ -469,7 +469,7 @@ Proof.
   intros HP.
   rewrite -(sum_index_ordinal_P_aux f l r P''); last first.
   {
-    intros i Hlt. rewrite /P'' //=. destruct lt_dec as [?|n] => //=. 
+    intros i Hlt. rewrite /P'' //=. destruct lt_dec as [?|n] => //=.
     - eauto.
     - exfalso; apply n. apply /ltP. done.
   }
@@ -480,7 +480,7 @@ Proof.
   destruct (lt_dec i (size l)) as [Hlt|Hn].
   - rewrite //=.
     assert (i = Ordinal (m := i) (introT ltP Hlt)) as <-.
-    { apply ord_inj => //=. } 
+    { apply ord_inj => //=. }
     done.
   - exfalso; apply Hn. apply /ltP/ltn_ord.
 Qed.
@@ -488,24 +488,24 @@ Qed.
 Lemma sum_index_ordinal {A: eqType} f (l: seq A):
   \big[Rplus/0]_(a in 'I_(size l)) nth 0 [seq (f i) | i <- l] a =
   \big[Rplus/0]_(a<-[seq (f i) | i <- l]) a.
-Proof.  
+Proof.
     induction l as [| a l].
-    * rewrite //= big_nil big_ord0 //. 
+    * rewrite //= big_nil big_ord0 //.
     * transitivity (\big[Rplus/0%R]_(0<= a' < (size l).+1) nth 0 ([seq (f i) | i <- a :: l]) a').
       { by rewrite big_mkord. }
-      rewrite //= big_cons big_ltn; last auto. 
+      rewrite //= big_cons big_ltn; last auto.
       f_equal; rewrite big_add1 //=. rewrite -IHl big_mkord. done.
 Qed.
 
 Lemma sum_index_ordinal_F {A: eqType} (l: seq (R * A)) F:
   \big[Rplus/0]_(a in 'I_(size l)) F (nth 0 [seq i.1 | i <- l] a) =
   \big[Rplus/0]_(a<-[seq i.1 | i <- l]) F a.
-Proof.  
+Proof.
     induction l as [| a l].
-    * rewrite //= big_nil big_ord0 //. 
+    * rewrite //= big_nil big_ord0 //.
     * transitivity (\big[Rplus/0%R]_(0<= a' < (size l).+1) F (nth 0 ([seq i.1 | i <- a :: l]) a')).
       { by rewrite big_mkord. }
-      rewrite //= big_cons big_ltn; last auto. 
+      rewrite //= big_cons big_ltn; last auto.
       f_equal; rewrite big_add1 //=. rewrite -IHl big_mkord. done.
 Qed.
 
@@ -530,7 +530,7 @@ Proof.
 Qed.
 
 
-Lemma big1_In: ∀ (R : Type) (idx : R) (op : Monoid.law idx) (I : Type) (l : list I) 
+Lemma big1_In: ∀ (R : Type) (idx : R) (op : Monoid.law idx) (I : Type) (l : list I)
          (P : pred I) (F : I → R) (Heq0: ∀ i : I, P i → List.In i l → F i = idx),
                                    \big[op/idx]_(i <- l | P i) F i = idx.
 Proof.
@@ -542,9 +542,9 @@ Proof.
     ** intros. eapply Heq0; auto; by right.
 Qed.
 
-Lemma eq_bigr_In: ∀ (R : Type) (idx : R) (op : Monoid.law idx) (I : Type) (l : list I) 
+Lemma eq_bigr_In: ∀ (R : Type) (idx : R) (op : Monoid.law idx) (I : Type) (l : list I)
          (P : pred I) (F F': I → R) (Heq: ∀ i : I, P i → List.In i l → F i = F' i),
-                                   \big[op/idx]_(i <- l | P i) F i = 
+                                   \big[op/idx]_(i <- l | P i) F i =
                                    \big[op/idx]_(i <- l | P i) F' i.
 Proof.
   intros. induction l as [| a l] => //=.

@@ -17,12 +17,12 @@ Module recurrence_counter.
     Definition alpha := 10/17.
     Lemma alpha_range: 1/2 < alpha < 1.
     Proof. rewrite /alpha.  split; nra. Qed.
-    Lemma ln_alpha: -/ln alpha > 1 /alpha. 
+    Lemma ln_alpha: -/ln alpha > 1 /alpha.
     Proof. rewrite /alpha. interval. Qed.
   End count_factor.
-  
+
   Module rec_solution := recurrence_log (count_factor).
-  Import rec_solution. 
+  Import rec_solution.
 
 
 Section recurrence_counter_sec.
@@ -42,12 +42,12 @@ Section recurrence_counter_sec.
 
   Hypothesis Tbelow: ∀ x e, size x ≤ d → (T x) e = 0.
 
-  Hypothesis Trec: 
-    ∀ x r,  pr_gt (T x) r ≤ \big[Rplus/0]_(x' : imgT (h x)) 
+  Hypothesis Trec:
+    ∀ x r,  pr_gt (T x) r ≤ \big[Rplus/0]_(x' : imgT (h x))
                   ((pr_eq (h x) (sval x')) * pr_gt (T (sval x')) (r - a (size x))).
 
   Variable m_bound_Eh: ∀ x, Ex (rvar_comp (h x) size) ≤ m (size x).
-  
+
   Lemma size_x_int x: size x > 1 → size x < 2 → False.
   Proof.
     rewrite /size.
@@ -56,10 +56,10 @@ Section recurrence_counter_sec.
     intros ?%INR_lt ?%INR_lt.
     omega.
   Qed.
-                         
-  Theorem counter_bound x w: 
+
+  Theorem counter_bound x w:
     P x →
-    size x > 1 →  
+    size x > 1 →
     pr_gt (T x) ((k * ln (size x) + 1) + INR w) ≤ (10/17)^w.
   Proof.
     intros HP Hgt1.
@@ -67,18 +67,18 @@ Section recurrence_counter_sec.
     {  rewrite /u. destruct (Rle_dec); first nra. rewrite //=. }
     replace (INR w) with (INR w * a (size x)); last first.
     { rewrite /a.  destruct Rle_dec; try destruct Rlt_dec; try nra.
-      exfalso; eapply size_x_int; eauto. } 
+      exfalso; eapply size_x_int; eauto. }
     etransitivity; first
-    eapply karp_bound_simple with 
+    eapply karp_bound_simple with
       (A := A)
       (B := B)
       (T := T)
       (h := h)
       (P := P)
-      (umin := umin) 
-      (d := d) 
-      (u := u) 
-      (a := a) 
+      (umin := umin)
+      (d := d)
+      (u := u)
+      (a := a)
       (m := m).
     - apply umin_non_neg.
     - cut (∀ x, umin ≤ u x).
@@ -103,10 +103,10 @@ Section recurrence_counter_sec.
     - apply urec0.
     - intros. auto.
     - intros. apply hrange1; auto.
-    - intros. apply hrange2. nra. 
+    - intros. apply hrange2. nra.
     - apply alower.
-    - apply a_nonneg. 
-    - apply a_mono. 
+    - apply a_nonneg.
+    - apply a_mono.
     - apply a_pos.
     - apply mnondec.
     - apply d_non_neg.
@@ -122,7 +122,7 @@ Section recurrence_counter_sec.
       { exfalso.  eapply size_x_int; first eauto. nra. }
       f_equal. field. nra.
   Qed.
-      
+
 
 End recurrence_counter_sec.
 End recurrence_counter.

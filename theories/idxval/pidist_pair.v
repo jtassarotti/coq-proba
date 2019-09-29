@@ -28,7 +28,7 @@ Proof.
   * setoid_rewrite Hp1. setoid_rewrite pidist_assoc; apply pidist_bind_congr; first by reflexivity.
     intros ((x&y)&Hpf). setoid_rewrite pidist_left_id => //=. reflexivity.
 Qed.
-    
+
 Lemma pidist_coupling_eq {A} (Is1 Is2: pidist A)
       (Ic: pidist_couplingP Is1 Is2 (λ x y, x = y)): eq_pidist Is1 Is2.
 Proof.
@@ -64,11 +64,11 @@ Proof.
   intros Heq.
   unshelve (econstructor).
   - refine (x ← Is1; mret (exist _ (x, x) _)) => //=.
-  - rewrite pidist_assoc. rewrite -[a in eq_pidist a _]pidist_right_id. 
+  - rewrite pidist_assoc. rewrite -[a in eq_pidist a _]pidist_right_id.
     eapply pidist_bind_congr; first reflexivity.
     intros a. rewrite pidist_left_id => //=.
     reflexivity.
-  - rewrite Heq. rewrite pidist_assoc. rewrite -[a in eq_pidist a _]pidist_right_id. 
+  - rewrite Heq. rewrite pidist_assoc. rewrite -[a in eq_pidist a _]pidist_right_id.
     eapply pidist_bind_congr; first reflexivity.
     intros a. rewrite pidist_left_id => //=.
     reflexivity.
@@ -141,7 +141,7 @@ Proof.
   - setoid_rewrite Hproj2. setoid_rewrite Hproj2'.
     symmetry; apply pidist_plus_bind.
 Qed.
-    
+
 Lemma pidist_coupling_union {A1 A2} Is1 Is2 Is1' Is2' (P: A1 → A2 → Prop):
   pidist_couplingP Is1 Is2 P →
   pidist_couplingP Is1' Is2' P →
@@ -162,7 +162,7 @@ Lemma pidist_coupling_join {Idx1} {A1 A2} (i1: Idx1)
   pidist_couplingP (pidist_join i1 Iss1) Is2 P.
 Proof.
   intros Ics.
-  exists (pidist_join i1 (λ i, Ics i)). 
+  exists (pidist_join i1 (λ i, Ics i)).
   - setoid_rewrite pidist_join_bind. split.
     * intros I (i&Hin).
       destruct (Ics i) as [Ic Hproj1 Hproj2] eqn:Heqi.

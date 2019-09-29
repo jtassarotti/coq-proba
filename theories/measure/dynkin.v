@@ -70,7 +70,7 @@ Proof.
     { firstorder. }
     apply dynkin_closed_set_minus; eauto. firstorder.
   }
-  assert (H1union: 
+  assert (H1union:
         ∀ Ps : nat → (A → Prop), (∀ i, D1 (Ps i)) →
                                  (∀ i, Ps i ⊆ Ps (S i)) → D1 (unionF Ps)).
   { rewrite /D1 => Ps HPs Hmono V HV.
@@ -97,7 +97,7 @@ Proof.
     { firstorder. }
     apply dynkin_closed_set_minus; eauto. firstorder.
   }
-  assert (H2union: 
+  assert (H2union:
         ∀ Ps : nat → (A → Prop), (∀ i, D2 (Ps i)) →
                                  (∀ i, Ps i ⊆ Ps (S i)) → D2 (unionF Ps)).
   { rewrite /D2 => Ps HPs Hmono V HV.
@@ -127,10 +127,10 @@ Proof.
   intros HF.
   assert (compl U ≡ set_minus (λ _, True) U) as -> by firstorder.
   apply dynkin_closed_set_minus; auto.
-  - apply dynkin_full. 
+  - apply dynkin_full.
   - firstorder.
 Qed.
-    
+
 Lemma mdp_closed_pair_union {A: Type} (pi: pi_system A) U V:
   minimal_dynkin pi U → minimal_dynkin pi V →
   minimal_dynkin pi (U ∪ V).
@@ -222,9 +222,9 @@ Proof.
   }
   assert (HDunion: ∀ Ps : nat → (A → Prop), (∀ i, D (Ps i)) →
                                             (∀ i, Ps i ⊆ Ps (S i)) → D (unionF Ps)).
-  { 
+  {
     rewrite /D. intros Ps HD Hmono; split.
-    - apply sigma_closed_unions. intros i. destruct (HD i); eauto. 
+    - apply sigma_closed_unions. intros i. destruct (HD i); eauto.
     - feed pose proof (measure_incr_seq μ Ps); auto.
       { intros i. destruct (HD i); eauto. }
       feed pose proof (measure_incr_seq ν Ps) as Hnu; auto.

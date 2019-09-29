@@ -31,9 +31,9 @@ Proof.
   - intros Hdiff0. assert (x = z) as <- by (apply Rminus_diag_uniq; auto).
     exists (Rmin alpf alpg); split.
     + repeat apply Rmin_case; auto.
-    + intros x'. 
+    + intros x'.
       case: (Rle_dec x' x).
-      * intros Hle'. rewrite (Hle x') // (Hle x) //=; last reflexivity. 
+      * intros Hle'. rewrite (Hle x') // (Hle x) //=; last reflexivity.
         intros (?&?); eapply Hfc'; split; auto.
         eapply Rlt_le_trans; eauto.
         apply Rmin_l.
@@ -41,13 +41,13 @@ Proof.
         intros (?&?); eapply Hgc'; split; auto.
         eapply Rlt_le_trans; eauto.
         apply Rmin_r.
-  - intros Hneq. 
+  - intros Hneq.
     exists (Rmin (Rmin alpf alpg) (Rabs (x - z))); split.
     + repeat apply Rmin_case; auto.
         by apply Rabs_pos_lt.
-    + intros x'. 
+    + intros x'.
       case: (Rle_dec x' z).
-      * intros Hle'. 
+      * intros Hle'.
         intros (?&Hmin).
         assert (x ≤ z).
         { apply Rnot_gt_le.
@@ -87,7 +87,7 @@ Proof.
   intros x' ((?&?)&Hdist).
   eapply Halp; split; auto.
   - rewrite /D_x; split; auto.
-    rewrite /Rlimit.dist //= /R_dist in Hdist. 
+    rewrite /Rlimit.dist //= /R_dist in Hdist.
     eapply Rlt_le_trans in Hdist; last apply Rmin_l.
     destruct (Rge_dec x' x) as [?|?%Rnot_ge_lt]; first by fourier.
     rewrite Rabs_left in Hdist; fourier.
@@ -108,7 +108,7 @@ Proof.
     exists (Rmin alpf (Rabs (x - z))); split.
     + repeat apply Rmin_case; auto.
         apply Rabs_pos_lt, Rlt_not_eq; fourier.
-    + intros x'. 
+    + intros x'.
       intros ((?&?)&Hmin).
         assert (x' ≤ z).
         { apply Rnot_gt_le.
@@ -120,14 +120,14 @@ Proof.
         }
         rewrite (Hle x') // (Hle x) //=; try fourier.
         eapply Hfc'; split; auto.
-        eapply Rlt_le_trans; eauto using Rmin_l. 
+        eapply Rlt_le_trans; eauto using Rmin_l.
   - destruct (Hfc x (Rle_refl x) eps Hgt0) as (alpf&?&Hfc').
     destruct (Hgc x (Rge_refl x) eps Hgt0) as (alpg&?&Hgc').
     exists (Rmin alpf alpg); split.
     + repeat apply Rmin_case; auto.
-    + intros x'. 
+    + intros x'.
       case: (Rle_dec x' x).
-      * intros Hle'. rewrite (Hle x') // (Hle x) //=; last reflexivity. 
+      * intros Hle'. rewrite (Hle x') // (Hle x) //=; last reflexivity.
         intros (?&?); eapply Hfc'; split; auto.
         eapply Rlt_le_trans; eauto.
         apply Rmin_l.
@@ -139,7 +139,7 @@ Proof.
     exists (Rmin alpg (Rabs (x - z))); split.
     + repeat apply Rmin_case; auto.
         apply Rabs_pos_lt, Rgt_not_eq; fourier.
-    + intros x'. 
+    + intros x'.
       intros ((?&?)&Hmin).
         assert (x' ≥ z).
         { apply Rnot_lt_ge.
@@ -151,7 +151,7 @@ Proof.
         }
         rewrite (Hge x') // (Hge x) //=; try fourier.
         eapply Hgc'; split; auto.
-        eapply Rlt_le_trans; eauto using Rmin_l. 
+        eapply Rlt_le_trans; eauto using Rmin_l.
 Qed.
 
 Lemma piecewise_continuity_pt P z f g r:
@@ -169,7 +169,7 @@ Proof.
     exists (Rmin alpf (Rabs (x - z))); split.
     + repeat apply Rmin_case; auto.
         apply Rabs_pos_lt, Rlt_not_eq; fourier.
-    + intros x'. 
+    + intros x'.
       intros ((?&?)&Hmin).
         assert (x' < z).
         { apply Rnot_ge_lt.
@@ -181,14 +181,14 @@ Proof.
         }
         rewrite (Hle x') // (Hle x) //=; try fourier.
         eapply Hfc'; split; auto.
-        eapply Rlt_le_trans; eauto using Rmin_l. 
+        eapply Rlt_le_trans; eauto using Rmin_l.
   - destruct (Hfc x HP (Rle_refl x) eps Hgt0) as (alpf&?&Hfc').
     destruct (Hgc x HP (Rge_refl x) eps Hgt0) as (alpg&?&Hgc').
     exists (Rmin alpf alpg); split.
     + repeat apply Rmin_case; auto.
-    + intros x'. 
+    + intros x'.
       case: (Rle_dec x' x).
-      * intros Hle'. 
+      * intros Hle'.
         destruct Hle'.
         { rewrite (Hle x') //.
           destruct Hjoin as (Heq1&Heq2); auto.
@@ -198,7 +198,7 @@ Proof.
           apply Rmin_l.
         }
         subst. intros. rewrite Rminus_diag_eq //. rewrite Rabs_R0. auto.
-      * move /Rnot_le_gt/Rgt_ge. intros Hge'. 
+      * move /Rnot_le_gt/Rgt_ge. intros Hge'.
         destruct Hge'.
         { rewrite (Hge x') //.
           destruct Hjoin as (Heq1&Heq2); auto.
@@ -212,7 +212,7 @@ Proof.
     exists (Rmin alpg (Rabs (x - z))); split.
     + repeat apply Rmin_case; auto.
         apply Rabs_pos_lt, Rgt_not_eq; fourier.
-    + intros x'. 
+    + intros x'.
       intros ((?&?)&Hmin).
         assert (x' > z).
         { apply Rnot_le_gt.
@@ -224,13 +224,13 @@ Proof.
         }
         rewrite (Hge x') // (Hge x) //=; try fourier.
         eapply Hgc'; split; auto.
-        eapply Rlt_le_trans; eauto using Rmin_l. 
+        eapply Rlt_le_trans; eauto using Rmin_l.
 Qed.
 
 Lemma continuity_id: continuity id.
 Proof.
   rewrite /continuity/continuity_pt/continue_in/limit1_in/limit_in//=/R_dist/D_x//=.
-  intros x eps Hgt. 
+  intros x eps Hgt.
   exists eps. split; auto.
   firstorder.
 Qed.
@@ -253,20 +253,20 @@ Section recurrence_work.
   Hypothesis Tbelow: ∀ x e, size x ≤ d → (T x) e ≤ umin.
 
 
-  Definition a x := 
-    if (Rle_dec x 1) then 
+  Definition a x :=
+    if (Rle_dec x 1) then
       0
     else
       x - 1.
 
-  Hypothesis Trec: 
-  ∀ x r,  pr_gt (T x) r ≤ \big[Rplus/0]_(x' : imgT (h x)) 
+  Hypothesis Trec:
+  ∀ x r,  pr_gt (T x) r ≤ \big[Rplus/0]_(x' : imgT (h x))
                 ((pr_eq (h x) (sval x')) * pr_gt (T (sval x')) (r - a (size x))).
 
   Definition m x := x * (3 / 4).
 
-  Definition u x := 
-    match Rle_dec x 1 with 
+  Definition u x :=
+    match Rle_dec x 1 with
       | left _ => 4
       | _ => 4 * x
     end.
@@ -281,7 +281,7 @@ Section recurrence_work.
   Proof. rewrite /umin; fourier. Qed.
 
   Variable m_bound_Eh: ∀ x, Ex (rvar_comp (h x) size) ≤ m (size x).
-  
+
   Lemma u_mono x y: x ≤ y → u x ≤ u y.
   Proof.
     rewrite /u/a/m/d => Hle.
@@ -299,9 +299,9 @@ Section recurrence_work.
     rewrite /u'/a/m/d => Hle.
     do 2 destruct (Rle_dec) => //=; nra.
   Qed.
-  
+
   Lemma u'_pos x: u' x > 0.
-  Proof.                      
+  Proof.
     rewrite /u'/a/m/d.
     do 1 destruct (Rle_dec) => //=; nra.
   Qed.
@@ -313,22 +313,22 @@ Section recurrence_work.
   Qed.
 
   Lemma u'_inv_above x: d < x → u' (u x) = x.
-  Proof.     
+  Proof.
     rewrite /u/u'/d.
     do 2 destruct (Rle_dec) => //=; nra.
   Qed.
-  
+
   Lemma u_inv_above x: umin < x → u (u' x) = x.
   Proof.
     rewrite /u/u'/umin.
     do 2 destruct (Rle_dec) => //=; nra.
   Qed.
-  
+
   Lemma ud_umin: u d = umin.
   Proof.
-    rewrite /u/d/umin//=. destruct (Rle_dec) => //=; field. 
+    rewrite /u/d/umin//=. destruct (Rle_dec) => //=; field.
   Qed.
-  
+
 
   Lemma u_cont: continuity u.
   Proof.
@@ -356,37 +356,37 @@ Section recurrence_work.
 
   Lemma urec x: x > d → u x ≥ a x + u (m x).
   Proof.
-    rewrite /u/a/m/d. 
+    rewrite /u/a/m/d.
     replace (4 * (x * (3 /4))) with (3 * x) by field.
     do 2 destruct Rle_dec => //=; nra.
   Qed.
-  
+
   Lemma alower: ∀ x, x ≤ d → a x = 0.
   Proof.
     rewrite /a => x. destruct (Rle_dec) => //=; intros; nra.
   Qed.
 
   Lemma ainc: ∀ x x', d ≤ x → x < x' → a x < a x'.
-  Proof.                                        
+  Proof.
     rewrite /a/d => x x' Hle Hlt.
     assert (Hgt: x' > 1) by fourier.
     do 2 destruct (Rle_dec) => //=; intros; nra.
   Qed.
-  
+
   Lemma a_nonneg: ∀ x, a x ≥ 0.
   Proof.
-    intros. rewrite /a. 
+    intros. rewrite /a.
     do 1 destruct (Rle_dec) => //=; intros; nra.
   Qed.
 
   Lemma a_pos: ∀ x, d < x → 0 < a x.
   Proof.
-    rewrite /d/a => ??. 
+    rewrite /d/a => ??.
     do 1 destruct (Rle_dec) => //=; intros; nra.
   Qed.
 
-  Lemma a_mono: Rmono a. 
-  Proof.                                        
+  Lemma a_mono: Rmono a.
+  Proof.
     rewrite /a/d => x x' Hle.
     do 2 destruct (Rle_dec) => //=; intros; nra.
   Qed.
@@ -404,9 +404,9 @@ Section recurrence_work.
   (* Technically this follows solely from the assumption on m, but it also
      is a trivial consquence of the fact that (h x) <= ceil(x) - 1, we should
      prove it from the assumption on m, but we need more facts about recn *)
-  Hypothesis hinf_0: ∀ a eps, eps > 0 → ∃ n, pr_gt (rvar_comp (recN_rvar h a n) size) d < eps. 
+  Hypothesis hinf_0: ∀ a eps, eps > 0 → ∃ n, pr_gt (rvar_comp (recN_rvar h a n) size) d < eps.
 
-  Theorem bound x w: 
+  Theorem bound x w:
     size x > 1 →  pr_gt (T x) (4 * size x + INR w * (size x - 1)) ≤ (3/4)^w.
   Proof.
     intros Hgt1.
@@ -415,20 +415,20 @@ Section recurrence_work.
     replace (size x - 1) with (a (size x)); last first.
     {  rewrite /a. destruct (Rle_dec); first nra. done. }
     etransitivity; first
-    eapply karp_bound_simple with 
+    eapply karp_bound_simple with
       (A := A)
       (B := B)
       (P := λ x, true)
       (T := T)
       (h := h)
-      (umin := umin) 
-      (d := d) 
-      (u := u) 
-      (a := a) 
+      (umin := umin)
+      (d := d)
+      (u := u)
+      (a := a)
       (m := m)
       (w := w).
     - apply umin_non_neg.
-    - intros x' Hgt. 
+    - intros x' Hgt.
       transitivity (a x' + u (m x') - a x').
       { rewrite /u/umin/d/m/a. do 2 destruct (Rle_dec) => //=; nra. }
       specialize (urec x'). nra.
@@ -447,9 +447,9 @@ Section recurrence_work.
     - apply urec.
     - auto.
     - apply hrange1.
-    - rewrite /d; intros. specialize (hrange2 x0). eapply hrange2. fourier. 
+    - rewrite /d; intros. specialize (hrange2 x0). eapply hrange2. fourier.
     - apply alower.
-    - apply a_nonneg. 
+    - apply a_nonneg.
     - apply a_mono.
     - apply a_pos.
     - apply mnondec.
@@ -482,22 +482,22 @@ Section recurrence_span.
   Definition umin := 1.
   Hypothesis Tbelow: ∀ x e, size x ≤ d → (T x) e ≤ umin.
 
-  Definition a x := 
+  Definition a x :=
     match Rle_dec x 1 with
       | left _ => 0
       | _ => ln x
     end.
 
-  Hypothesis Trec: 
-    ∀ x r,  pr_gt (T x) r ≤ \big[Rplus/0]_(x' : imgT (h x)) 
+  Hypothesis Trec:
+    ∀ x r,  pr_gt (T x) r ≤ \big[Rplus/0]_(x' : imgT (h x))
                   ((pr_eq (h x) (sval x')) * pr_gt (T (sval x')) (r - a (size x))).
 
   Definition m x := x * (3 / 4).
-  
+
   Definition k := -/ ln(3/4).
 
-  Definition u x := 
-    match Rle_dec x 1 with 
+  Definition u x :=
+    match Rle_dec x 1 with
       | left _ => 1
       | _ => ((k * ln x + 1) * (k * ln x + 1))
     end.
@@ -519,13 +519,13 @@ Section recurrence_span.
     rewrite ln_Rinv; last fourier.
     assert (0 < ln (4 / 3)).
     { rewrite -ln_1. apply ln_increasing; fourier. }
-    rewrite Ropp_inv_permute. 
+    rewrite Ropp_inv_permute.
     - rewrite Ropp_involutive.
       replace 1 with (/1) at 1 by field.
       apply Rinv_lt_contravar; first rewrite Rmult_1_r //.
       rewrite -[a in _ < a](ln_exp 1).
       apply ln_increasing; first fourier.
-      apply (Rlt_le_trans _ 2); first fourier. 
+      apply (Rlt_le_trans _ 2); first fourier.
       apply exp_ge_2.
     - apply Rlt_not_eq. fourier.
   Qed.
@@ -534,16 +534,16 @@ Section recurrence_span.
   Proof.
     etransitivity; last apply kgt1. fourier.
   Qed.
-  
+
   Lemma u_mono x y: x ≤ y → u x ≤ u y.
   Proof.
     rewrite /u/a/m/d => Hle.
     destruct (Rle_dec) as [Hle'|Hnle']; try nra;
     destruct (Rle_dec) as [Hle''|Hnle'']; try nra.
     - cut (0 ≤ ln y).
-      { 
+      {
         intros. generalize kgt1 => ?.
-        assert (k * ln y ≥ 0). 
+        assert (k * ln y ≥ 0).
         { transitivity (1 * ln y); last fourier.
           apply Rle_ge, Rmult_le_compat; try fourier.
         }
@@ -555,7 +555,7 @@ Section recurrence_span.
       apply Rsqr_incr_1.
       apply Rplus_le_compat; last fourier.
       cut (ln x ≤ ln y).
-      { 
+      {
         specialize (kgt0); cut (0 ≤ ln x); intros; first apply Rmult_le_compat; auto; try fourier.
         rewrite -(ln_1). left; apply ln_increasing; nra.
       }
@@ -575,7 +575,7 @@ Section recurrence_span.
     - specialize (kgt0) => Hk.
       replace 1 with (Rsqr 1) by (rewrite /Rsqr; field).
       assert (0 < k * ln y).
-      { 
+      {
         apply Rmult_lt_0_compat; try fourier.
         apply Rlt_0_ln; fourier.
       }
@@ -584,7 +584,7 @@ Section recurrence_span.
       apply Rsqr_incrst_1.
       apply Rplus_lt_compat_r.
       cut (ln x < ln y).
-      { 
+      {
         specialize (kgt0); cut (0 < ln x); intros; first apply Rmult_lt_compat_l; auto; try fourier.
         rewrite -(ln_1); apply ln_increasing; nra.
       }
@@ -609,7 +609,7 @@ Section recurrence_span.
       cut (sqrt y > 1); intros; first fourier.
       rewrite -sqrt_1.
       apply Rnot_le_gt in Hnle''.
-      apply Rlt_gt. 
+      apply Rlt_gt.
       apply sqrt_lt_1; fourier.
     - apply Rnot_le_gt in Hnle'.
       apply Rnot_le_gt in Hnle''.
@@ -622,16 +622,16 @@ Section recurrence_span.
       * rewrite /Rminus. apply Rplus_le_compat_r.
         apply sqrt_le_1; fourier.
   Qed.
-  
+
   Lemma u'_pos x: u' x > 0.
-  Proof.                      
+  Proof.
     rewrite /u'/a/m/d.
     do 1 destruct (Rle_dec) => //=; try nra.
     apply exp_pos.
   Qed.
 
   Lemma u'_inv_above x: d < x → u' (u x) = x.
-  Proof.     
+  Proof.
     rewrite /u/u'/d.
     destruct (Rle_dec) as [Hc1|?] => //=; try nra;
     destruct (Rle_dec) => //=; try nra.
@@ -659,23 +659,23 @@ Section recurrence_span.
       destruct (Rle_dec) => //=; try nra.
       destruct (Rle_dec) => //=; try nra.
   Qed.
-  
+
   Lemma u_inv_above x: umin < x → u (u' x) = x.
   Proof.
     rewrite /u/u'/umin.
     destruct (Rle_dec) as [Hc1|?] => //=; try nra;
     destruct (Rle_dec) as [?|?] => //=; try nra.
     - exfalso. rewrite -{2}exp_0 in Hc1.
-      apply exp_le_embedding in Hc1. 
+      apply exp_le_embedding in Hc1.
       assert (1 < sqrt x).
       { rewrite -sqrt_1. apply sqrt_lt_1; nra. }
       specialize (kgt1) => Hk.
-      cut (0 < (sqrt x - 1) / k). 
+      cut (0 < (sqrt x - 1) / k).
       { by intros ?%Rlt_not_le. }
       apply Rdiv_lt_0_compat; fourier.
     - rewrite ln_exp. rewrite /Rdiv.
       transitivity (sqrt x * sqrt x).
-      * field. apply Rgt_not_eq, kgt0. 
+      * field. apply Rgt_not_eq, kgt0.
       * apply sqrt_sqrt. fourier.
   Qed.
 
@@ -683,7 +683,7 @@ Section recurrence_span.
   Proof.
     rewrite /u/d/umin//=. destruct (Rle_dec) => //=; nra.
   Qed.
-  
+
   Lemma u_cont: continuity u.
   Proof.
     apply piecewise_continuity' with (g := λ x, (k * ln x + 1) * (k * ln x + 1))
@@ -703,7 +703,7 @@ Section recurrence_span.
     - rewrite /u => x. destruct (Rle_dec) => //=; nra.
     - rewrite /u => x.
       destruct (Rle_dec) => //=; try nra; intros.
-      assert (x = 1) as -> by (apply Rle_antisym; nra). 
+      assert (x = 1) as -> by (apply Rle_antisym; nra).
       rewrite ln_1 Rmult_0_r Rplus_0_l Rmult_1_l. done.
   Qed.
 
@@ -721,14 +721,14 @@ Section recurrence_span.
 
   Lemma urec x: x > d → u x ≥ a x + u (m x).
   Proof.
-    rewrite /u/a/m/d. 
+    rewrite /u/a/m/d.
     destruct (Rle_dec) as [Hc1|Hc1] => //=; first by nra.
     destruct (Rle_dec) as [Hc2|Hc2] => //=.
     - transitivity ((k * ln x) * (k * ln x) + 2 * k * (ln x) + 1).
       { right. field. }
       assert (0 < ln x) by (apply Rlt_0_ln; auto).
       assert (0 < (k * ln x) * (k * ln x)) by (repeat apply Rmult_lt_0_compat; auto using kgt0).
-      assert (2 * k * ln x > ln x). 
+      assert (2 * k * ln x > ln x).
       { apply Rlt_gt. rewrite -[a in a < _](Rmult_1_l).
         apply Rmult_lt_compat_r; auto.
         generalize kgt1 =>?. fourier.
@@ -744,15 +744,15 @@ Section recurrence_span.
       rewrite Rplus_assoc Rplus_opp_l Rplus_0_r.
       rewrite ?(Rmult_plus_distr_l).
       rewrite ?(Rmult_plus_distr_r).
-      assert (k * ln x > ln x). 
+      assert (k * ln x > ln x).
       { apply Rlt_gt. rewrite -[a in a < _](Rmult_1_l).
         apply Rmult_lt_compat_r; auto.
         generalize kgt1 =>?. fourier.
       }
       nra.
   Qed.
-  
-  
+
+
   Lemma alower: ∀ x, x ≤ d → a x = 0.
   Proof.
     rewrite /a => x. destruct (Rle_dec) => //=; nra.
@@ -771,7 +771,7 @@ Section recurrence_span.
   Qed.
 
   Lemma ainc: ∀ x x', d ≤ x → x < x' → a x < a x'.
-  Proof.                                        
+  Proof.
     rewrite /a/d => x x' Hle Hlt.
     assert (Hgt: x' > 1) by fourier.
     destruct (Rle_dec) => //;
@@ -780,8 +780,8 @@ Section recurrence_span.
     - apply ln_increasing; fourier.
   Qed.
 
-  Lemma a_mono: Rmono a. 
-  Proof.                                        
+  Lemma a_mono: Rmono a.
+  Proof.
     rewrite /Rmono. intros x x' Hle.
     inversion Hle; subst; try reflexivity.
     destruct (Rle_dec d x) as [?|?%Rnot_le_gt].
@@ -808,10 +808,10 @@ Section recurrence_span.
   (* Technically this follows solely from the assumption on m, but it also
      is a trivial consquence of the fact that (h x) <= ceil(x) - 1, we should
      prove it from the assumption on m, but we need more facts about recn *)
-  Hypothesis hinf_0: ∀ a eps, eps > 0 → ∃ n, pr_gt (rvar_comp (recN_rvar h a n) size) d < eps. 
+  Hypothesis hinf_0: ∀ a eps, eps > 0 → ∃ n, pr_gt (rvar_comp (recN_rvar h a n) size) d < eps.
 
-  Theorem bound x w: 
-    size x > 1 →  
+  Theorem bound x w:
+    size x > 1 →
     pr_gt (T x) ((k * ln (size x) + 1)² + INR w * ln (size x)) ≤ (3/4)^w.
   Proof.
     intros Hgt1.
@@ -820,16 +820,16 @@ Section recurrence_span.
     replace (ln (size x) )with (a (size x)); last first.
     {  rewrite /a. destruct (Rle_dec); first nra. done. }
     etransitivity; first
-    eapply karp_bound_simple with 
+    eapply karp_bound_simple with
       (A := A)
       (B := B)
       (T := T)
       (P := λ x, true)
       (h := h)
-      (umin := umin) 
-      (d := d) 
-      (u := u) 
-      (a := a) 
+      (umin := umin)
+      (d := d)
+      (u := u)
+      (a := a)
       (m := m).
     - apply umin_non_neg.
     - cut (∀ x, umin ≤ u x).
@@ -854,7 +854,7 @@ Section recurrence_span.
     - apply urec.
     - auto.
     - apply hrange1.
-    - rewrite /d; intros. specialize (hrange2 x0). eapply hrange2. fourier. 
+    - rewrite /d; intros. specialize (hrange2 x0). eapply hrange2. fourier.
     - apply alower.
     - apply a_nonneg.
     - apply a_mono.

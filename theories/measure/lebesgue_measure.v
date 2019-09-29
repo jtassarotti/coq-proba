@@ -10,7 +10,7 @@ Coercion interval_R {a b} (x : Interval a b) : R := (sval x).
 
 Hint Resolve Rabs_pos Rle_ge.
 Hint Resolve disc_neighbourhood.
-    
+
 (* Lebesgue number lemma. Most pencil and paper proofs don't seem
    to use this, but I think it makes the proof that the outer measure
    of intervals is equal to their length simpler *)
@@ -24,7 +24,7 @@ Proof.
   intros Hcompact Hcover Hopen.
   apply Classical_Pred_Type.not_all_not_ex => Hnot.
   assert (Hneg: ∀ y, 0 < y → (∃ x, D x ∧ ∀ i, ∃ z, D z ∧ ball x y z ∧ ¬ U i z)).
-  { 
+  {
     intros y. specialize (Hnot y) => Hpos.
     apply Classical_Prop.not_and_or in Hnot as [?|Hnot]; first by auto.
     apply Classical_Pred_Type.not_all_ex_not in Hnot.
@@ -54,7 +54,7 @@ Proof.
   {
     apply adherence_P2; first by apply compact_P2.
     rewrite /adherence/point_adherent => V Hneighbor'.
-    edestruct (Hneighbor V O) as (p&Hge&HV); eauto. 
+    edestruct (Hneighbor V O) as (p&Hge&HV); eauto.
     exists (un p). rewrite /intersection_domain; split; auto.
     rewrite /un. destruct ClassicalEpsilon.constructive_indefinite_description; intuition.
   }
@@ -67,7 +67,7 @@ Proof.
   rewrite /un in Hin.
   destruct (ClassicalEpsilon.constructive_indefinite_description) as (xbad&?&Hneg').
   specialize (Hneg' i). destruct Hneg' as (z&HD&Hball&Hneg').
-  apply Hneg'. apply Hsub. 
+  apply Hneg'. apply Hsub.
   apply disc_ball.
   apply: (ball_le _ (δ/2 + (/ (INR (N' + 1))))).
   { destruct δ as (δ&?) => //=.
@@ -80,7 +80,7 @@ Proof.
        nra.
      * apply lt_INR. omega.
   }
-  eapply ball_triangle; eauto. 
+  eapply ball_triangle; eauto.
 Qed.
 
 Hint Resolve Rabs_pos Rle_ge.
@@ -88,7 +88,7 @@ Hint Resolve Rabs_pos Rle_ge.
 Section Interval_UniformSpace.
   Variable a b : R.
   Implicit Types x y : Interval a b.
-  
+
   Definition Interval_ball (x: Interval a b) eps y := ball (x : R) eps y.
   Definition Interval_ball_center x (e: posreal) : Interval_ball x e x := @ball_center _ _ _.
   Definition Interval_ball_sym x y e := @ball_sym _ (x : R) y e.
@@ -98,7 +98,7 @@ Section Interval_UniformSpace.
     apply (UniformSpace.Mixin _ Interval_ball
                               Interval_ball_center
                               Interval_ball_sym
-                              Interval_ball_triangle).   
+                              Interval_ball_triangle).
   Defined.
 
   Canonical Interval_UniformSpace := UniformSpace.Pack _ Interval_UniformSpace_mixin (Interval a b).
@@ -145,7 +145,7 @@ Section lebesgue_measure.
       * exact V.
       * exact ∅.
     }
-    { 
+    {
       split.
       * intros HUz. specialize (HopenU _ HUz).
         destruct HopenU as ((δ&Hpos)&Hdelta).
@@ -247,7 +247,7 @@ Section lebesgue_measure.
     apply Hlub. intros x (?&(?&<-)).
     apply Ropp_le_contravar. auto.
   Qed.
-  
+
   Lemma leb_outer_fun_lb U Us:
     leb_outer_set U Us → leb_outer_fun U <= Series (λ i, Rabs (snd (Us i) - fst (Us i))).
   Proof.
@@ -294,7 +294,7 @@ Section lebesgue_measure.
   Proof.
     intros U U' Heq ?? ->. rewrite /leb_outer_pre_fun. setoid_rewrite Heq. done.
   Qed.
-    
+
   Global Instance leb_outer_fun_proper : Proper (eq_prop ==> eq) leb_outer_fun.
   Proof.
     intros U U' Heq.
@@ -323,21 +323,21 @@ Section lebesgue_measure.
   Qed.
 
   Lemma leb_outer_eps_close U eps :
-    0 < eps → 
+    0 < eps →
     ∃ Us, leb_outer_set U Us
           ∧ Series (λ i, Rabs (snd (Us i) - fst (Us i))) < leb_outer_fun U + eps.
   Proof.
     intros Hpos.
     apply Classical_Pred_Type.not_all_not_ex.
     intros Hneg.
-    apply (Rlt_not_ge (leb_outer_fun U) (leb_outer_fun U + eps)); first nra. 
+    apply (Rlt_not_ge (leb_outer_fun U) (leb_outer_fun U + eps)); first nra.
     apply Rle_ge, leb_outer_fun_glb => Us Hin.
     apply Rnot_gt_le. intros Hgt. apply (Hneg Us).
     split; auto.
   Qed.
 
   Lemma leb_outer_eps_close' U eps :
-    0 < eps → 
+    0 < eps →
     { Us : _ | leb_outer_set U Us
           ∧ Series (λ i, Rabs (snd (Us i) - fst (Us i))) < leb_outer_fun U + eps }.
   Proof.
@@ -374,7 +374,7 @@ Section lebesgue_measure.
       intros n'. rewrite Series_incr_1_aux; eauto.
     * rewrite Series_0; eauto.
   Qed.
-  
+
   Lemma leb_outer_fun_subadditivity Us :
     ex_series (λ n, leb_outer_fun (Us n)) →
     leb_outer_fun (unionF Us) <= Series (λ n, leb_outer_fun (Us n)).
@@ -401,12 +401,12 @@ Section lebesgue_measure.
 
     set (len := λ xy, Rabs (snd xy - fst xy)).
     set (aseq0 := λ mn, match mn with
-                       | (S m, S n) => 
+                       | (S m, S n) =>
                          (sval (leb_outer_eps_close' (Us m) (eps/2 * (pow (1/2) m))
                                                          (Hpos_scale m)) n)
                        | (_, _) => (a, a)
                     end).
-    set (aseq := λ mn, len (aseq0 mn)). 
+    set (aseq := λ mn, len (aseq0 mn)).
     set (σ := λ n, match @pickle_inv [countType of nat * nat] n with
                    | Some (m, n) => (S m, S n)
                    | _ => (O, O)
@@ -425,7 +425,7 @@ Section lebesgue_measure.
         rewrite Rabs_right; nra.
     }
     assert (double.double_summable aseq).
-    { 
+    {
       apply ex_series_rows_ds.
       intros j.
       * rewrite /aseq/aseq0.
@@ -434,7 +434,7 @@ Section lebesgue_measure.
         ** apply ex_series_incr_1 => //=.
            destruct (leb_outer_eps_close') as (?&Hex'&?); auto.
            eapply ex_series_ext; last eapply Hex'.
-           intros ?. rewrite /len Rabs_Rabsolu => //=. 
+           intros ?. rewrite /len Rabs_Rabsolu => //=.
       * apply: ex_series_double_shift.
         { intros j k [?|?]; subst => //=; try destruct j;
                                        rewrite /aseq/aseq0 /len ?Rminus_eq_0 ?Rabs_R0 //.
@@ -445,7 +445,7 @@ Section lebesgue_measure.
         etransitivity; last by (left; eapply Hlt).
         right. rewrite /norm//=/abs//=. rewrite Rabs_right.
         ** apply Series_ext => ? //=. by rewrite Rabs_Rabsolu.
-        ** apply Rle_ge, Series_pos => ?. auto. 
+        ** apply Rle_ge, Series_pos => ?. auto.
     }
     feed pose proof (series_double_covering' aseq σ) as His; auto.
     { intros n n'. rewrite /σ/aseq.
@@ -457,11 +457,11 @@ Section lebesgue_measure.
     }
     { rewrite /aseq/aseq0. intros ([|m]&[|n]) => //=;
       rewrite /len ?Rminus_eq_0 ?Rabs_R0 //=.
-      exists (pickle (m, n)). 
+      exists (pickle (m, n)).
       rewrite /σ pickleK_inv => //=. }
     etransitivity.
     * apply (leb_outer_fun_lb _ (aseq0 \o σ)). split.
-      ** intros x (n&Hin). 
+      ** intros x (n&Hin).
          destruct (leb_outer_eps_close' (Us n) _ (Hpos_scale n)) as (Vs&(Hcover&?)&?) eqn:Heq.
          generalize (Hcover x Hin). intros (i&Hin').
          exists (pickle (n, i)).
@@ -469,7 +469,7 @@ Section lebesgue_measure.
          rewrite Heq. auto.
       ** eexists; eauto.
     * rewrite (is_series_unique _ _ His).
-      rewrite -(is_series_unique _ _ His_plus). 
+      rewrite -(is_series_unique _ _ His_plus).
       rewrite Series_double_shift; last first.
       { intros ?? [?|?]; subst; try destruct j; rewrite /aseq/len//= ?Rminus_eq_0 ?Rabs_R0 //=. }
       apply Series_le; last by (eexists; eauto).
@@ -479,7 +479,7 @@ Section lebesgue_measure.
       ** rewrite /aseq/aseq0//=. destruct (leb_outer_eps_close') as (?&?&Hdone); eauto.
          rewrite /len//=. nra.
   Qed.
-  
+
   Lemma Rabs_Rminus_eq_0 x:
     Rabs (x - x) = 0.
   Proof.
@@ -509,7 +509,7 @@ Section lebesgue_measure.
       destruct (Rlt_dec (eps) (y1 - x1)) as [?|?]; last by nra.
       destruct (Hsubseteq (x1 + eps/2)).
       { split; nra. }
-      rewrite Rabs_right; last by nra. 
+      rewrite Rabs_right; last by nra.
       destruct (Hsubseteq (y1 - eps/2)).
       { split; nra. }
       nra.
@@ -520,7 +520,7 @@ Section lebesgue_measure.
     open_interval x1 y1 ⊆ open_interval x2 y2 →
     x2 <= x1.
   Proof.
-    intros Hle Hsubseteq. 
+    intros Hle Hsubseteq.
     cut (∀ eps : R, 0 < eps → eps < (y1 - x1) → x2 <= x1 + eps).
     { intros Hcut. apply le_epsilon.
       intros eps Hlt.
@@ -543,7 +543,7 @@ Section lebesgue_measure.
     open_interval x1 y1 ⊆ open_interval x2 y2 →
     y1 <= y2.
   Proof.
-    intros Hle Hsubseteq. 
+    intros Hle Hsubseteq.
     cut (∀ eps : R, 0 < eps → eps < (y1 - x1) → y1 <= y2 + eps).
     { intros Hcut. apply le_epsilon.
       intros eps Hlt.
@@ -584,7 +584,7 @@ Section lebesgue_measure.
     - intros ??. destruct 1 as [Heq|[]].
       * inversion Heq; subst; nra.
       * eapply IHHdec. by left.
-      * eapply IHHdec. by right. 
+      * eapply IHHdec. by right.
   Qed.
 
   Lemma decreasing_intervals_2 x1 y1 l
@@ -593,7 +593,7 @@ Section lebesgue_measure.
   Proof.
     remember ((x1, y1) :: l) as l0 eqn:Heql. revert x1 y1 l Heql.
     induction Hdec.
-    - congruence. 
+    - congruence.
     - intros x1 y1 l. inversion 1; subst. intros ?? [].
     - intros x1 y1 l0. inversion 1; subst.
       intros ??. inversion 1.
@@ -611,12 +611,12 @@ Section lebesgue_measure.
     intros ?? [Heq1|Htl].
     - inversion Heq1; reflexivity.
     - transitivity x1.
-      * eapply decreasing_intervals_2; eauto. 
+      * eapply decreasing_intervals_2; eauto.
       * eapply decreasing_intervals_1; eauto; by left.
   Qed.
 
   Lemma intervals_contained_length Us (l: list (R * R)) :
-    decreasing_intervals l → 
+    decreasing_intervals l →
     ex_series (λ i : nat, Rabs ((Us i).2 - (Us i).1)) →
     (∀ a b, In (a, b) l → ∃ i, (open_interval a b) ⊆ open_interval (Us i).1 (Us i).2) →
     fold_right Rplus 0 (map int_len l) <= Series (λ i : nat, Rabs ((Us i).2 - (Us i).1)).
@@ -641,7 +641,7 @@ Section lebesgue_measure.
                 (λ i0 : nat, Rabs
        ((match Nat.eq_dec i0 i with | left _ => ((Us i).1, x2) | _ => Us i0 end).2 -
        ((match Nat.eq_dec i0 i with | left _ => ((Us i).1, x2) | _ => Us i0 end).1)))).
-      { 
+      {
         apply: ex_series_le; eauto.
         intros n. rewrite /norm//=/abs//= Rabs_Rabsolu.
         destruct Nat.eq_dec => //=; last reflexivity.
@@ -655,7 +655,7 @@ Section lebesgue_measure.
                                     | left _ => ((Us i).1, x2)
                                     | _ => Us n
                                     end)); auto.
-      { 
+      {
         intros a' b' Hin. edestruct (Hcov a' b') as (n&Hin'); first by right.
         exists n. destruct Nat.eq_dec => //=; subst.
         intros x Hrange. specialize (Hin' _ Hrange) as (?&?).
@@ -682,9 +682,9 @@ Section lebesgue_measure.
         { ring_simplify.  cut (y2 <= snd (Us i)); first (intros; nra).
           eapply open_interval_subset_right_ordering; eauto. nra.
         }
-        ** eapply open_interval_subset_non_empty in Hsubseteq; nra. 
-        ** eapply open_interval_subset_left_ordering in Hsubseteq; nra. 
-        ** eapply open_interval_subset_right_ordering in Hsubseteq; nra. 
+        ** eapply open_interval_subset_non_empty in Hsubseteq; nra.
+        ** eapply open_interval_subset_left_ordering in Hsubseteq; nra.
+        ** eapply open_interval_subset_right_ordering in Hsubseteq; nra.
   Qed.
 
 
@@ -714,7 +714,7 @@ Section lebesgue_measure.
   Proof.
     intros Hpos.
     revert x. induction n => x.
-    - done. 
+    - done.
     - intros a' b'. intros [Hhd|Htl].
       * exists (x - δ/2); split_and!.
         ** rewrite //=. destruct n; try nra. specialize (pos_INR (S n)) => H. nra.
@@ -729,7 +729,7 @@ Section lebesgue_measure.
       * edestruct IHn as (x0&(Hlb&?)&?&Hrange); eauto.
         exists x0. split_and!; auto; try nra.
         ** rewrite S_INR. nra.
-        ** intros. edestruct Hrange; eauto. rewrite S_INR. nra. 
+        ** intros. edestruct Hrange; eauto. rewrite S_INR. nra.
   Qed.
 
   Lemma decreasing_intervals_delta3  x δ n :
@@ -754,7 +754,7 @@ Section lebesgue_measure.
     intros Hpos Hle1 Hle2 Hle3.
     destruct Hle2 as [Hlt|Heq]; last first.
     { subst. exists []; split_and! => //=.
-      * econstructor. 
+      * econstructor.
       * nra.
     }
     assert (∃ N, (y - x) / INR N < δ ∧ (0 < N)%nat) as (N&Hsize&HposN).
@@ -848,8 +848,8 @@ Section lebesgue_measure.
     transitivity (leb_outer_fun (λ z, Rmax a x <= z <= Rmin y b)).
     {
       apply leb_outer_fun_mono. intros (z&(?&?)) => //=. intros (?&?); split.
-      * apply Rmax_case_strong; intros; try nra.  
-      * apply Rmin_case_strong; intros; try nra.  
+      * apply Rmax_case_strong; intros; try nra.
+      * apply Rmin_case_strong; intros; try nra.
     }
     rewrite leb_outer_fun_interval_length; auto using Rmax_r, Rmax_l, Rmin_r, Rmin_l.
     - apply Rmax_case_strong; apply Rmin_case_strong; intros; rewrite ?Rabs_right; nra.
@@ -869,15 +869,15 @@ Section lebesgue_measure.
     etransitivity; last eapply leb_outer_fun_interval_length_arbitrary1.
     apply leb_outer_fun_mono => z; nra.
   Qed.
-  
+
   Definition leb_outer_measure : outer_measure (Interval a b).
   refine {| outer_measure_fun := leb_outer_fun |}.
-  - apply leb_outer_fun_empty. 
+  - apply leb_outer_fun_empty.
   - apply leb_outer_fun_subadditivity.
   Defined.
 
   Definition leb_measure := outer_measure_measure leb_outer_measure.
-  
+
   Lemma norm_R_right (r: R):
     0 <= r → norm r = r.
   Proof. intros; rewrite /norm//=/abs//= Rabs_right; nra. Qed.
@@ -895,7 +895,7 @@ Section lebesgue_measure.
                                                  (λ z, z <= x)) +
                  leb_outer_measure (open_interval (Us n).1 (Us n).2 ∩
                                                  compl (λ z, z <= x))).
-    { intros n. 
+    { intros n.
       destruct (Rle_dec x (Us n).1).
       {
         assert (eq_prop (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ Rle^~ x) x0)
@@ -920,7 +920,7 @@ Section lebesgue_measure.
                       (λ x0, (Us n).1 < x0 <= x)) as Heq1.
         { intros (z&?&?) => //=. split.
           * intros ((Hr1&Hr2)&Hr3); split; nra.
-          * rewrite /open_interval; intros; split_and!; try nra. 
+          * rewrite /open_interval; intros; split_and!; try nra.
         }
         assert (eq_prop
                   (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ compl (Rle^~ x)) x0)
@@ -938,7 +938,7 @@ Section lebesgue_measure.
                         (open_interval (Us n).1 (Us n).2)) as Heq1.
         { intros (z&?&?) => //=. split.
           * intros ((Hr1&Hr2)&Hr3); split; nra.
-          * rewrite /open_interval; intros; split_and!; try nra. 
+          * rewrite /open_interval; intros; split_and!; try nra.
         }
         assert (eq_prop
                   (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ compl (Rle^~ x)) x0)

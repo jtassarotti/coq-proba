@@ -12,8 +12,8 @@ Global Set Bullet Behavior "Strict Subproofs".
 Lemma Rlt_plus_reg a b a' b': a + b < a' + b' → (a < a') ∨ (b < b').
 Proof.
   intros.
-  destruct (Rlt_dec a a') as [|?%Rnot_lt_ge]; first by auto. 
-  destruct (Rlt_dec b b') as [|?%Rnot_lt_ge]; first by auto. 
+  destruct (Rlt_dec a a') as [|?%Rnot_lt_ge]; first by auto.
+  destruct (Rlt_dec b b') as [|?%Rnot_lt_ge]; first by auto.
   fourier.
 Qed.
 
@@ -39,13 +39,13 @@ Hypothesis grange2: ∀ r,  r \in img X → 0 ≤ g (size (snd r)).
 Hypothesis grange_sum: ∀ r,  r \in img X → g (size (fst r)) + g (size (snd r)) ≤ g x.
 
 Hypothesis f0: f 0 = 0.
-Hypothesis frange1: ∀ x,  0 ≤ f x. 
+Hypothesis frange1: ∀ x,  0 ≤ f x.
 Variable z : R.
 Hypothesis zgt1 : z ≥ 1.
 Hypothesis frange2: ∀ y, y ≥ c → f y = z.
 
-Hypothesis fnondec: ∀ y y', 
-    (y ≤ y') ∧ 
+Hypothesis fnondec: ∀ y y',
+    (y ≤ y') ∧
     (0 < y ∧ y ≤ c) ∧
     (0 < y' ∧ y' ≤ c) →
     (f y / y) ≤ (f y' / y').
@@ -55,7 +55,7 @@ Proof. by apply Rmin_case. Qed.
 Lemma min_xc_neq0: Rmin x c ≠ 0.
 Proof. eapply Rlt_not_eq'. apply min_xc_gt. Qed.
 
-Lemma fmono_aux y y': 
+Lemma fmono_aux y y':
   0 ≤ y → y ≤ y' → y' ≤ c → f y ≤ f y'.
 Proof.
   intros Hge0 Hle Hlec.
@@ -71,7 +71,7 @@ Proof.
   * apply Rinv_le_contravar; fourier.
 Qed.
 
-Lemma fmono y y': 
+Lemma fmono y y':
   0 ≤ y → y ≤ y' → f y ≤ f y'.
 Proof.
   intros Hge0 Hle.
@@ -93,19 +93,19 @@ Proof.
   rewrite /Rdiv Rmult_comm.
   rewrite ?Ex_fin_pt.
   rewrite big_distrr//=.
-  apply (Rle_bigr) => r Hin. 
-  - rewrite -?Rmult_assoc.  
+  apply (Rle_bigr) => r Hin.
+  - rewrite -?Rmult_assoc.
     apply (Rmult_le_compat_r (rvar_dist X r)); first by (auto using Rge_le, pmf_pos).
      etransitivity.
      { apply Rplus_le_compat; apply Rmult_le_compat_l.
-       - apply grange1, img_alt. exists r. auto. 
+       - apply grange1, img_alt. exists r. auto.
        - apply (fmono _ (Rmax (size (fst (X r))) (size (snd (X r))))).
-         * apply Xrange11, img_alt. exists r. auto. 
-         * apply Rmax_l. 
-       - apply grange2, img_alt. exists r. auto. 
+         * apply Xrange11, img_alt. exists r. auto.
+         * apply Rmax_l.
+       - apply grange2, img_alt. exists r. auto.
        - apply (fmono _ (Rmax (size (fst (X r))) (size (snd (X r))))).
-         * apply Xrange21, img_alt. exists r. auto. 
-         * apply Rmax_r. 
+         * apply Xrange21, img_alt. exists r. auto.
+         * apply Rmax_r.
      }
      rewrite -Rmult_plus_distr_r.
      rewrite ?Rmult_assoc.
@@ -113,20 +113,20 @@ Proof.
      {
        - replace 0 with (0 + 0) by field.
          apply Rplus_le_compat.
-         * apply grange1, img_alt. exists r. auto. 
-         * apply grange2, img_alt. exists r. auto. 
+         * apply grange1, img_alt. exists r. auto.
+         * apply grange2, img_alt. exists r. auto.
      }
      { apply grange_sum, img_alt. exists r. auto. }
      set (y := Rmax (size (fst (X r))) (size (snd (X r)))).
      rewrite -?/y.
      assert (y ≤ x).
-     { 
+     {
        rewrite /y. apply Rmax_case.
        * apply Xrange12, img_alt; eauto.
        * apply Xrange22, img_alt; eauto.
      }
      assert (g y ≤ g x).
-     { 
+     {
        assert (0 ≤ (g (size ((fst (X r)))))); first apply grange1, img_alt; eauto.
        assert (0 ≤ (g (size ((snd (X r)))))); first apply grange2, img_alt; eauto.
        rewrite /y; transitivity (g (size (X r).1) + g (size (X r).2)).
@@ -134,12 +134,12 @@ Proof.
        - apply grange_sum, img_alt; eauto.
      }
      assert (0 ≤ y) as [Hgt|HX0].
-     { 
-       rewrite /y; apply Rmax_case; [ eapply Xrange11 | eapply Xrange21]; apply img_alt; 
-       exists r; eauto. 
+     {
+       rewrite /y; apply Rmax_case; [ eapply Xrange11 | eapply Xrange21]; apply img_alt;
+       exists r; eauto.
      }
-     * apply (Rmult_le_reg_r (Rdiv 1 y)). 
-         apply Rdiv_lt_0_compat; fourier. 
+     * apply (Rmult_le_reg_r (Rdiv 1 y)).
+         apply Rdiv_lt_0_compat; fourier.
          transitivity (f (Rmin x c) / (Rmin x c)); last first.
          *** apply Req_le. field; split.
              **** by apply Rlt_not_eq'.
@@ -196,19 +196,19 @@ Variable a_cont: ∀ x, d < x → continuity_pt a x.
 
 Hypothesis T_non_neg: ∀ x n, (T x) n ≥ 0.
 
-Hypothesis Trec: 
-  ∀ x r, P x → size x > d →  pr_gt (T x) r ≤ \big[Rplus/0]_(x' : imgT (h x)) 
-                        (pr_eq (h x) (sval x') * 
+Hypothesis Trec:
+  ∀ x r, P x → size x > d →  pr_gt (T x) r ≤ \big[Rplus/0]_(x' : imgT (h x))
+                        (pr_eq (h x) (sval x') *
                          pr_gt (rvar_comp (rvar_pair (T (fst (sval x'))) (T (snd (sval x'))))
                                           (fun xy => Rmax (fst xy) (snd xy))) (r - a (size x))).
 (*
-Hypothesis Trec: 
-  ∀ x r,  pr (T x) r = \rsum_(x' <- img (h x)) 
+Hypothesis Trec:
+  ∀ x r,  pr (T x) r = \rsum_(x' <- img (h x))
                         (pr (h x) x') * pr (comp_rv (pair_rv (T (fst x')) (T (snd x')))
                                         (fun xy => Rmax (fst xy) (snd xy))) (r - a (size x)).
 *)
 
-Hypothesis urec: 
+Hypothesis urec:
   ∀ x, x > d →  u x ≥ a x + u (m x).
 
 Hypothesis hP: ∀ x n, P x → P (fst ((h x) n)) ∧ P (snd ((h x) n)).
@@ -244,14 +244,14 @@ Defined.
 Definition Krecfun φ (i: nat) r x : R := Krec _ (λ x, size (snd x)) _ (hpath φ) a umin i r x.
 *)
 
-(* This could be weakend; I think what's needed is to say it in the limit 
+(* This could be weakend; I think what's needed is to say it in the limit
    it's bounded above by 2^-n *)
 Hypothesis hinf_0: ∀ a, ∃ n, ∀ φ, pr_gt (rvar_comp (recN_rvar (hpath φ) (O, a) n)
                                                   (λ x, size (snd x))) d = 0.
 
 Hypothesis Tbelow: ∀ x e, size x ≤ d → (T x) e ≤ umin.
 Hypothesis gd: ∀ x, x > d → g x ≥ 1.
-Hypothesis gpos: ∀ x, 0 ≤ x → 0 ≤ g x. 
+Hypothesis gpos: ∀ x, 0 ≤ x → 0 ≤ g x.
 Hypothesis g_mono: Rmono g.
 
 
@@ -265,22 +265,22 @@ Proof.
   - subst. reflexivity.
 Qed.
 
-Lemma K_alt4 r z: 
+Lemma K_alt4 r z:
   P z →
   size z > d →
-  K r z ≤ \big[Rplus/0]_(i : imgT (h z)) ((pr_eq (h z) (sval i) 
+  K r z ≤ \big[Rplus/0]_(i : imgT (h z)) ((pr_eq (h z) (sval i)
                                              * ((K (r - (a (size z))) (fst (sval i))) +
                                                 (K (r - (a (size z))) (snd (sval i)))))).
 Proof.
-  rewrite {1}/K. 
-  etransitivity. 
+  rewrite {1}/K.
+  etransitivity.
   { etransitivity; first apply Trec; last reflexivity; auto. }
-  apply Rle_bigr.  intros (x'&Hin) _. 
-  set (Trecpair := rvar_comp (rvar_pair (T x'.1) (T x'.2)) (λ xy, Rmax (fst xy) (snd xy))); 
+  apply Rle_bigr.  intros (x'&Hin) _.
+  set (Trecpair := rvar_comp (rvar_pair (T x'.1) (T x'.2)) (λ xy, Rmax (fst xy) (snd xy)));
     rewrite -/Trecpair.
-  apply Rmult_le_compat_l; first by (rewrite /pr_eq; apply Rge_le, ge_pr_0). 
+  apply Rmult_le_compat_l; first by (rewrite /pr_eq; apply Rge_le, ge_pr_0).
   set (pred_combined := (fun x: (A (fst x')) * A (snd x') =>
-                           Rgt_dec (Rmax ((T x'.1) x.1) (T x'.2 x.2)) 
+                           Rgt_dec (Rmax ((T x'.1) x.1) (T x'.2 x.2))
                                    (r - a (size z))) : pred (A (fst x') * A (snd x'))).
   set (predA := (fun x: (A (fst x')) * A (snd x') =>
                            Rgt_dec (T (fst x') (fst x))
@@ -288,13 +288,13 @@ Proof.
   set (predB := (fun x: (A (fst x')) * A (snd x') =>
                            Rgt_dec (T (snd x') (snd x))
                                    (r - a (size z))) : pred (A (fst x') * A (snd x'))).
-    assert (Heq: pred_combined =i predU predA predB). 
-    { 
+    assert (Heq: pred_combined =i predU predA predB).
+    {
       intros y. rewrite /in_mem//=/pred_combined/predA/predB/predU.
-      apply Rmax_case_strong => Hcase; 
+      apply Rmax_case_strong => Hcase;
       destruct (Rgt_dec) as [Hgt|Hnotgt] => //=; try nra;
       destruct (Rgt_dec) as [Hgt'|Hnotgt'] => //=; try nra;
-      rewrite //= in Hgt', Hnotgt, Hcase; nra. 
+      rewrite //= in Hgt', Hnotgt, Hcase; nra.
     }
    rewrite /pr_gt.
    rewrite (pr_eq_pred _ _ _ Heq).
@@ -316,17 +316,17 @@ Definition K0 r (z: X) :=
   else
     0.
 
-Fixpoint Krec i r x := 
+Fixpoint Krec i r x :=
   match i with
     | 0 => K0 r x
-    | S i' => Rmin 1 (Ex (rvar_comp (h x) (fun x' => Krec i' (r - a (size x)) (fst x') + 
+    | S i' => Rmin 1 (Ex (rvar_comp (h x) (fun x' => Krec i' (r - a (size x)) (fst x') +
                                            Krec i' (r - a (size x)) (snd x'))))
   end.
 
 
 Definition round r x := Rceil ((r - u x) / a x).
 
-Definition D r x := 
+Definition D r x :=
   if Rle_dec r umin then
     1
   else
@@ -338,7 +338,7 @@ Definition D r x :=
       else
         (m x / x)^(Z.to_nat (round r x)) * (g(x) * x / (u' (r - a(x) * IZR (round r x)))).
 
-Definition Dalt r x := 
+Definition Dalt r x :=
   if Rle_dec r umin then
     1
   else
@@ -355,25 +355,25 @@ Lemma D_Dalt_equiv r x:
   D r x = Dalt r x.
 Proof.
   rewrite /Dalt /D.
-  destruct (Rle_dec) as [?|Hgt] => //=. 
+  destruct (Rle_dec) as [?|Hgt] => //=.
   apply Rnot_le_gt in Hgt.
-  destruct (Rle_dec) as [?|Hgt'] => //=. 
+  destruct (Rle_dec) as [?|Hgt'] => //=.
   apply Rnot_le_gt in Hgt'.
   destruct (Rle_dec) as [Hle|?] => //=.
   - inversion Hle as [Hlt|Heq].
     * destruct (Rlt_dec) => //=.
     * subst. destruct (Rlt_dec) => //=.
       assert (round (u x) x = 0%Z) as ->.
-      { 
+      {
         rewrite /round. rewrite -Rceil_0. f_equal.
         rewrite Rminus_diag_eq // /Rdiv Rmult_0_l //.
       }
       rewrite //= Rmult_0_r /Rminus Ropp_0 Rplus_0_r u'_inv_above //=.
-      rewrite /Rdiv Rmult_1_l. rewrite Rmax_right; first field. 
+      rewrite /Rdiv Rmult_1_l. rewrite Rmax_right; first field.
       ** apply Rgt_not_eq; nra.
       ** apply Rge_le, gd; fourier.
-  - destruct (Rlt_dec) => //=. 
-    intros. exfalso. nra. 
+  - destruct (Rlt_dec) => //=.
+    intros. exfalso. nra.
 Qed.
 
 Lemma K_0 r z: r < 0 → K r z = 1.
@@ -381,7 +381,7 @@ Proof.
   intros Hlt. rewrite /K /pr.
   rewrite -(pmf_sum1_Series (rvar_dist (T z))).
   rewrite ?SeriesC_fin_big.
-  eapply eq_big; auto. 
+  eapply eq_big; auto.
   intros x Hin.
   destruct (Rgt_dec) as [?|Hngt] => //=.
   exfalso; apply Hngt.
@@ -389,22 +389,22 @@ Proof.
   apply Rge_le, T_non_neg.
 Qed.
 
-Lemma K_unfold r x: P x → size x > d → 
+Lemma K_unfold r x: P x → size x > d →
                     K r x ≤ Ex (rvar_comp (h x) (fun x' => K (r - a (size x)) (fst x') +
                                                          K (r - a (size x)) (snd x'))).
 Proof.
   intros; etransitivity; first apply K_alt4; auto.
-  rewrite Ex_fin_comp. 
+  rewrite Ex_fin_comp.
   right; apply eq_bigr => ??. by rewrite Rmult_comm.
 Qed.
-  
+
 Lemma Krec_non_decS: ∀ (i: nat) r x, Krec i r x ≤ Krec (S i) r x.
 Proof.
   induction i as [|i'] => r x.
   - rewrite /Krec. rewrite Ex_fin_pt //= /K0.
     destruct (Rlt_dec) as [H|H];
     rewrite //= /rvar_comp //=.
-    * destruct Rlt_dec as [|Hfalse]. 
+    * destruct Rlt_dec as [|Hfalse].
       ** apply Rmin_case_strong; intros; first nra.
          rewrite //=. rewrite -big_distrr //=. rewrite -SeriesC_fin_big pmf_sum1_Series. nra.
       ** exfalso. eapply Hfalse.
@@ -412,12 +412,12 @@ Proof.
     * destruct Rlt_dec as [|].
       ** apply Rmin_case_strong; intros; first fourier.
          rewrite //=. rewrite -big_distrr //=. rewrite -SeriesC_fin_big pmf_sum1_Series. nra.
-      ** apply Rmin_case_strong; intros; first fourier. 
+      ** apply Rmin_case_strong; intros; first fourier.
          rewrite //=. rewrite -big_distrr //=. rewrite -SeriesC_fin_big pmf_sum1_Series. nra.
   - rewrite /Krec -/Krec. apply Rle_min_compat_l.
     rewrite ?Ex_fin_pt.
-    apply (Rle_bigr) => i hin. 
-    rewrite //=. etransitivity. 
+    apply (Rle_bigr) => i hin.
+    rewrite //=. etransitivity.
     * apply Rmult_le_compat_r.
       { apply Rge_le, pmf_pos. }
       { apply Rplus_le_compat; eapply IHi'. }
@@ -427,17 +427,17 @@ Qed.
 Lemma Krec_non_dec (i i': nat) r x: (i ≤ i')%nat → Krec i r x ≤ Krec i' r x.
 Proof.
   induction 1; first reflexivity.
-  etransitivity; [ apply IHle | apply Krec_non_decS ]. 
+  etransitivity; [ apply IHle | apply Krec_non_decS ].
 Qed.
 
 Lemma Krec_bound0 r x i: 0 ≤ Krec i r x.
 Proof.
   revert r x.
-  induction i => r x. 
+  induction i => r x.
   - rewrite //=. rewrite /K0. destruct Rlt_dec => //=; nra.
   - rewrite /Krec -/Krec Ex_fin_pt /rvar_comp //=.
     apply Rmin_case; first fourier.
-    apply Rle_big0 => ??. 
+    apply Rle_big0 => ??.
     rewrite -[a in a ≤ _](Rmult_0_l 0).
     apply Rmult_le_compat; try fourier.
     * replace 0 with (R0 + R0) by rewrite Rplus_0_l //=. apply Rplus_le_compat; eauto.
@@ -466,8 +466,8 @@ Proof.
 Qed.
 
 Definition Krec_sup (r: R) x : R :=
-  proj1_sig (completeness (fun v => ∃ i, Krec i r x = v) 
-                          (Krec_bound r x) 
+  proj1_sig (completeness (fun v => ∃ i, Krec i r x = v)
+                          (Krec_bound r x)
                           (ex_intro _ (Krec 0 r x) (ex_intro _ O erefl))).
 
 Lemma Krec_sup_is_lub r x: is_lub (fun v => ∃ i, Krec i r x = v) (Krec_sup r x).
@@ -481,11 +481,11 @@ Proof.
   revert r x. induction i as [| i'] => r x Hle.
   - rewrite /K /Krec /K0 //=.
     destruct (Rlt_dec).
-    + rewrite /is_left. apply pr_le_1. 
-    + rewrite /pr//=.  right. rewrite SeriesC_fin_big. eapply big1 => b ?. 
+    + rewrite /is_left. apply pr_le_1.
+    + rewrite /pr//=.  right. rewrite SeriesC_fin_big. eapply big1 => b ?.
       rewrite //=. destruct (Rgt_dec) as [?|Hnlt] => //=; try nra.
       specialize (Tbelow _ b Hle).
-      exfalso. destruct (T x); simpl in *. nra. 
+      exfalso. destruct (T x); simpl in *. nra.
   - etransitivity; first eapply IHi'; eauto.
     apply Krec_non_decS.
 Qed.
@@ -499,14 +499,14 @@ Qed.
 Definition recN_a {i: nat} φ x (b: @recN_space _ _ _ (hpath φ) x i) : R.
   revert x b. induction i.
   - intros x ?. exact 0.
-  - intros x (b&b'). 
+  - intros x (b&b').
     exact (a (size (snd x)) + IHi ((hpath φ x) b) b').
 Defined.
 
-Lemma Rge_not_gt_eq x y: x >= y → (¬ x > y) → x = y.      
+Lemma Rge_not_gt_eq x y: x >= y → (¬ x > y) → x = y.
 Proof. nra. Qed.
 
-Lemma Rge_not_eq_gt x y: x >= y → (¬ x = y) → x > y.      
+Lemma Rge_not_eq_gt x y: x >= y → (¬ x = y) → x > y.
 Proof. nra. Qed.
 
 Lemma pr_gt_path_shift:
@@ -516,22 +516,22 @@ Lemma pr_gt_path_shift:
                                          | O => b
                                          | S n' => φ n'
                                          end)) (S j, x) k) (λ x, size (snd x))) r.
-Proof.    
-  induction k; intros. 
-  - rewrite //=. 
-  - rewrite ?recN_pr_gt. 
+Proof.
+  induction k; intros.
+  - rewrite //=.
+  - rewrite ?recN_pr_gt.
     rewrite /index_enum.
     rewrite [@Finite.enum]unlock //=.
-    rewrite (img_fin_big' _ (λ i, (pr_eq _ i * pr_gt (rvar_comp (recN_rvar _ i _) _) _)) (λ x, true)). 
-    rewrite (img_fin_big' _ (λ i, (pr_eq _ i * pr_gt (rvar_comp (recN_rvar _ i _) _) _)) (λ x, true)). 
+    rewrite (img_fin_big' _ (λ i, (pr_eq _ i * pr_gt (rvar_comp (recN_rvar _ i _) _) _)) (λ x, true)).
+    rewrite (img_fin_big' _ (λ i, (pr_eq _ i * pr_gt (rvar_comp (recN_rvar _ i _) _) _)) (λ x, true)).
     eapply (sum_reidx_map _ _ _ _ (λ x, (S (fst x), snd x))); auto.
-    * intros (?&?) Hin; f_equal. 
+    * intros (?&?) Hin; f_equal.
       ** rewrite /pr_eq/pr ?SeriesC_fin_big.
          apply eq_big => //=.
          intros ? _. destruct (φ j); auto.
       ** rewrite //=.
     * rewrite //=. intros (n&x'). rewrite ?img_alt'. intros (i&Hin) _.
-      split; auto. exists i. move: Hin. rewrite //=. 
+      split; auto. exists i. move: Hin. rewrite //=.
       case: ifP; intros; inversion Hin; subst; f_equal; auto; omega.
     * rewrite //=. intros (n&x') Hin _ Hfalse.
       apply Rmult_eq_0_compat. right.
@@ -539,16 +539,16 @@ Proof.
       rewrite /pr_gt.
       apply Rge_not_gt_eq; first apply ge_pr_0.
       intros Hgt.
-      apply Rlt_gt, pr_img_gt in Hgt as (r'&Hgt&Himg). 
+      apply Rlt_gt, pr_img_gt in Hgt as (r'&Hgt&Himg).
       apply img_alt in Himg as (i&Himg).
       apply img_alt' in Hin as (i'&Himg').
       rewrite //= in Himg, Himg'.
-      contradiction (Hfalse). 
+      contradiction (Hfalse).
       move: Himg'. case: ifP => ? [? ?].
-      ** exists (S j, x'). rewrite img_alt'. repeat split; auto. 
+      ** exists (S j, x'). rewrite img_alt'. repeat split; auto.
          *** eexists; f_equal; eauto.
          *** f_equal; rewrite //=; try congruence; try omega.
-      ** exists (S j, x'). rewrite img_alt'. repeat split; auto. 
+      ** exists (S j, x'). rewrite img_alt'. repeat split; auto.
          *** eexists; f_equal; eauto.
          *** f_equal; rewrite //=; try congruence; try omega.
     * rewrite /img. apply undup_uniq.
@@ -573,16 +573,16 @@ Proof.
       rewrite SeriesC_fin_big.
       rewrite /index_enum. rewrite (eq_bigl predT).
       ** rewrite /index_enum {1}[@Finite.enum]unlock big_seq1 //=. fourier.
-      ** intros ?. rewrite /in_mem//=. 
+      ** intros ?. rewrite /in_mem//=.
   - destruct (Rle_dec (size x) d) as [Hlt2|Hnlt%Rnot_le_gt].
     { exfalso. apply Rlt_not_le in Hlt. apply Hlt.
       by apply K_Krec_leq_below. }
     rewrite /Krec -/Krec in Hlt. move: Hlt. apply Rmin_case.
     { intros Hfalse%Rlt_not_le. contradiction Hfalse.
       rewrite /K. apply pr_le_1. }
-    intros Hlt. 
+    intros Hlt.
     eapply Rlt_le_trans in Hlt; last apply K_alt4; auto.
-    rewrite Ex_fin_comp in Hlt. 
+    rewrite Ex_fin_comp in Hlt.
     rewrite /index_enum [@Finite.enum]unlock //= in Hlt.
     rewrite (img_fin_big' _ (λ i, (pr_eq _ i * (Krec _ _ (fst i) + Krec _ _ (snd i)))) (λ x, true))
             in Hlt.
@@ -606,22 +606,22 @@ Proof.
       rewrite recN_pr_gt => //=.
       rewrite /index_enum.
       rewrite [@Finite.enum]unlock //=.
-      rewrite (img_fin_big' _ (λ i, (pr_eq _ i * pr_gt (rvar_comp (recN_rvar _ i _) _) _)) 
-                            (λ x, true)). 
+      rewrite (img_fin_big' _ (λ i, (pr_eq _ i * pr_gt (rvar_comp (recN_rvar _ i _) _) _))
+                            (λ x, true)).
       eapply (Rle_lt_trans); first (right; symmetry; apply big1; reflexivity).
       eapply Rlt_bigr.
       ** intros; apply Rmult_le_pos; apply Rge_le, ge_pr_0.
-      ** rewrite //=. 
+      ** rewrite //=.
          exists (S O, fst b); repeat split.
          *** apply img_alt'. apply img_alt' in Hin.
              destruct Hin as (s&Heq). exists s. rewrite Heq. done.
          *** rewrite //=. apply Rmult_lt_0_compat.
              **** eapply Rlt_le_trans; first apply HPrb.
-                  rewrite /pr_eq /pr ?SeriesC_fin_big /index_enum /Bn /=.  
+                  rewrite /pr_eq /pr ?SeriesC_fin_big /index_enum /Bn /=.
                   rewrite -?big_mkcondr.
                   apply Rle_bigr'; try nra.
-                  ***** intros ?. move /andP => [_ Heq]. move /eqP in Heq; subst. 
-                        split; try nra. apply /andP; split; auto. 
+                  ***** intros ?. move /andP => [_ Heq]. move /eqP in Heq; subst.
+                        split; try nra. apply /andP; split; auto.
                         rewrite //= in Hpr. rewrite /Ωn//=. nra.
                   ***** intros. apply Rge_le, pmf_pos.
              **** eapply Rlt_le_trans; first apply Hpr.
@@ -636,8 +636,8 @@ Proof.
       rewrite recN_pr_gt => //=.
       rewrite /index_enum.
       rewrite [@Finite.enum]unlock //=.
-      rewrite (img_fin_big' _ (λ i, (pr_eq _ i * pr_gt (rvar_comp (recN_rvar _ i _) _) _)) 
-                            (λ x, true)). 
+      rewrite (img_fin_big' _ (λ i, (pr_eq _ i * pr_gt (rvar_comp (recN_rvar _ i _) _) _))
+                            (λ x, true)).
       eapply (Rle_lt_trans); first (right; symmetry; apply big1; reflexivity).
       eapply Rlt_bigr.
       ** intros; apply Rmult_le_pos; apply Rge_le, ge_pr_0.
@@ -650,8 +650,8 @@ Proof.
                   rewrite /pr_eq /pr /index_enum /Bn /= ?SeriesC_fin_big.
                   rewrite -?big_mkcondr.
                   apply Rle_bigr'; try nra.
-                  ***** intros ?. move /andP => [_ Heq]. move /eqP in Heq; subst. 
-                        split; try nra. apply /andP; split; auto. 
+                  ***** intros ?. move /andP => [_ Heq]. move /eqP in Heq; subst.
+                        split; try nra. apply /andP; split; auto.
                         rewrite /Ωn //=. reflexivity.
                   ***** intros. apply Rge_le, pmf_pos.
              **** eapply Rlt_le_trans; first apply Hpr.
@@ -673,15 +673,15 @@ Qed.
 
 
 Lemma D0_aux r x:
-   0 < x → 0 ≤ ((m x) / x) ^ Z.to_nat (round r x) 
+   0 < x → 0 ≤ ((m x) / x) ^ Z.to_nat (round r x)
                                           * (g(x) * x / u' (r - a x * IZR (round r x))).
-Proof.                                             
+Proof.
   intros Hlt.
-    eapply Rmult_pos. 
+    eapply Rmult_pos.
     * eapply pow_le. rewrite /Rdiv.
       eapply Rle_mult_inv_pos; eauto.
       apply mpos. fourier.
-    * rewrite /round //=. 
+    * rewrite /round //=.
       eapply Rle_mult_inv_pos.
       ** apply Rmult_le_pos; eauto.
          *** eapply gpos; fourier.
@@ -691,12 +691,12 @@ Qed.
 
 Lemma D0 r x:
   0 ≤ D r x.
-Proof.                                             
+Proof.
   rewrite /D.
   destruct (Rle_dec) => //=; intros; try nra.
   destruct (Rle_dec) => //=; intros; try nra.
   destruct (Rle_dec) => //=; intros; try nra.
-  intros. 
+  intros.
   { transitivity 1; first fourier. apply Rmax_l. }
   apply D0_aux. nra.
 Qed.
@@ -731,14 +731,14 @@ Lemma D_karpD r x:
   D r x = g(x) * kD r x.
 Proof.
   intros Hr (?&Hrange).
-  rewrite D_Dalt_equiv. 
+  rewrite D_Dalt_equiv.
   rewrite /kD. erewrite karp.D_Dalt_equiv; eauto.
   rewrite /Dalt /karp.Dalt.
   destruct (Rle_dec); first nra.
   rewrite /is_left.
   destruct (Rle_dec); first nra.
   rewrite /is_left.
-  destruct (Rlt_dec). 
+  destruct (Rlt_dec).
   { intros. apply uu'_adjointrl in Hrange; last fourier.
   apply Rle_not_gt in Hrange. nra. }
   rewrite /karp.round/round.
@@ -752,14 +752,14 @@ Lemma D_karpD' r x:
   D r x ≤ g x * kD r x.
 Proof.
   intros Hr ?.
-  rewrite D_Dalt_equiv. 
+  rewrite D_Dalt_equiv.
   rewrite /kD. erewrite karp.D_Dalt_equiv; eauto.
   rewrite /Dalt /karp.Dalt.
   destruct (Rle_dec) as [|?]; first nra.
   rewrite /is_left.
   destruct (Rle_dec) as [|Hled]; first nra.
   rewrite /is_left.
-  destruct (Rlt_dec) as [Hr'%Rlt_le|?]. 
+  destruct (Rlt_dec) as [Hr'%Rlt_le|?].
   { intros. rewrite Rmult_1_r.
     apply u'_mono in Hr'. rewrite u'_inv_above in Hr'; eauto; try nra.
     apply Rmax_case_strong; intros.
@@ -775,14 +775,14 @@ Lemma D_karpD'' r x:
   D r x ≤ g x * kD r x.
 Proof.
   intros Hgt.
-  rewrite D_Dalt_equiv. 
+  rewrite D_Dalt_equiv.
   rewrite /kD. erewrite karp.D_Dalt_equiv; eauto.
   rewrite /Dalt /karp.Dalt.
   destruct (Rle_dec) as [|?]; first by nra.
   rewrite /is_left.
   destruct (Rle_dec) as [|Hled]; first nra.
   rewrite /is_left.
-  destruct (Rlt_dec) as [Hr'%Rlt_le|?]. 
+  destruct (Rlt_dec) as [Hr'%Rlt_le|?].
   { intros. rewrite Rmult_1_r.
     apply u'_mono in Hr'. rewrite u'_inv_above in Hr'; eauto; try nra.
     apply Rmax_case_strong; intros.
@@ -799,9 +799,9 @@ Proof.
 Qed.
 
 Lemma Rceil_1 x: (0 < x) → (x ≤ 1) → Rceil x = 1%Z.
-Proof.          
+Proof.
   intros Hgt Hle.
-  rewrite /Rceil. 
+  rewrite /Rceil.
   move: Hgt.
   case: ifP.
   - apply Int_part_mono in Hle.
@@ -814,7 +814,7 @@ Proof.
     * intros. omega.
   - move /eqP => Hnfp0 Hgt.
     assert (Int_part x = 1 ∨ Int_part x = 0)%Z as [?|?].
-    { 
+    {
       apply Rlt_le in Hgt. apply Int_part_mono in Hgt.
       replace (Int_part 0) with 0%Z in Hgt; last first.
       { replace 0 with (IZR 0) by auto. rewrite Int_part_IZR //=. }
@@ -834,14 +834,14 @@ Qed.
 Lemma Krec_le_D: ∀ i r x, Krec i r x ≤ D r (size x).
 Proof.
   induction i => r x.
-  - rewrite /K /D. 
+  - rewrite /K /D.
     destruct (Rle_dec) as [|Hgtmin]; first by (edestruct Krec0_bound01; eauto).
     rewrite /is_left.
     destruct (Rle_dec) as [Hge|Hnge].
     { right. rewrite //= /K0 //=. destruct (Rlt_dec) => //=; try nra. }
     rewrite /is_left.
     destruct (Rle_dec) as [Hge|Hnge'].
-    { edestruct (Krec_bound01 r x O); eauto. 
+    { edestruct (Krec_bound01 r x O); eauto.
       transitivity 1; first nra. apply Rmax_l. }
     rewrite //= /K0.
     destruct (Rlt_dec) as [|Hnlt].
@@ -850,16 +850,16 @@ Proof.
   - rewrite /K /D.
     destruct (Rle_dec) as [|Hgtmin]; first (clear IHi; edestruct Krec_bound01; eauto).
     destruct (Rle_dec) as [Hge|Hnge].
-    { 
+    {
       clear IHi.
       right. revert r x Hgtmin Hge. induction (S i).
       * rewrite //= /K0 //=. intros. destruct Rlt_dec; last reflexivity.
-        exfalso; eapply Hgtmin. nra. 
-      * intros. rewrite /Krec -/Krec Ex_fin_pt /rvar_comp //=. 
+        exfalso; eapply Hgtmin. nra.
+      * intros. rewrite /Krec -/Krec Ex_fin_pt /rvar_comp //=.
         rewrite alower; last fourier. rewrite Rminus_0_r.
         etransitivity; last (apply (Rmin_right)); f_equal; try nra.
-        eapply big1 => b ?.  rewrite ?IHn //=; auto; try nra. 
-        ** transitivity (size x) => //. 
+        eapply big1 => b ?.  rewrite ?IHn //=; auto; try nra.
+        ** transitivity (size x) => //.
         ** transitivity (size x) => //.
     }
     rewrite /is_left.
@@ -879,7 +879,7 @@ Proof.
     transitivity
       (Ex (rvar_comp (h x) (λ x', (g (size (fst x'))) * kD (r - a (size x)) (size (fst x')) +
                                   (g (size (snd x'))) * kD (r - a (size x)) (size (snd x'))))).
-    { 
+    {
       apply Rmin_le_right.
       rewrite ?Ex_fin_pt //=.
       apply Rle_bigr => z ?.
@@ -891,15 +891,15 @@ Proof.
            eapply hrange22. nra.
     }
     etransitivity.
-    { 
-    eapply lemma31_simplex with (g := g) (size := size) (X := h x) (c := u' (r - a (size x))) 
+    {
+    eapply lemma31_simplex with (g := g) (size := size) (X := h x) (c := u' (r - a (size x)))
                                           (f := (λ z, kD (r - a (size x)) z))
                                           (x := size x)
                                           (z := 1).
         * nra.
         * apply u'_pos.
         * intros p. rewrite img_alt. intros (n&?). subst.
-          eapply hrange12. nra.  
+          eapply hrange12. nra.
         * intros p. rewrite img_alt. intros (n&?). subst.
           eapply hrange22. nra.
         * intros p. rewrite img_alt. intros (n&?). subst.
@@ -911,7 +911,7 @@ Proof.
         * intros p. rewrite img_alt. intros (n&?). subst.
           eapply gpos, hrange22. nra.
         * intros p. rewrite img_alt. intros (n&?). subst.
-          eauto. eapply hgrange_sum. nra. 
+          eauto. eapply hgrange_sum. nra.
         * rewrite /kD/karp.D.
           repeat (destruct (Rle_dec); rewrite /is_left; try nra).
         * rewrite /kD; apply karp.D0; eauto.
@@ -922,12 +922,12 @@ Proof.
           apply Rge_le, u_mono in Hley. rewrite u_inv_above // in Hley.
         * intros. eapply karp.Dnondec; eauto.
     }
-    rewrite /Rdiv ?Rmult_assoc. etransitivity. 
+    rewrite /Rdiv ?Rmult_assoc. etransitivity.
     {
       apply Rmult_le_compat_r; last (apply m_bound_Eh).
       apply Rmult_le_pos.
-      - apply gpos. nra. 
-      - apply Rle_mult_inv_pos; auto. 
+      - apply gpos. nra.
+      - apply Rle_mult_inv_pos; auto.
           * rewrite /kD. apply karp.D0; eauto.
           * apply Rmin_case; nra.
     }
@@ -936,7 +936,7 @@ Proof.
        field. apply Rgt_not_eq. apply a_pos. nra.
     }
     assert (Hrgt0: (round r (size x) > 0)%Z).
-    { 
+    {
       rewrite /round. rewrite -Rceil_0. apply Zlt_gt, Rceil_mono_strict. apply frac_part_0.
       apply Rdiv_lt_0_compat.
       - nra.
@@ -950,7 +950,7 @@ Proof.
       destruct (Rle_dec); rewrite /is_left; first nra.
       destruct (Rlt_dec).
       { move: Hminl. move /uu'_adjointrl/Rle_ge/Rge_not_lt. nra. }
-      right. 
+      right.
       rewrite Z2Nat.inj_add; try omega.
       rewrite plus_IZR. replace (IZR 1) with 1 by auto.
       rewrite //=.
@@ -969,7 +969,7 @@ Proof.
       { move: Hbad. rewrite u_inv_above; nra. }
       right. symmetry.
       assert (round (r - a (size x)) (u' (r - a (size x))) = 0)%Z as Hround0'.
-      { 
+      {
         rewrite /round -Rceil_0. f_equal.
         rewrite u_inv_above /Rdiv; last done.
         apply Rmult_eq_0_compat_r; ring.
@@ -979,8 +979,8 @@ Proof.
         last by apply Rgt_not_eq, u'_pos.
       rewrite Rmult_1_l.
       assert (round r (size x) = 1)%Z as ->.
-      { rewrite /round. apply Rceil_positive_le1. 
-        - move: Hrgt0. rewrite /round. done. 
+      { rewrite /round. apply Rceil_positive_le1.
+        - move: Hrgt0. rewrite /round. done.
         - apply (Rmult_le_reg_r (a (size x))).
           * apply a_pos. nra.
           * rewrite Rmult_1_l /Rdiv Rmult_assoc Rinv_l.
@@ -994,7 +994,7 @@ Proof.
       ** nra.
 Qed.
 
-Theorem span_bound r x: P x → K r x ≤ D r (size x). 
+Theorem span_bound r x: P x → K r x ≤ D r (size x).
 Proof.
   transitivity (Krec_sup r x).
   - apply K_le_supKrec; auto.
@@ -1003,7 +1003,7 @@ Proof.
 Qed.
 
 
-Theorem span_bound_simple w x: 
+Theorem span_bound_simple w x:
   g (size x) > 1 →
   size x > d →
   P x → pr_gt (T x) (u (size x) + INR w * a (size x)) ≤ g (size x) * (m (size x) / size x) ^ w.
@@ -1018,14 +1018,14 @@ Proof.
          specialize (pos_INR w).
          intros. rewrite S_INR in Hle. exfalso. nra.
      }
-     rewrite //=. 
+     rewrite //=.
      destruct Rle_dec => //=; try nra; [].
      destruct Rle_dec as [Hle|?].
      { intros. rewrite //=.
-       destruct w. 
+       destruct w.
        { replace (INR 0) with 0 by auto. rewrite Rmult_0_l Rplus_0_r.
          rewrite u'_inv_above; last nra.
-         apply Rmax_case_strong; nra. 
+         apply Rmax_case_strong; nra.
        }
        assert (umin <= u (size x)) by (apply umin_lb_simple; nra).
        assert (a (size x) > 0) by (apply a_pos; nra).
@@ -1034,16 +1034,16 @@ Proof.
      }
      rewrite //=.
      assert (round (u (size x) + INR w * a (size x)) (size x) = Z_of_nat w) as Hround.
-     { 
+     {
        rewrite /round.
        assert ((u (size x) + INR w * a (size x) - u (size x)) / a (size x)=
                INR w) as ->.
        { field. specialize (a_pos (size x)). nra. }
         rewrite INR_IZR_INZ Rceil_IZR. done.
      }
-     rewrite Hround //=. rewrite INR_IZR_INZ. 
+     rewrite Hround //=. rewrite INR_IZR_INZ.
      rewrite (Rmult_comm (IZR _)).
-     assert (u (size x) + a (size x) * IZR (Z.of_nat w) - a (size x) * IZR (Z.of_nat w) 
+     assert (u (size x) + a (size x) * IZR (Z.of_nat w) - a (size x) * IZR (Z.of_nat w)
              = u (size x)) as -> by field.
      rewrite u'_inv_above; last by nra.
      rewrite /Rdiv. rewrite (Rmult_assoc (g (size x))). rewrite Rinv_r; last by nra. rewrite Rmult_1_r.

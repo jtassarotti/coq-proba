@@ -49,13 +49,13 @@ Variable g_cont: ∀ x, d < x → continuity_pt g2 x.
 
 Hypothesis T_non_neg: ∀ x n, (T x) n ≥ 0.
 
-Hypothesis Trec: 
-  ∀ x r, P x → pr_gt (T x) r ≤ \big[Rplus/0]_(x' : imgT (h x)) 
-                        (pr_eq (h x) (sval x') * 
+Hypothesis Trec:
+  ∀ x r, P x → pr_gt (T x) r ≤ \big[Rplus/0]_(x' : imgT (h x))
+                        (pr_eq (h x) (sval x') *
                          pr_gt (rvar_comp (rvar_pair (T (fst (sval x'))) (T (snd (sval x'))))
                                           (fun xy => fst xy + snd xy)) (r - a (size x))).
 
-Hypothesis urec: 
+Hypothesis urec:
   ∀ x, x > d →  u x ≥ a x / g2 x + u (m x).
 
 Hypothesis hP: ∀ x n, P x → P (fst ((h x) n)) ∧ P (snd ((h x) n)).
@@ -95,7 +95,7 @@ Definition hpath (φ: nat → bool) (nx: nat * X) : rvar (Ωn nx) [eqType of nat
          end).
 Defined.
 
-(* This could be weakend; I think what's needed is to say it in the limit 
+(* This could be weakend; I think what's needed is to say it in the limit
    it's bounded above by 2^-n *)
 Hypothesis hinf_0: ∀ a, ∃ n, ∀ φ, pr_gt (rvar_comp (recN_rvar (hpath φ) (O, a) n)
                                                   (λ x, size (snd x))) d = 0.
@@ -118,10 +118,10 @@ Proof.
 Qed.
 
 Lemma Kg_K r z: g2 (size z) > 0 → Kg r z = K (g2 (size z) * r) z.
-Proof.                  
+Proof.
   intros Hsize.
-  rewrite /Kg /K /H. 
-  rewrite pr_gt_alt_comp pr_gt_alt. 
+  rewrite /Kg /K /H.
+  rewrite pr_gt_alt_comp pr_gt_alt.
   apply eq_bigr => i ?.
   destruct (Rgt_dec) as [Hlt|Hge]; rewrite /is_left.
   - rewrite /Rdiv in Hlt. apply (Rmult_lt_compat_r (g2 (size z))) in Hlt; last first.
@@ -147,20 +147,20 @@ Proof.
 Qed.
 
 
-Lemma Hrec: 
-  ∀ x r, P x → size x > d →  pr_gt (H x) r ≤ \big[Rplus/0]_(x' : imgT (h x)) 
+Lemma Hrec:
+  ∀ x r, P x → size x > d →  pr_gt (H x) r ≤ \big[Rplus/0]_(x' : imgT (h x))
                         ((pr_eq (h x) (sval x')) *
                          pr_gt (rvar_comp (rvar_pair (H (fst (sval x'))) (H (snd (sval x'))))
-                                        (fun xy => Rmax (fst xy) (snd xy))) 
+                                        (fun xy => Rmax (fst xy) (snd xy)))
                                               (r - a (size x) / g2 (size x))).
 Proof.
  intros.
  rewrite /pr_gt. specialize (Kg_K); rewrite /Kg; intros ->; last by eauto.
  etransitivity. rewrite /K. apply Trec; auto.
  apply Rle_bigr => i Hin.
- apply Rmult_le_compat_l. 
+ apply Rmult_le_compat_l.
  { rewrite /pr_eq. apply Rge_le, ge_pr_0. }
- rewrite /pr_gt /pr. 
+ rewrite /pr_gt /pr.
  rewrite ?SeriesC_fin_big.
  rewrite -?big_mkcondr.
  apply Rle_bigr' => i' Hin'; auto.
@@ -181,21 +181,21 @@ Proof.
    { apply Rinv_0_lt_compat. apply g2_pos; auto. }
    rewrite -Rmult_assoc Rinv_l in Hlt; last first.
    { apply Rgt_not_eq; eauto. }
-   rewrite Rmult_1_l in Hlt. 
+   rewrite Rmult_1_l in Hlt.
    rewrite ?Rmult_plus_distr_l in Hlt.
    rewrite /Rminus.
    apply (Rplus_lt_compat_r (- (/ g2 (size x) * a (size x)))) in Hlt.
    rewrite /Rminus Rplus_assoc Rplus_opp_r Rplus_0_r in Hlt.
-   rewrite /Rdiv. rewrite Rmult_comm. rewrite //= in Hlt. 
-   eapply Rlt_le_trans. 
+   rewrite /Rdiv. rewrite Rmult_comm. rewrite //= in Hlt.
+   eapply Rlt_le_trans.
    { rewrite Rmult_comm. apply Hlt. }
    assert (T ((h x) n).1 i'.1 =
    ( g2 (size ((h x) n).1) * (T ((h x) n).1) i'.1 * / g2 (size ((h x) n).1))) as Hdiv1.
-   { rewrite Rmult_comm -Rmult_assoc Rinv_l; first by rewrite Rmult_1_l. 
+   { rewrite Rmult_comm -Rmult_assoc Rinv_l; first by rewrite Rmult_1_l.
      apply Rgt_not_eq, g2_pos. }
    assert (T ((h x) n).2 i'.2 =
    ( g2 (size ((h x) n).2) * (T ((h x) n).2) i'.2 * / g2 (size ((h x) n).2))) as Hdiv2.
-   { rewrite Rmult_comm -Rmult_assoc Rinv_l; first by rewrite Rmult_1_l. 
+   { rewrite Rmult_comm -Rmult_assoc Rinv_l; first by rewrite Rmult_1_l.
      apply Rgt_not_eq, g2_pos. }
    rewrite {1}Hdiv1.
    rewrite {1}Hdiv2.
@@ -206,10 +206,10 @@ Proof.
         { apply Rinv_pos, g2_pos. }
         rewrite Rmult_assoc.
         apply Rmult_le_compat_l.
-        { left. apply g2_pos. } 
+        { left. apply g2_pos. }
         apply Hle.
       }
-      rewrite Rmult_assoc. 
+      rewrite Rmult_assoc.
       rewrite -Rmult_plus_distr_l.
       rewrite (Rmult_comm (T _ _)).
       rewrite -Rmult_plus_distr_r.
@@ -230,10 +230,10 @@ Proof.
         { apply Rinv_pos, g2_pos. }
         rewrite Rmult_assoc.
         apply Rmult_le_compat_l.
-        { left. apply g2_pos. } 
+        { left. apply g2_pos. }
         rewrite Rmult_comm; apply Hle.
       }
-      rewrite Rmult_assoc. 
+      rewrite Rmult_assoc.
       rewrite -Rmult_plus_distr_l.
       rewrite -Rmult_plus_distr_r.
       rewrite -Rmult_assoc.
@@ -250,15 +250,15 @@ Proof.
  * intros. apply Rge_le, pmf_pos.
 Qed.
 
-Lemma Kg_work_bound: 
+Lemma Kg_work_bound:
   ∀ r x, P x → Kg r x ≤ span2.D g1 (λ x, a x / g2 x) m u u' d (umin)  r (size x).
 Proof.
-  intros. 
+  intros.
   eapply span_bound; eauto.
   - intros. apply continuity_pt_div; auto.
     apply Rgt_not_eq, g2_pos; fourier.
   - apply Hrec.
-  - rewrite /H //=.  intros. 
+  - rewrite /H //=.  intros.
     rewrite g_below /Rdiv; eauto.
 Qed.
 
@@ -270,7 +270,7 @@ Qed.
 Lemma work_bound_simple w x:
   g1 (size x) > 1 →
   size x > d →
-  P x → pr_gt (T x) (g2 (size x) * u (size x) + INR w * a (size x)) 
+  P x → pr_gt (T x) (g2 (size x) * u (size x) + INR w * a (size x))
               ≤ g1 (size x) * (m (size x) / size x) ^ w.
 Proof.
   set (r := g2 (size x) * (u (size x)) + INR w * (a (size x))).
@@ -283,7 +283,7 @@ Proof.
          assert (umin <= u (size x)) by (apply umin_lb_simple; nra).
          assert (a (size x) / g2 (size x) > 0) as Hag by (apply ag_pos; nra).
          specialize (g2_pos (size x)).
-         assert (a (size x) > 0). 
+         assert (a (size x) > 0).
          { apply Rgt_lt, (Rmult_lt_compat_r (g2 (size x))) in Hag; last by nra.
            rewrite /Rdiv Rmult_assoc Rinv_l in Hag; last by nra.
            nra.
@@ -292,51 +292,51 @@ Proof.
          intros. rewrite S_INR in Hle. exfalso.
          rewrite /Rdiv Rmult_plus_distr_r in Hle.
          rewrite /Rdiv in Hag.
-         rewrite Rmult_comm in Hle. 
-         rewrite -Rmult_assoc in Hle. 
+         rewrite Rmult_comm in Hle.
+         rewrite -Rmult_assoc in Hle.
          rewrite Rinv_l in Hle; last nra.
          rewrite Rmult_1_l in Hle. nra.
      }
-     rewrite //=. 
+     rewrite //=.
      destruct Rle_dec => //=; try nra; [].
      destruct Rle_dec as [Hle|?].
      { intros. rewrite //=.
-       destruct w. 
+       destruct w.
        { replace (INR 0) with 0 by auto. rewrite Rmult_0_l Rplus_0_r.
          specialize (g2_pos (size x)).
          rewrite /Rdiv Rmult_comm -Rmult_assoc Rinv_l; last by nra.
          rewrite Rmult_1_l.
          rewrite u'_inv_above; last nra.
-         apply Rmax_case_strong; nra. 
+         apply Rmax_case_strong; nra.
        }
        assert (umin <= u (size x)) by (apply umin_lb_simple; nra).
          assert (a (size x) / g2 (size x) > 0) as Hag by (apply ag_pos; nra).
          specialize (g2_pos (size x)).
-         assert (a (size x) > 0). 
+         assert (a (size x) > 0).
          { apply Rgt_lt, (Rmult_lt_compat_r (g2 (size x))) in Hag; last by nra.
            rewrite /Rdiv Rmult_assoc Rinv_l in Hag; last by nra.
            nra.
          }
          specialize (pos_INR w).
-         intros. rewrite S_INR in Hle. exfalso. 
+         intros. rewrite S_INR in Hle. exfalso.
          rewrite /Rdiv Rmult_plus_distr_r in Hle.
          rewrite /Rdiv in Hag.
-         rewrite Rmult_comm in Hle. 
-         rewrite -Rmult_assoc in Hle. 
+         rewrite Rmult_comm in Hle.
+         rewrite -Rmult_assoc in Hle.
          rewrite Rinv_l in Hle; last nra.
          rewrite Rmult_1_l in Hle. nra.
      }
      rewrite //=.
      assert ((round (λ x0 : R, a x0 / g2 x0) u
-         ((g2 (size x) * u (size x) + INR w * a (size x)) / g2 (size x)) 
+         ((g2 (size x) * u (size x) + INR w * a (size x)) / g2 (size x))
          (size x)) = (Z_of_nat w)) as Hround.
-     { 
+     {
        rewrite /round.
-       assert ((((g2 (size x) * u (size x) + INR w * a (size x)) / g2 (size x) 
+       assert ((((g2 (size x) * u (size x) + INR w * a (size x)) / g2 (size x)
                  - u (size x)) / (a (size x) / g2 (size x))) = INR w) as ->.
        { assert (a (size x) / g2 (size x) > 0) as Hag by (apply ag_pos; nra).
          specialize (g2_pos (size x)).
-         assert (a (size x) > 0). 
+         assert (a (size x) > 0).
          { apply Rgt_lt, (Rmult_lt_compat_r (g2 (size x))) in Hag; last by nra.
            rewrite /Rdiv Rmult_assoc Rinv_l in Hag; last by nra.
            nra.
@@ -346,14 +346,14 @@ Proof.
        }
         rewrite INR_IZR_INZ Rceil_IZR. done.
      }
-     rewrite Hround //= INR_IZR_INZ. 
+     rewrite Hround //= INR_IZR_INZ.
      rewrite (Rmult_comm (IZR _)).
      assert ((g2 (size x) * u (size x) + a (size x) * IZR (Z.of_nat w)) / g2 (size x)
              - a (size x) / g2 (size x) * IZR (Z.of_nat w)
              = u (size x)) as ->.
      { field. specialize (g2_pos (size x)); nra.  }
      rewrite u'_inv_above; last by nra.
-     rewrite /Rdiv. rewrite (Rmult_assoc (g1 (size x))). 
+     rewrite /Rdiv. rewrite (Rmult_assoc (g1 (size x))).
      rewrite Rinv_r; last by nra. rewrite Rmult_1_r.
       rewrite Nat2Z.id. nra.
 Qed.
