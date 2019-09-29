@@ -12,6 +12,7 @@ branches:
 
 cache:
   directories:
+    - $HOME/.opam
 
 services:
   - docker
@@ -24,6 +25,7 @@ matrix:
 
 install: |
   docker run -d -i --init --name=COQ -v ${TRAVIS_BUILD_DIR}:/home/coq/build -w /home/coq/build "coqorg/coq:${COQ_VERSION}"
+  docker cp $HOME/.opam COQ:/home/coq/.opam
   docker exec COQ /bin/bash --login -c "
     # This bash script is double-quoted to interpolate Travis CI env vars:
     echo \"Build triggered by ${TRAVIS_EVENT_TYPE}\"
@@ -59,7 +61,7 @@ script:
       set -ex
       make -j2
       "
-  - stack --allow-different-user test
+  - docker cp COQ:/home/coq/.opam $HOME/.opam/
   - echo -en 'travis_fold:end:build\\r'
 
 after_script:
