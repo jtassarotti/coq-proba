@@ -47,6 +47,7 @@ install: |
     echo \"git log: https://github.com/coq/coq/commits/\$(opam info -f source-hash coq)\"
     yes | make build-dep
     opam list
+    sleep 1
     "
 before_script:
   - |
