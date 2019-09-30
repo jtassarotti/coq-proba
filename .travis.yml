@@ -33,7 +33,7 @@ install: |
     export PS4='+ \e[33;1m(\$0 @ line \$LINENO) \$\e[0m '
     set -ex  # -e = exit on failure; -x = trace for debug
     pwd
-    ls /home/coq/.opam
+    sudo chown -R coq:coq /home/coq/.opam
     sudo chown -R coq:coq .
     export OPAMYES=true
     export OPAMVERBOSE=3
@@ -47,7 +47,6 @@ install: |
     echo \"git log: https://github.com/coq/coq/commits/\$(opam info -f source-hash coq)\"
     yes | make build-dep
     opam list
-    sleep 1
     "
 before_script:
   - |
