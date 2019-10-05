@@ -7,7 +7,7 @@ From discprob.measure Require Export measurable_space.
 From discprob.measure Require Import dynkin.
 
 
-Record measure {A: Type} (F: sigma_algebra A) :=
+Record measure A {F: measurable_space A} :=
   { measure_fun :> (A → Prop) → R;
     measure_proper : Proper (@eq_prop A ==> eq) measure_fun;
     measure_nonneg : ∀ X, measure_fun X >= 0;
@@ -25,9 +25,7 @@ Global Existing Instance measure_proper.
 
 Section measure_props.
 
-  Context {A: Type}.
-  Context {F: sigma_algebra A}.
-  Context (μ : @measure A F).
+  Context `(μ : @measure A F).
 
   Lemma measure_additivity_Series U :
         (∀ i, F (U i)) → disjointF U → μ (unionF U) = Series (λ x, μ (U x)).
@@ -318,13 +316,20 @@ Section measure_props.
 End measure_props.
 
 
-Definition almost_everywhere {A: Type} {F: sigma_algebra A} (μ : measure F) (U: A → Prop) :=
+Definition almost_everywhere `(μ : @measure A F) (U: A → Prop) :=
   ∃ V, F (compl V) ∧ μ (compl V) = 0 ∧ (∀ a, V a → U a).
 
-Definition almost_everywhere_meas {A: Type} {F: sigma_algebra A} (μ : measure F) (U: A → Prop) :=
+Definition almost_everywhere_meas `(μ : @measure A F) (U: A → Prop) :=
   F (compl U) ∧ μ (compl U) = 0.
 
-Lemma ae_to_aem {A F} (μ: measure F) (U: A → Prop) :
+Section ae.
+Context {A: Type}.
+Context {F: measurable_space A}.
+
+Implicit Types μ: @measure A F.
+Implicit Types U: A → Prop.
+
+Lemma ae_to_aem μ U :
   F U → almost_everywhere μ U → almost_everywhere_meas μ U.
 Proof.
   intros HF (V&?&Hzero&?).
@@ -334,7 +339,7 @@ Proof.
   intros z Hnu Hv. apply Hnu. eauto.
 Qed.
 
-Lemma aem_to_ae {A F} (μ: measure F) (U: A → Prop) :
+Lemma aem_to_ae μ U :
   almost_everywhere_meas μ U → almost_everywhere μ U ∧ F U.
 Proof.
   intros (HF&?). split; auto.
@@ -343,7 +348,7 @@ Proof.
     done.
 Qed.
 
-Lemma almost_everywhere_conj {A F} (μ: measure F) (U1 U2: A → Prop):
+Lemma almost_everywhere_conj μ U1 U2:
   almost_everywhere μ U1 →
   almost_everywhere μ U2 →
   almost_everywhere μ (U1 ∩ U2).
@@ -364,7 +369,7 @@ Proof.
   - firstorder.
 Qed.
 
-Lemma almost_everywhere_meas_conj {A F} (μ: measure F) (U1 U2: A → Prop):
+Lemma almost_everywhere_meas_conj μ U1 U2:
   almost_everywhere_meas μ U1 →
   almost_everywhere_meas μ U2 →
   almost_everywhere_meas μ (U1 ∩ U2).
@@ -374,8 +379,7 @@ Proof.
   apply almost_everywhere_conj; auto.
 Qed.
 
-
-Lemma almost_everywhere_meas_ext {A: Type} {F: sigma_algebra A} (μ : measure F) (U1 U2: A → Prop):
+Lemma almost_everywhere_meas_ext μ U1 U2:
   eq_prop U1 U2 →
   almost_everywhere_meas μ U1 →
   almost_everywhere_meas μ U2.
@@ -386,7 +390,7 @@ Proof.
   - by rewrite -Heq.
 Qed.
 
-Lemma almost_everywhere_meas_mono {A: Type} {F: sigma_algebra A} (μ : measure F) (U1 U2: A → Prop):
+Lemma almost_everywhere_meas_mono μ U1 U2:
   F U2 → U1 ⊆ U2 →
   almost_everywhere_meas μ U1 →
   almost_everywhere_meas μ U2.
@@ -399,7 +403,7 @@ Proof.
     firstorder.
 Qed.
 
-Lemma almost_everywhere_mono {A: Type} {F: sigma_algebra A} (μ : measure F) (U1 U2: A → Prop):
+Lemma almost_everywhere_mono μ U1 U2:
   U1 ⊆ U2 →
   almost_everywhere μ U1 →
   almost_everywhere μ U2.
@@ -408,7 +412,7 @@ Proof.
   split_and!; auto.
 Qed.
 
-Lemma almost_everywhere_ext {A: Type} {F: sigma_algebra A} (μ : measure F) (U1 U2: A → Prop):
+Lemma almost_everywhere_ext μ U1 U2:
   eq_prop U1 U2 →
   almost_everywhere μ U1 →
   almost_everywhere μ U2.
@@ -416,7 +420,7 @@ Proof.
   intros Heq. apply almost_everywhere_mono; eauto. by rewrite Heq.
 Qed.
 
-Lemma almost_everywhere_meas_everywhere {A: Type} {F: sigma_algebra A} (μ : measure F) (U: A → Prop):
+Lemma almost_everywhere_meas_everywhere μ U:
   (∀ x : A, U x) →
   almost_everywhere_meas μ U.
 Proof.
@@ -426,7 +430,7 @@ Proof.
     clear; firstorder. }
 Qed.
 
-Lemma almost_everywhere_meas_meas {A: Type} {F: sigma_algebra A} (μ : measure F) (U: A → Prop):
+Lemma almost_everywhere_meas_meas μ U:
   almost_everywhere_meas μ U →
   F U.
 Proof.
@@ -435,7 +439,7 @@ Proof.
   rewrite compl_involutive in HU * => //=.
 Qed.
 
-Lemma almost_everywhere_meas_meas_full {A: Type} {F: sigma_algebra A} (μ : measure F) (U: A → Prop):
+Lemma almost_everywhere_meas_meas_full μ U:
   almost_everywhere_meas μ U →
   μ U = μ (λ _, True).
 Proof.
@@ -448,14 +452,14 @@ Proof.
   - clear; firstorder.
 Qed.
 
-Global Instance almost_everywhere_meas_Proper {A: Type} {F: sigma_algebra A} (μ : measure F):
+Global Instance almost_everywhere_meas_Proper μ:
   Proper (eq_prop ==> iff) (almost_everywhere_meas μ).
 Proof.
   intros ?? Heq. split; eapply almost_everywhere_meas_ext; eauto.
     by symmetry.
 Qed.
 
-Lemma almost_everywhere_meas_True {A: Type} {F: sigma_algebra A} (μ : measure F):
+Lemma almost_everywhere_meas_True μ:
   almost_everywhere_meas μ (λ _, True).
 Proof.
   split.
@@ -463,8 +467,7 @@ Proof.
   - rewrite compl_top measure_empty //.
 Qed.
 
-Lemma almost_everywhere_meas_conj_inv {A: Type} {F : sigma_algebra A}
-      (μ : measure F) (U1 U2 : A → Prop):
+Lemma almost_everywhere_meas_conj_inv μ U1 U2:
   F U1 → almost_everywhere_meas μ (U1 ∩ U2) →
   almost_everywhere_meas μ U1.
 Proof.
@@ -474,8 +477,9 @@ Proof.
   apply measure_mono; auto using sigma_closed_complements.
   { clear. firstorder. }
 Qed.
+End ae.
 
-Lemma compl_meas_0_full {A: Type} (F: sigma_algebra A) (μ: measure F) U:
+Lemma compl_meas_0_full {A: Type} {F: measurable_space A} (μ: measure A) U:
   F (compl U) →
   μ U = μ (λ _, True) →
   μ (compl U) = 0.
@@ -491,12 +495,12 @@ Qed.
 
 Hint Resolve almost_everywhere_meas_True.
 
-Lemma disjoint_sum_measure_additivity {A1 A2: Type} {F1: sigma_algebra A1} {F2: sigma_algebra A2}
-      (μ1: measure F1) (μ2: measure F2) Us:
-  (∀ i, (disjoint_sum_sigma F1 F2) (Us i))
-  → disjointF Us
-    → is_series (λ n : nat, μ1 (fun_inv inl (Us n)) + μ2 (fun_inv inr (Us n)))
-                (μ1 (fun_inv inl (unionF Us)) + μ2 (fun_inv inr (unionF Us))).
+Lemma disjoint_sum_measure_additivity {A1 A2: Type} {F1: measurable_space A1} {F2: measurable_space A2}
+      (μ1: measure A1) (μ2: measure A2) Us:
+  (∀ i, (measurable_space_sum A1 A2) (Us i)) →
+  disjointF Us →
+  is_series (λ n : nat, μ1 (fun_inv inl (Us n)) + μ2 (fun_inv inr (Us n)))
+            (μ1 (fun_inv inl (unionF Us)) + μ2 (fun_inv inr (unionF Us))).
 Proof.
   intros HUs Hdisj.
   apply: is_series_plus.
@@ -514,8 +518,8 @@ Proof.
       split; auto.
 Qed.
 
-Definition disjoint_sum_measure {A1 A2: Type} {F1: sigma_algebra A1} {F2: sigma_algebra A2}
-           (μ1: measure F1) (μ2: measure F2): measure (disjoint_sum_sigma F1 F2).
+Definition disjoint_sum_measure {A1 A2} {F1: measurable_space A1} {F2: measurable_space A2}
+           (μ1: measure A1) (μ2: measure A2): measure (A1 + A2).
 Proof.
   refine {| measure_fun := λ U, μ1 (fun_inv inl U) + μ2 (fun_inv inr U) |}.
   - intros U1 U2 Heq. by rewrite Heq.
@@ -527,8 +531,8 @@ Proof.
   - apply disjoint_sum_measure_additivity.
 Defined.
 
-Definition scal_measure {A: Type} {F: sigma_algebra A} (p: R) (μ: measure F) :
-           measure F.
+Definition scal_measure {A: Type} {F: measurable_space A} (p: R) (μ: measure A) :
+           measure A.
 Proof.
   refine {| measure_fun := λ U, Rabs p * μ U |}.
   - abstract (by intros ?? ->).
@@ -537,7 +541,7 @@ Proof.
   - abstract (intros ???; apply: is_series_scal; apply measure_additivity; eauto).
 Defined.
 
-Definition trivial_measure0 {A: Type} (F: sigma_algebra A) : measure F.
+Definition trivial_measure0 {A: Type} (F: measurable_space A) : measure A.
 Proof.
   refine {| measure_fun := λ _, 0 |}.
   - abstract (intro; nra).
@@ -583,7 +587,7 @@ Proof.
     intros. exists n. by eapply Heq.
 Qed.
 
-Definition pt_measure : measure (discrete_algebra unit).
+Definition pt_measure : measure unit.
 Proof.
   refine {| measure_fun :=
               λ U : unit → Prop, match excluded_middle_informative (eq_prop U (λ _, True)) with
@@ -603,45 +607,14 @@ Proof.
   - apply pt_measure_additivity.
 Defined.
 
-(*
-Definition finite_pmf_measure {A: finType} (pmf: A → R) (pmf_nonneg: ∀ x, pmf x >= 0)
-  : measure (discrete_algebra A).
-Proof.
-  refine {| measure_fun :=
-              λ U, \big[Rplus/0]_(i : A | is_left (excluded_middle_informative (U i)))
-                    pmf i |}.
-  - intros ?? Heq. apply eq_big.
-    * intros i.
-      destruct excluded_middle_informative as [|n1]; auto;
-      destruct excluded_middle_informative as [|n2]; auto.
-      ** exfalso; apply n2. eapply Heq. eauto.
-      ** exfalso; apply n1. eapply Heq. eauto.
-    * auto.
-  - abstract (intros X; apply Rle_ge, Rle_big0; intros; apply Rge_le; eauto).
-  - abstract (apply big1; intros i; destruct excluded_middle_informative => //=).
-  - intros U _ Hdisj.
-SearchAbout measure.
-    abstract (apply big1; intros i; destruct excluded_middle_informative => //=).
-
-    inversion 1. destruct excluded_middle_informative; inversion 1.destruct H.
-
-    Rbig_eq0. apply eq_bigr. intros X. apply Rle_ge, Rle_big0; intros. apply Rge_le; eauto.
-    * auto.
-      exfalso. eapply n.
-
-
-      destruct excluded_middle_informative.  rewrite //=.
-    f_equal. rewrite Heq.
-*)
-
-
-Lemma pi_measure_equiv {A: Type} (pi: (A → Prop) → Prop) (μ ν : measure (minimal_sigma pi)):
+Lemma pi_measure_equiv {A: Type} {F: measurable_space A} (pi: (A → Prop) → Prop) (μ ν : measure A):
   is_pi_system pi →
+  eq_sigma F (minimal_sigma pi) →
   μ (λ _, True) = ν (λ _, True) →
   (∀ U, pi U → μ U = ν U) →
   (∀ U, (minimal_sigma pi) U → μ U = ν U).
 Proof.
-  intros His_pi Hfull Hpi.
+  intros His_pi Heq Hfull Hpi.
   set (D := λ U, minimal_sigma pi U ∧ μ U = ν U).
   assert (HDfull: D (λ _, True)).
   { rewrite /D//=. }
@@ -651,7 +624,7 @@ Proof.
   { rewrite /D. intros P Q (?&HP) (?&HQ) Hsub.
     split.
     - apply sigma_closed_set_minus; auto.
-    - rewrite ?measure_set_minus; auto. nra.
+    - rewrite ?measure_set_minus ?Heq; auto. nra.
   }
   assert (HDunion: ∀ Ps : nat → (A → Prop), (∀ i, D (Ps i)) →
                                             (∀ i, Ps i ⊆ Ps (S i)) → D (unionF Ps)).
@@ -659,11 +632,11 @@ Proof.
     rewrite /D. intros Ps HD Hmono; split.
     - apply sigma_closed_unions. intros i. destruct (HD i); eauto.
     - feed pose proof (measure_incr_seq μ Ps); auto.
-      { intros i. destruct (HD i); eauto. }
+      { intros i. destruct (HD i); rewrite ?Heq; eauto. }
       feed pose proof (measure_incr_seq ν Ps) as Hnu; auto.
-      { intros i. destruct (HD i); eauto. }
+      { intros i. destruct (HD i); rewrite ?Heq; eauto. }
       eapply is_lim_seq_ext in Hnu; last first.
-      { intros n. destruct (HD n) as (?&Heq). symmetry; apply Heq. }
+      { intros n. destruct (HD n) as (?&Heq'). symmetry; apply Heq'. }
       cut (Finite (μ (unionF Ps)) = Finite (ν (unionF Ps))).
       { congruence. }
       etransitivity; last eapply is_lim_seq_unique; eauto.

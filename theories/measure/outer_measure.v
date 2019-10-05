@@ -252,16 +252,20 @@ Section outer_measure_props.
         intros n. apply outer_measure_proper, Hsimpl1.
   Qed.
 
-  Definition outer_measure_measure : measure (outer_measure_sigma).
+  Definition outer_measure_measure {F: measurable_space A} :
+    eq_sigma F (outer_measure_sigma) →
+    measure A.
+  Proof.
+    intros Heq.
     refine {| measure_fun := μ |}.
     - abstract (auto).
     - apply outer_measure_empty.
-    - apply outer_measurable_additivity.
+    - abstract (intros; apply outer_measurable_additivity; auto; try (intros; by eapply Heq)).
   Defined.
 
 End outer_measure_props.
 
-Definition full_measure_is_outer {A: Type} (F: sigma_algebra A) (μ: measure F)
+Definition full_measure_is_outer {A: Type} {F: measurable_space A} (μ: measure A)
           (Hfull: eq_prop F (λ _, True)) : outer_measure A.
 Proof.
   refine {| outer_measure_fun := measure_fun _ μ |}.
@@ -272,7 +276,7 @@ Defined.
 
 Definition outer_pt_measure : outer_measure ().
 Proof.
-  refine (full_measure_is_outer _ pt_measure _).
+  refine (full_measure_is_outer pt_measure _).
   { rewrite //=. }
 Defined.
 

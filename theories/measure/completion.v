@@ -5,10 +5,10 @@ From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigo
 From discprob.measure Require Export borel integral.
 Require Import ClassicalEpsilon.
 
-Definition complete {A: Type} {F: sigma_algebra A} (μ: measure F) :=
+Definition complete {A: Type} {F: measurable_space A} (μ: measure A) :=
   ∀ U V, F V → μ V = 0 → le_prop U V → F U.
 
-Lemma completion_union_proj {A: Type} {F: sigma_algebra A} (μ: measure F) Ps
+Lemma completion_union_proj {A: Type} {F: measurable_space A} (μ: measure A) Ps
       (Hin : ∀ i : nat, ∃ W V : A → Prop, F W ∧ F V ∧ le_prop W (Ps i)
                                           ∧ le_prop (Ps i) V ∧ μ (set_minus V W) = 0) :
   nat → ((A → Prop) * (A → Prop)).
@@ -20,7 +20,7 @@ Proof.
   exact (Wi, Vi).
 Defined.
 
-Lemma completion_closed_full {A: Type} {F: sigma_algebra A} (μ: measure F):
+Lemma completion_closed_full {A: Type} {F: measurable_space A} (μ: measure A):
   ∃ W V : A → Prop,
     F W ∧ F V ∧ le_prop W (λ _ : A, True) ∧ le_prop (λ _ : A, True) V ∧ μ (set_minus V W) = 0.
 Proof.
@@ -31,7 +31,7 @@ Proof.
   * intros [].
 Qed.
 
-Lemma completion_closed_union {A: Type} {F: sigma_algebra A} (μ: measure F):
+Lemma completion_closed_union {A: Type} {F: measurable_space A} (μ: measure A):
   ∀ Ps : nat → A → Prop,
     (∀ i : nat,
         ∃ W V : A → Prop, F W ∧ F V ∧ le_prop W (Ps i) ∧ le_prop (Ps i) V ∧ μ (set_minus V W) = 0)
@@ -86,7 +86,7 @@ Proof.
                   do 2 destruct constructive_indefinite_description => //=; intuition.
 Qed.
 
-Definition sigma_completion {A: Type} {F: sigma_algebra A} (μ: measure F) : sigma_algebra A.
+Definition sigma_completion {A: Type} {F: measurable_space A} (μ: measure A) : sigma_algebra A.
 Proof.
   refine {| sigma_sets := λ U, ∃ W V, F W ∧ F V ∧ le_prop W U ∧ le_prop U V
                                       ∧ μ (set_minus V W) = 0 |}.

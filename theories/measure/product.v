@@ -8,6 +8,11 @@ Require Import ClassicalEpsilon.
 Definition product_sigma {A B: Type} (F1: sigma_algebra A) (F2: sigma_algebra B) :=
   minimal_sigma (λ UV, ∃ U V, F1 U ∧ F2 V ∧ UV ≡ (λ ab, U (fst ab) ∧ V (snd ab))).
 
+Instance product_measurable_space (A B: Type)
+       {F1: measurable_space A} {F2: measurable_space B}:
+  measurable_space (A * B).
+Proof. econstructor. apply product_sigma; eapply measurable_space_sigma. Defined.
+
 Definition left_section {A B: Type} (E: A * B → Prop) (a: A) : B → Prop :=
   λ b, E (a, b).
 
@@ -108,31 +113,39 @@ Proof.
     firstorder.
 Qed.
 
-Lemma fun_left_measurable {A B C: Type} F1 F2 F3 (f : A * B → C) x:
-  measurable f (product_sigma F1 F2) F3 →
-  measurable (λ y, f (x, y)) F2 F3.
+Lemma fun_left_measurable {A B C: Type}
+      {F1: measurable_space A} {F2: measurable_space B} {F3: measurable_space C}
+      (f : A * B → C) x:
+  measurable f →
+  measurable (λ y, f (x, y)).
 Proof.
   intros Hmeas U HU.
-  eapply sigma_proper; last eapply (left_section_measurable (fun_inv f U) x);
-    eauto; firstorder.
+  eapply sigma_proper; last eapply (left_section_measurable (fun_inv f U) x).
+  - firstorder.
+  - eapply Hmeas in HU. eapply HU.
 Qed.
 
-Lemma fun_right_measurable {A B C: Type} F1 F2 F3 (f : A * B → C) y:
-  measurable f (product_sigma F1 F2) F3 →
-  measurable (λ x, f (x, y)) F1 F3.
+Lemma fun_right_measurable {A B C: Type}
+      {F1: measurable_space A} {F2: measurable_space B} {F3: measurable_space C}
+      (f : A * B → C) y:
+  measurable f →
+  measurable (λ x, f (x, y)).
 Proof.
   intros Hmeas U HU.
-  eapply sigma_proper; last eapply (right_section_measurable (fun_inv f U) y);
-    eauto; firstorder.
+  eapply sigma_proper; last eapply (right_section_measurable (fun_inv f U) y).
+  - firstorder.
+  - eapply Hmeas in HU. eapply HU.
 Qed.
 
-Lemma pair_measurable {A B C: Type} F1 F2 F3 (f : A → B) (g: A → C):
-  measurable f F1 F2 →
-  measurable g F1 F3 →
-  measurable (λ x, (f x, g x)) F1 (product_sigma F2 F3).
+Lemma pair_measurable {A B C: Type}
+      {F1: measurable_space A} {F2: measurable_space B} {F3: measurable_space C}
+      (f : A → B) (g: A → C):
+  measurable f →
+  measurable g →
+  measurable (λ x, (f x, g x)).
 Proof.
   intros Hmeasf Hmeasg.
-  apply measurable_generating_sets.
+  apply sigma_measurable_generating_sets.
   intros ? (U&V&HU&HV&->).
   rewrite /fun_inv//=.
   assert ((λ a, U (f a) ∧ V (g a)) ≡ fun_inv f U ∩ fun_inv g V) as ->.
@@ -142,17 +155,17 @@ Qed.
 
 Section product_measure.
   Context {A B: Type}.
-  Context {F1: sigma_algebra A} {F2: sigma_algebra B}.
-  Context (μ: measure F1) (ν: measure F2).
+  Context {F1: measurable_space A} {F2: measurable_space B}.
+  Context (μ: measure A) (ν: measure B).
 
-  Lemma wpt_indicator_left_section U (Hmeas : product_sigma F1 F2 U) x:
+  Lemma wpt_indicator_left_section (U: A * B → Prop) Hmeas x:
     (∀ y, wpt_fun (wpt_indicator U Hmeas) (x, y) =
           wpt_fun (wpt_indicator (left_section U x) (left_section_measurable _ _ Hmeas)) y).
   Proof. intros y. rewrite ?wpt_indicator_spec/left_section//=. Qed.
 
-  Lemma wpt_indicator_right_section U (Hmeas : product_sigma F1 F2 U) y:
+  Lemma wpt_indicator_right_section (U: A * B → Prop) Hmeas y:
     (∀ x, wpt_fun (wpt_indicator U Hmeas) (x, y) =
-          wpt_fun (wpt_indicator (right_section U y) (right_section_measurable _ _ Hmeas)) x).
+          @wpt_fun _ F1 (wpt_indicator (right_section U y) (right_section_measurable _ _ Hmeas)) x).
   Proof. intros x. rewrite ?wpt_indicator_spec/right_section//=. Qed.
 
   Lemma measure_left_section_rectangle (U: A → Prop) (V: B → Prop) (x: A) (Hmeas: F1 U):
@@ -177,18 +190,18 @@ Section product_measure.
     destruct (excluded_middle_informative).
     * rewrite Rmult_1_r. apply measure_proper.
       split; intuition.
-    * rewrite Rmult_0_r. etransitivity; last eapply measure_empty.
-      apply measure_proper. split.
+    * rewrite Rmult_0_r. etransitivity; last eapply (@measure_empty A).
+      apply (measure_proper _ μ). split.
       ** intros (?&?); intuition.
       ** inversion 1.
   Qed.
 
   Lemma measurable_measure_left U:
     product_sigma F1 F2 U →
-    measurable (λ x : A, ν (left_section U x)) F1 (borel R_UniformSpace).
+    measurable (λ x : A, ν (left_section U x)).
   Proof.
     intros HU.
-    set (F := (λ U, product_sigma F1 F2 U ∧ measurable (λ x, ν (left_section U x)) F1 (borel _))).
+    set (F := (λ U, product_sigma F1 F2 U ∧ measurable (λ x, ν (left_section U x)))).
     cut (eq_prop (product_sigma F1 F2) F).
     { intros Heq. destruct (Heq U) as (Himpl1&Himpl2); eauto.
       destruct (Himpl1); eauto. }
@@ -276,10 +289,10 @@ Section product_measure.
 
   Lemma measurable_measure_right V:
     product_sigma F1 F2 V →
-    measurable (λ x : B, μ (right_section V x)) F2 (borel R_UniformSpace).
+    measurable (λ x : B, μ (right_section V x)).
   Proof.
     intros HU.
-    set (F := (λ U, product_sigma F1 F2 U ∧ measurable (λ x, μ (right_section U x)) F2 (borel _))).
+    set (F := (λ U, product_sigma F1 F2 U ∧ measurable (λ x, μ (right_section U x)))).
     cut (eq_prop (product_sigma F1 F2) F).
     { intros Heq. destruct (Heq V) as (Himpl1&Himpl2); eauto.
       destruct (Himpl1); eauto. }
@@ -411,14 +424,14 @@ Section product_measure.
       {
         exists (μ (λ _, True) * ν (λ _, True)).
         intros ? (n&His).
-        eapply (is_integral_mono _ _ _ (λ x_, ν (λ _, True))); eauto.
+        eapply (is_integral_mono μ _ _ (λ x_, ν (λ _, True))); eauto.
         { intros; rewrite //=. rewrite -measure_sum_n_additivity.
           * apply measure_mono; last by done; auto.
             ** apply sigma_closed_range_union. intros.
                eapply left_section_measurable; eauto.
             ** auto.
           * intros; eapply left_section_measurable; eauto.
-          * apply disjointF_left_section; auto.
+          * apply disjointF_left_section; eauto.
         }
         rewrite Rmult_comm.
         apply is_integral_const.
@@ -486,7 +499,7 @@ Section product_measure.
     }
   Qed.
 
-  Definition product_measure : measure (product_sigma F1 F2).
+  Definition product_measure : measure (A * B).
   Proof.
     refine {| measure_fun := λ UV, Integral μ (λ x, ν (left_section UV x)) |}.
     - abstract (intros UV UV' Heq; setoid_rewrite Heq; done).
@@ -496,7 +509,7 @@ Section product_measure.
     - apply product_measure_additivity1.
   Defined.
 
-  Definition product_measure_alt : measure (product_sigma F1 F2).
+  Definition product_measure_alt : measure (A * B).
   Proof.
     refine {| measure_fun := λ UV, Integral ν (λ x, μ (right_section UV x)) |}.
     - abstract (intros UV UV' Heq; setoid_rewrite Heq; done).
@@ -517,6 +530,7 @@ Section product_measure.
         exists (U1 ∩ U2), (V1 ∩ V2).
         split_and!; auto.
         rewrite Heq1 Heq2. clear; firstorder.
+    - rewrite //=.
     - rewrite //=. rewrite /left_section/right_section ?Integral_const. nra.
     - intros ? (U&V&HU&HV&->).
       rewrite //=. rewrite /left_section/right_section //=.
@@ -549,17 +563,17 @@ End product_measure.
 
 Definition swap {A1 A2: Type} (a: A1 * A2) := (snd a, fst a).
 
-Lemma swap_measurable {A1 A2 F1 F2}:
-  measurable (@swap A1 A2) (product_sigma F1 F2) (product_sigma F2 F1).
+Lemma swap_measurable {A1 A2} {F1: measurable_space A1} {F2: measurable_space A2}:
+  measurable (@swap A1 A2).
 Proof.
-  apply measurable_generating_sets.
+  apply sigma_measurable_generating_sets.
   intros ? (V&U&HV&HU&->).
   apply minimal_sigma_ub.
   exists U, V; split_and!; eauto.
   firstorder.
 Qed.
 
-Lemma swap_is_pt_iso {A1 A2 F1 F2} (μ1: measure F1) (μ2: measure F2):
+Lemma swap_is_pt_iso {A1 A2} {F1: measurable_space A1} {F2: measurable_space A2} (μ1: measure A1) (μ2: measure A2):
   is_pt_iso (@swap A1 A2) (product_measure μ1 μ2) (product_measure μ2 μ1).
 Proof.
   split.
@@ -585,16 +599,16 @@ Qed.
 Section fubini_tonelli_lr.
 
   Context {A B: Type}.
-  Context {F1: sigma_algebra A} {F2: sigma_algebra B}.
-  Context (μ: measure F1) (ν: measure F2).
+  Context {F1: measurable_space A} {F2: measurable_space B}.
+  Context (μ: measure A) (ν: measure B).
 
-  Definition wpt_proj2 (wpt: weighted_partition (product_sigma F1 F2)) (x: A)
+  Definition wpt_proj2 (wpt: weighted_partition (@product_measurable_space A B _ _)) (x: A)
     : weighted_partition F2.
   Proof.
     refine (wpt_indicator_scal_list (map (λ rU, (fst rU, left_section (snd rU) x)) wpt) _).
-    { abstract (intros r U (rU&Heq&Hin)%in_map_iff;
+    abstract (intros r U (rU&Heq&Hin)%in_map_iff;
                 inversion Heq; subst; eapply (@left_section_measurable _ _ F1); eauto;
-                eapply In_wpt_snd_measurable; eauto). }
+                specialize (In_wpt_snd_measurable _ _ Hin) => //= ).
   Defined.
 
   Lemma wpt_proj2_spec wpt x y:
@@ -630,10 +644,10 @@ Section fubini_tonelli_lr.
 
 
   Lemma tonelli_lr_measurable_wpt wpt:
-    measurable (λ x, Integral ν (λ y, @wpt_fun _ (product_sigma F1 F2) wpt (x, y))) F1 (borel _).
+    measurable (λ x, Integral ν (λ y, @wpt_fun _ (product_measurable_space A B) wpt (x, y))).
   Proof.
     induction wpt using wpt_induction.
-    - eapply measurable_proper'; eauto.
+    - eapply measurable_proper; eauto.
       intros x. apply Integral_ext; eauto.
     - setoid_rewrite wpt_indicator_left_section => //=.
       setoid_rewrite Integral_wpt.
@@ -654,8 +668,8 @@ Section fubini_tonelli_lr.
 
   Lemma tonelli_lr_pos_measurable (f: A * B → R):
     (∀ x, 0 <= f x) →
-    measurable f (product_sigma F1 F2) (borel _) →
-    measurable (λ x : A, Integral ν (λ y, f (x, y))) F1 (borel _).
+    measurable f →
+    measurable (λ x : A, Integral ν (λ y, f (x, y))).
   Proof.
     intros Hpos Hmeas.
     edestruct (wpt_approx_measurable _ Hpos Hmeas) as (wptn&?&?&?&?).
@@ -663,7 +677,7 @@ Section fubini_tonelli_lr.
                  (λ x : A, Lim_seq (λ n, Integral ν (wpt_fun (wpt_proj2 (wptn n) x)))) x) as Heq.
     { intros x. symmetry.
       apply Integral_pos_mct; eauto.
-      { eapply (fun_left_measurable F1 F2 _ _ x); eauto. }
+      { eapply (fun_left_measurable _ _); eauto. }
       { intros. rewrite //=. setoid_rewrite wpt_proj2_spec. eauto.  }
       { intros. rewrite ?wpt_proj2_spec; eauto. }
       { intros. rewrite ?wpt_proj2_spec; eauto. }
@@ -675,8 +689,8 @@ Section fubini_tonelli_lr.
   Qed.
 
   Lemma tonelli_lr_measurable (f: A * B → R):
-    measurable f (product_sigma F1 F2) (borel _) →
-    measurable (λ x : A, Integral ν (λ y, f (x, y))) F1 (borel _).
+    measurable f →
+    measurable (λ x : A, Integral ν (λ y, f (x, y))).
   Proof.
     intros. rewrite /Integral.
     eapply measurable_ext.
@@ -701,7 +715,7 @@ Section fubini_tonelli_lr.
     { apply ex_integral_const. }
   Qed.
 
-  Lemma ex_integral_left_wpt (wpt: weighted_partition (product_sigma F1 F2)) x:
+  Lemma ex_integral_left_wpt (wpt: weighted_partition (product_measurable_space A B)) x:
     ex_integral ν (λ y, wpt_fun wpt (x, y)).
   Proof.
     eapply (ex_integral_ext _ (wpt_fun (wpt_proj2 wpt x))).
@@ -711,7 +725,7 @@ Section fubini_tonelli_lr.
 
   Hint Resolve ex_integral_left_wpt.
 
-  Lemma tonelli_lr_integral_wpt (wpt : weighted_partition (product_sigma F1 F2)):
+  Lemma tonelli_lr_integral_wpt (wpt : weighted_partition (product_measurable_space A B)):
     is_integral μ (λ x, Integral ν (λ y, wpt_fun wpt (x, y)))
                 (Integral (product_measure μ ν) (wpt_fun wpt)).
   Proof.
@@ -748,7 +762,7 @@ Section fubini_tonelli_lr.
     intros ?? Heq. apply Lim_seq_ext; eauto.
   Qed.
 
-  Lemma tonelli_lr_Integral_wpt (wpt : weighted_partition (product_sigma F1 F2)):
+  Lemma tonelli_lr_Integral_wpt (wpt : weighted_partition (product_measurable_space A B)):
     Integral μ (λ x, Integral ν (λ y, wpt_fun wpt (x, y))) =
                 (Integral (product_measure μ ν) (wpt_fun wpt)).
   Proof.
@@ -757,7 +771,7 @@ Section fubini_tonelli_lr.
 
   Lemma fubini_lr_pos_integral_aux (f: A * B → R):
     (∀ x, 0 <= f x) →
-    measurable f (product_sigma F1 F2) (borel _) →
+    measurable f →
     ex_integral (product_measure μ ν) f →
     almost_everywhere_meas μ (λ x, ex_integral ν (λ y, f (x, y))) →
     is_integral μ (λ x, Integral ν (λ y, f (x, y)))
@@ -804,14 +818,14 @@ Section fubini_tonelli_lr.
 
   Lemma fubini_lr_pos_integral_ae (f: A * B → R):
     (∀ x, 0 <= f x) →
-    measurable f (product_sigma F1 F2) (borel _) →
+    measurable f →
     ex_integral (product_measure μ ν) f →
     almost_everywhere_meas μ (λ x, ex_integral ν (λ y, f (x, y))).
   Proof.
     intros Hpos Hmeas Hex.
     assert (Himp: ∀ P Q : Prop, P ∧ (P → Q) → P ∧ Q) by intuition.
     assert (∀ i,
-        measurable (λ x : A, Integral ν (λ y : B, Rmin (f (x, y)) (INR i))) F1 (borel _)).
+        measurable (λ x : A, Integral ν (λ y : B, Rmin (f (x, y)) (INR i)))).
     {
       intros i.
       apply (tonelli_lr_measurable (λ ab, Rmin (f ab) (INR i))).
@@ -822,7 +836,8 @@ Section fubini_tonelli_lr.
     { apply sigma_closed_complements.
       eapply (sigma_proper _ F1
               (λ x, ex_finite_lim_seq (λ n, Integral ν (λ y, Rmin (f (x, y)) (INR n))))).
-      { intros x. rewrite -ex_integral_ex_finite_lim_min; eauto using fun_left_measurable. }
+      { intros x. rewrite -ex_integral_ex_finite_lim_min; eauto.
+        eapply fun_left_measurable; eauto. }
       measurable.
     }
     intros HF.
@@ -872,7 +887,7 @@ Section fubini_tonelli_lr.
       destruct Hex as (v'&His').
       assert (v' <= v + 1).
       { transitivity v; last nra.
-        eapply is_integral_mono; eauto.
+        unshelve (eapply (is_integral_mono _ _ _ _ _ _ His')); eauto.
         intros => //=. apply Rmin_l. }
       transitivity (v' / INR (S k)); last first.
       { rewrite /Rdiv. apply Rmult_le_compat_r; auto. left.
@@ -992,7 +1007,7 @@ Section fubini_tonelli_lr.
     { measurable. eauto. }
     { apply ex_integral_Rabs in Hex; eauto. }
     eapply almost_everywhere_meas_ext; eauto.
-    intros x. symmetry. apply ex_integral_Rabs; eauto using fun_left_measurable.
+    intros x. symmetry. apply ex_integral_Rabs. eapply fun_left_measurable; eauto with *.
   Qed.
 
   Lemma fubini_lr_Integral (f: A * B → R):
@@ -1004,7 +1019,7 @@ Section fubini_tonelli_lr.
 
   Lemma tonelli_lr_integral (f: A * B → R):
     (∀ x, 0 <= f x) →
-    measurable f (product_sigma F1 F2) (borel _) →
+    measurable f  →
     almost_everywhere_meas μ (λ x, ex_integral ν (λ y, f (x, y))) →
     ex_integral μ (λ x, Integral ν (λ y, f (x, y))) →
     ex_integral (product_measure μ ν) f.
@@ -1033,14 +1048,14 @@ End fubini_tonelli_lr.
 
 Section fubini_tonelli_rl.
   Context {A B: Type}.
-  Context {F1: sigma_algebra A} {F2: sigma_algebra B}.
-  Context (μ: measure F1) (ν: measure F2).
+  Context {F1: measurable_space A} {F2: measurable_space B}.
+  Context (μ: measure A) (ν: measure B).
 
   Lemma tonelli_rl_measurable (f: A * B → R):
-    measurable f (product_sigma F1 F2) (borel _) →
-    measurable (λ y : B, Integral μ (λ x, f (x, y))) F2 (borel _).
+    measurable f →
+    measurable (λ y : B, Integral μ (λ x, f (x, y))).
   Proof.
-    intros Hmeas. eapply (measurable_ext _ _ (λ y : B, Integral μ (λ x, f (swap (y, x))))).
+    intros Hmeas. eapply (measurable_ext _ (λ y : B, Integral μ (λ x, f (swap (y, x))))).
     { rewrite //=. }
     apply (tonelli_lr_measurable _ (λ x, f (swap x))).
     eapply (measurable_comp); eauto.
@@ -1080,13 +1095,14 @@ Section fubini_tonelli_rl.
 
   Lemma tonelli_rl_integral (f: A * B → R):
     (∀ x, 0 <= f x) →
-    measurable f (product_sigma F1 F2) (borel _) →
+    measurable f →
     almost_everywhere_meas ν (λ y, ex_integral μ (λ x, f (x, y))) →
     ex_integral ν (λ y, Integral μ (λ x, f (x, y))) →
     ex_integral (product_measure μ ν) f.
   Proof.
     intros.
-    eapply ex_integral_iso; first apply swap_is_pt_iso.
+    eapply (ex_integral_iso _ ((product_measure ν μ))).
+    { apply swap_is_pt_iso. }
     eapply (tonelli_lr_integral ν μ); eauto.
     eapply measurable_comp; eauto.
     eapply (iso_measurable (product_measure ν μ)); eapply swap_is_pt_iso.

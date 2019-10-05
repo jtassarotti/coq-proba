@@ -8,7 +8,11 @@ Require ClassicalEpsilon.
 (* Usually the Borel sigma algebra is defined for more general topological spaces,
    but the Coquelicot hierarchy is oriented around uniform spaces, and in any case
    that will be good enough *)
-Definition borel (A: UniformSpace) : sigma_algebra A := minimal_sigma (@open A).
+Definition borel_sigma (A: UniformSpace) : sigma_algebra A := minimal_sigma (@open A).
+
+(* Todo: should we make it global? or only if second countable *)
+Instance borel (A: UniformSpace) : measurable_space A :=
+  {| measurable_space_sigma := borel_sigma A |}.
 
 Lemma continuous_inverse_open (A B: UniformSpace) (f: A → B) :
   (∀ x, continuous f x) →
@@ -22,9 +26,9 @@ Qed.
 
 Lemma continuous_borel_measurable (A B: UniformSpace) (f: A → B) :
   (∀ x, continuous f x) →
-  measurable f (borel A) (borel B).
+  measurable f.
 Proof.
-  intros Hcont. apply measurable_generating_sets => U Hopen. apply minimal_sigma_ub.
+  intros Hcont. apply sigma_measurable_generating_sets => U Hopen. apply minimal_sigma_ub.
   by apply continuous_inverse_open.
 Qed.
 
@@ -55,12 +59,14 @@ Proof.
   intros Hclosed. rewrite borel_gen_closed. by apply minimal_sigma_ub.
 Qed.
 
-Section borel_R.
+(* Technically this would be the Borel sigma algebra on the extended reals,
+ but we do not have the UniformSpace structure on Rbar *)
+Definition Rbar_sigma : sigma_algebra Rbar :=
+  minimal_sigma (λ U, ∃ x, U = (λ z, Rbar_le z x)).
+Instance Rbar_measurable_space : measurable_space Rbar :=
+  {| measurable_space_sigma := Rbar_sigma |}.
 
-  (* Technically this would be the Borel sigma algebra on the extended reals,
-   but we do not have the UniformSpace structure on Rbar *)
-  Definition Rbar_sigma : sigma_algebra Rbar :=
-    minimal_sigma (λ U, ∃ x, U = (λ z, Rbar_le z x)).
+Section borel_R.
 
   Lemma Rbar_sigma_p_infty:
     Rbar_sigma {[p_infty]}.
@@ -275,16 +281,16 @@ Section borel_R.
       apply (closed_ray_borel_le x).
   Qed.
 
-  Lemma measurable_plus {A: Type} (F: sigma_algebra A) (f1 f2: A → R) :
-    measurable f1 F (borel _) →
-    measurable f2 F (borel _) →
-    measurable (λ x, f1 x + f2 x) F (borel _).
+  Lemma measurable_plus {A: Type} {F: measurable_space A} (f1 f2: A → R) :
+    measurable f1 →
+    measurable f2 →
+    measurable (λ x, f1 x + f2 x).
   Proof.
     intros Hmeas1 Hmeas2.
-    eapply measurable_mono.
+    eapply sigma_measurable_mono.
     { rewrite /le_sigma; reflexivity. }
     { rewrite /le_sigma/flip. apply borel_gen_open_ray_gt. }
-    eapply measurable_generating_sets.
+    eapply sigma_measurable_generating_sets.
     intros ? (t&->). rewrite /fun_inv.
     cut (eq_prop (λ a, t < f1 a + f2 a)
                  (unionF (λ n, match @pickle_inv [countType of (bool * (nat * nat))] n with
@@ -329,16 +335,16 @@ Section borel_R.
       * destruct Hspec.
   Qed.
 
-  Lemma measurable_scal {A: Type} (F: sigma_algebra A) (f: A → R) (c: R):
-    measurable f F (borel _) →
-    measurable (λ x, c * f x) F (borel _).
+  Lemma measurable_scal {A: Type} {F: measurable_space A} (f: A → R) (c: R):
+    measurable f →
+    measurable (λ x, c * f x).
   Proof.
     intros Hmeas.
     destruct (Rtotal_order 0 c) as [Hgt0|[Heq|Hlt0]].
-    - eapply measurable_mono.
+    - eapply sigma_measurable_mono.
       { rewrite /le_sigma; reflexivity. }
       { rewrite /le_sigma/flip. apply borel_gen_open_ray_gt. }
-      eapply measurable_generating_sets.
+      eapply sigma_measurable_generating_sets.
       intros ? (x&->).
       rewrite /fun_inv. eapply (sigma_proper _ _ (λ a, x /c < f a)).
       { intros z; split.
@@ -356,10 +362,10 @@ Section borel_R.
       * eapply sigma_proper; last apply sigma_empty_set.
         intros x; rewrite Rmult_0_l; split; auto.
         inversion 1.
-    - eapply measurable_mono.
+    - eapply sigma_measurable_mono.
       { rewrite /le_sigma; reflexivity. }
       { rewrite /le_sigma/flip. apply borel_gen_open_ray_gt. }
-      eapply measurable_generating_sets.
+      eapply sigma_measurable_generating_sets.
       intros ? (x&->).
       rewrite /fun_inv. eapply (sigma_proper _ _ (λ a, x /c > f a)).
       { intros z; split.
@@ -372,15 +378,15 @@ Section borel_R.
       apply: Hmeas. apply open_ray_borel_lt.
   Qed.
 
-  Lemma measurable_square {A: Type} (F: sigma_algebra A) (f: A → R) :
-    measurable f F (borel _) →
-    measurable (λ x, f x * f x) F (borel _).
+  Lemma measurable_square {A: Type} {F: measurable_space A} (f: A → R) :
+    measurable f →
+    measurable (λ x, f x * f x).
   Proof.
     intros Hmeas.
-    eapply measurable_mono.
+    eapply sigma_measurable_mono.
     { rewrite /le_sigma; reflexivity. }
     { rewrite /le_sigma/flip. apply borel_gen_closed_ray2. }
-    eapply measurable_generating_sets.
+    eapply sigma_measurable_generating_sets.
     intros ? (t&->).
     rewrite /fun_inv//=.
     destruct (Rlt_dec t 0) as [Hlt|Hnlt].
@@ -407,10 +413,9 @@ Section borel_R.
       apply Hmeas, closed_interval_borel.
   Qed.
 
-
-  Lemma measurable_opp {A: Type} (F: sigma_algebra A) (f: A → R) :
-    measurable f F (borel _) →
-    measurable (λ x, - f x) F (borel _).
+  Lemma measurable_opp {A: Type} {F: measurable_space A} (f: A → R) :
+    measurable f →
+    measurable (λ x, - f x).
   Proof.
     intros. eapply measurable_comp.
     * eauto.
@@ -418,10 +423,10 @@ Section borel_R.
       intros x. apply: continuous_opp. apply: continuous_id.
   Qed.
 
-  Lemma measurable_minus {A: Type} (F: sigma_algebra A) (f1 f2: A → R) :
-    measurable f1 F (borel _) →
-    measurable f2 F (borel _) →
-    measurable (λ x, f1 x - f2 x) F (borel _).
+  Lemma measurable_minus {A: Type} {F: measurable_space A} (f1 f2: A → R) :
+    measurable f1 →
+    measurable f2 →
+    measurable (λ x, f1 x - f2 x).
   Proof.
     intros Hmeas1 Hmeas2. rewrite /Rminus.
     apply measurable_plus; auto.
@@ -429,10 +434,10 @@ Section borel_R.
     apply measurable_opp, measurable_id.
   Qed.
 
-  Lemma measurable_mult {A: Type} (F: sigma_algebra A) (f1 f2: A → R) :
-    measurable f1 F (borel _) →
-    measurable f2 F (borel _) →
-    measurable (λ x, f1 x * f2 x) F (borel _).
+  Lemma measurable_mult {A: Type} {F: measurable_space A} (f1 f2: A → R) :
+    measurable f1 →
+    measurable f2 →
+    measurable (λ x, f1 x * f2 x).
   Proof.
     intros Hmeas1 Hmeas2.
     assert (∀ x, f1 x * f2 x = /2 * ((f1 x + f2 x) * (f1 x + f2 x)) -
@@ -450,19 +455,19 @@ Section borel_R.
                              apply measurable_square || apply measurable_mult ||
                              apply measurable_const || auto).
 
-  Lemma measurable_Rabs {A: Type} (F: sigma_algebra A) f1:
-    measurable f1 F (borel _) →
-    measurable (λ x, Rabs (f1 x)) F (borel _).
+  Lemma measurable_Rabs {A: Type} {F: measurable_space A} f1:
+    measurable f1 →
+    measurable (λ x, Rabs (f1 x)).
   Proof.
     intros Hmeas. eapply measurable_comp; eauto.
     apply continuous_borel_measurable => x.
     apply: continuous_abs.
   Qed.
 
-  Lemma measurable_Rmax {A: Type} (F: sigma_algebra A) (f1 f2: A → R) :
-    measurable f1 F (borel _) →
-    measurable f2 F (borel _) →
-    measurable (λ x, Rmax (f1 x) (f2 x)) F (borel _).
+  Lemma measurable_Rmax {A: Type} {F: measurable_space A} (f1 f2: A → R) :
+    measurable f1 →
+    measurable f2 →
+    measurable (λ x, Rmax (f1 x) (f2 x)).
   Proof.
     intros. assert (Heq: ∀ x, Rmax (f1 x) (f2 x) = /2 * ((f1 x + f2 x) + Rabs (f1 x - f2 x))).
     { intros. apply Rmax_case_strong; apply Rabs_case; nra. }
@@ -472,10 +477,10 @@ Section borel_R.
     apply measurable_minus; auto.
   Qed.
 
-  Lemma measurable_Rmin {A: Type} (F: sigma_algebra A) (f1 f2: A → R) :
-    measurable f1 F (borel _) →
-    measurable f2 F (borel _) →
-    measurable (λ x, Rmin (f1 x) (f2 x)) F (borel _).
+  Lemma measurable_Rmin {A: Type} {F: measurable_space A} (f1 f2: A → R) :
+    measurable f1 →
+    measurable f2 →
+    measurable (λ x, Rmin (f1 x) (f2 x)).
   Proof.
     intros. assert (Heq: ∀ x, Rmin (f1 x) (f2 x) = /2 * ((f1 x + f2 x) - Rabs (f1 x - f2 x))).
     { intros. apply Rmin_case_strong; apply Rabs_case; nra. }
@@ -486,12 +491,12 @@ Section borel_R.
   Qed.
 
   Lemma measurable_real:
-    measurable real (Rbar_sigma) (borel _).
+    measurable real.
   Proof.
-    eapply measurable_mono.
+    eapply sigma_measurable_mono.
     { rewrite /le_sigma; reflexivity. }
     { rewrite /le_sigma/flip. apply borel_gen_closed_ray2. }
-    eapply measurable_generating_sets.
+    eapply sigma_measurable_generating_sets.
     intros ? (t&->).
     destruct (Rlt_dec t 0).
     - eapply (sigma_proper _ _ (Rbar_le^~ t ∩ compl ({[m_infty]}))).
@@ -515,10 +520,10 @@ Section borel_R.
   Qed.
 
   Lemma measurable_Finite:
-    measurable Finite (borel _) Rbar_sigma.
+    measurable Finite.
   Proof.
     intros.
-    eapply measurable_generating_sets.
+    eapply sigma_measurable_generating_sets.
     intros ? (t&->).
     destruct t as [r | | ].
     - assert (eq_prop (fun_inv Finite (Rbar_le^~ r))
@@ -575,12 +580,12 @@ Section borel_R.
   Qed.
 
 
-  Lemma measurable_Rbar_opp {A: Type} (F: sigma_algebra A) (f: A → Rbar) :
-    measurable f F (Rbar_sigma) →
-    measurable (λ x, Rbar_opp (f x)) F (Rbar_sigma).
+  Lemma measurable_Rbar_opp {A: Type} {F: measurable_space A} (f: A → Rbar) :
+    measurable f →
+    measurable (λ x, Rbar_opp (f x)).
   Proof.
     intros Hmeas.
-    apply measurable_generating_sets.
+    apply sigma_measurable_generating_sets.
     intros ? (t&->).
     assert (fun_inv (λ x, Rbar_opp (f x)) (Rbar_le^~t) ≡
                     fun_inv f (Rbar_le (Rbar_opp t))) as ->.
@@ -599,12 +604,12 @@ Section borel_R.
     rewrite /=. eapply Rbar_le_trans; eauto. apply r.  eauto.
   Qed.
 
-  Lemma measurable_Sup {A: Type} (F: sigma_algebra A) (fn : nat → A → Rbar):
-    (∀ n, measurable (fn n) F Rbar_sigma) →
-    measurable (λ x, Sup_seq (λ n, fn n x)) F Rbar_sigma.
+  Lemma measurable_Sup {A: Type} {F: measurable_space A} (fn : nat → A → Rbar):
+    (∀ n, measurable (fn n)) →
+    measurable (λ x, Sup_seq (λ n, fn n x)).
   Proof.
     intros Hmeas.
-    eapply measurable_generating_sets.
+    eapply sigma_measurable_generating_sets.
     intros ? (t&->).
     assert (eq_prop (λ x, Rbar_le (Sup_seq (λ n, fn n x)) t)
                     (intersectF (λ n, fun_inv (fn n) (λ x, Rbar_le x t)))) as ->.
@@ -623,9 +628,9 @@ Section borel_R.
     apply minimal_sigma_ub. eauto.
   Qed.
 
-  Lemma measurable_Inf {A: Type} (F: sigma_algebra A) (fn : nat → A → Rbar):
-    (∀ n, measurable (fn n) F Rbar_sigma) →
-    measurable (λ x, Inf_seq (λ n, fn n x)) F Rbar_sigma.
+  Lemma measurable_Inf {A: Type} {F: measurable_space A} (fn : nat → A → Rbar):
+    (∀ n, measurable (fn n)) →
+    measurable (λ x, Inf_seq (λ n, fn n x)).
   Proof.
     intros.
     setoid_rewrite Inf_opp_sup.
@@ -634,9 +639,9 @@ Section borel_R.
     intros n. apply measurable_Rbar_opp. done.
   Qed.
 
-  Lemma measurable_LimSup {A: Type} (F: sigma_algebra A) (fn : nat → A → R):
-    (∀ n, measurable (fn n) F (borel _)) →
-    measurable (λ x, LimSup_seq (λ n, fn n x)) F Rbar_sigma.
+  Lemma measurable_LimSup {A: Type} {F: measurable_space A} (fn : nat → A → R):
+    (∀ n, measurable (fn n)) →
+    measurable (λ x, LimSup_seq (λ n, fn n x)).
   Proof.
     intros Hmeas.
     setoid_rewrite LimSup_InfSup_seq.
@@ -646,9 +651,9 @@ Section borel_R.
     eauto.
   Qed.
 
-  Lemma measurable_LimInf {A: Type} (F: sigma_algebra A) (fn : nat → A → R):
-    (∀ n, measurable (fn n) F (borel _)) →
-    measurable (λ x, LimInf_seq (λ n, fn n x)) F Rbar_sigma.
+  Lemma measurable_LimInf {A: Type} {F: measurable_space A} (fn : nat → A → R):
+    (∀ n, measurable (fn n)) →
+    measurable (λ x, LimInf_seq (λ n, fn n x)).
   Proof.
     intros Hmeas.
     setoid_rewrite LimInf_SupInf_seq.
@@ -658,9 +663,9 @@ Section borel_R.
     eauto.
   Qed.
 
-  Lemma measurable_Sup' {A: Type} (F: sigma_algebra A) (fn : nat → A → R):
-    (∀ n, measurable (fn n) F (borel _)) →
-    measurable (λ x, Sup_seq (λ n, fn n x) : R) F (borel _).
+  Lemma measurable_Sup_seq {A: Type} {F: measurable_space A} (fn : nat → A → R):
+    (∀ n, measurable (fn n)) →
+    measurable (λ x, Sup_seq (λ n, fn n x) : R).
   Proof.
     intros Hmeas. eapply measurable_comp. apply measurable_Sup.
     { intros n. eapply measurable_comp; last apply measurable_Finite.
@@ -668,9 +673,9 @@ Section borel_R.
     apply measurable_real.
   Qed.
 
-  Lemma measurable_Inf' {A: Type} (F: sigma_algebra A) (fn : nat → A → R):
-    (∀ n, measurable (fn n) F (borel _)) →
-    measurable (λ x, Inf_seq (λ n, fn n x) : R) F (borel _).
+  Lemma measurable_Inf_seq {A: Type} {F: measurable_space A} (fn : nat → A → R):
+    (∀ n, measurable (fn n)) →
+    measurable (λ x, Inf_seq (λ n, fn n x) : R).
   Proof.
     intros Hmeas. eapply measurable_comp. apply measurable_Inf.
     { intros n. eapply measurable_comp; last apply measurable_Finite.
@@ -679,9 +684,9 @@ Section borel_R.
   Qed.
 
   Lemma measurable_Rbar_div_pos y:
-    measurable (Rbar_div_pos^~ y) Rbar_sigma Rbar_sigma.
+    measurable (Rbar_div_pos^~ y).
   Proof.
-    apply measurable_generating_sets.
+    apply sigma_measurable_generating_sets.
     intros ? (t&->).
     destruct t as [r | | ].
     - assert (fun_inv (Rbar_div_pos^~y) (Rbar_le^~r) ≡
@@ -694,13 +699,13 @@ Section borel_R.
       intros [ | |] => //=.
   Qed.
 
-  Lemma measurable_Rbar_plus {A: Type} (F: sigma_algebra A) (f1 f2: A → Rbar) :
-    measurable f1 F Rbar_sigma →
-    measurable f2 F Rbar_sigma →
-    measurable (λ x, Rbar_plus (f1 x) (f2 x)) F Rbar_sigma.
+  Lemma measurable_Rbar_plus {A: Type} {F: measurable_space A} (f1 f2: A → Rbar) :
+    measurable f1 →
+    measurable f2 →
+    measurable (λ x, Rbar_plus (f1 x) (f2 x)).
   Proof.
     intros Hmeas1 Hmeas2.
-    apply measurable_generating_sets.
+    apply sigma_measurable_generating_sets.
     intros ? (t&->).
     destruct t as [r | | ].
     -
@@ -731,7 +736,7 @@ Section borel_R.
         apply sigma_closed_pair_union; eauto using Rbar_sigma_m_infty.
         apply sigma_closed_pair_union; eauto using Rbar_sigma_m_infty.
         repeat apply sigma_closed_pair_intersect.
-        * apply measurable_plus; eauto using measurable_comp, measurable_real.
+        * apply measurable_plus; try eapply measurable_comp; eauto using measurable_real.
           apply closed_ray_borel_le.
         * apply sigma_closed_complements; eapply Hmeas1.
           apply sigma_closed_pair_union; eauto using Rbar_sigma_m_infty, Rbar_sigma_p_infty.
@@ -765,7 +770,7 @@ Section borel_R.
         apply sigma_closed_pair_union; eauto using Rbar_sigma_m_infty;
         first apply sigma_closed_pair_union; eauto using Rbar_sigma_m_infty;
         first repeat apply sigma_closed_pair_intersect.
-        * apply measurable_plus; eauto using measurable_comp, measurable_real.
+        * apply measurable_plus; try eapply measurable_comp; eauto using measurable_comp, measurable_real.
           apply closed_ray_borel_le.
         * apply sigma_closed_complements; eapply Hmeas1.
           apply sigma_closed_pair_union; eauto using Rbar_sigma_pt.
@@ -800,9 +805,9 @@ Section borel_R.
       * eapply Hmeas1. eauto using Rbar_sigma_pt.
   Qed.
 
-  Lemma measurable_Lim {A: Type} (F: sigma_algebra A) (fn : nat → A → R):
-    (∀ n, measurable (fn n) F (borel _)) →
-    measurable (λ x, Lim_seq (λ n, fn n x)) F Rbar_sigma.
+  Lemma measurable_Lim {A: Type} {F: measurable_space A} (fn : nat → A → R):
+    (∀ n, measurable (fn n)) →
+    measurable (λ x, Lim_seq (λ n, fn n x)).
   Proof.
     intros Hmeas. rewrite /Lim_seq//=.
     eapply (measurable_comp _ (Rbar_div_pos^~{| pos := 2 ; cond_pos := Rlt_R0_R2|}));
@@ -812,51 +817,52 @@ Section borel_R.
     * apply measurable_LimInf. done.
   Qed.
 
-  Lemma measurable_Lim' {A: Type} (F: sigma_algebra A) (fn : nat → A → R):
-    (∀ n, measurable (fn n) F (borel _)) →
-    measurable (λ x, real (Lim_seq (λ n, fn n x))) F (borel _).
+  Lemma measurable_Lim' {A: Type} {F: measurable_space A} (fn : nat → A → R):
+    (∀ n, measurable (fn n)) →
+    measurable (λ x, real (Lim_seq (λ n, fn n x))).
   Proof.
     intros. eapply measurable_comp; eauto using measurable_real.
     apply measurable_Lim. done.
   Qed.
 
-  Lemma measurable_fun_eq_0 {A: Type} {F: sigma_algebra A} f:
-    measurable f F (borel R_UniformSpace) →
-    F (λ x, f x = 0).
+  Lemma measurable_fun_eq_0 {A: Type} {F: measurable_space A} f:
+    measurable f →
+    is_measurable (λ x, f x = 0).
   Proof.
     intros Hmeas. eapply (Hmeas (λ x, x = 0)).
     apply borel_closed, closed_eq.
   Qed.
 
-  Lemma measurable_fun_eq_0_Rbar {A: Type} {F: sigma_algebra A} f:
-    measurable f F Rbar_sigma →
-    F (λ x, f x = 0).
+  Lemma measurable_fun_eq_0_Rbar {A: Type} {F: measurable_space A} (f: A → Rbar):
+    measurable f →
+    is_measurable (λ x, f x = 0).
   Proof.
     intros Hmeas. eapply (Hmeas (λ x, x = 0)).
     apply Rbar_sigma_pt.
   Qed.
 
-  Lemma measurable_fun_ge {A: Type} {F: sigma_algebra A} f k:
-    measurable f F (borel _) →
-    F (λ x, k <= f x).
+  Lemma measurable_fun_ge {A: Type} {F: measurable_space A} f k:
+    measurable f →
+    is_measurable (λ x, k <= f x).
   Proof.
     intros Hmeas. eapply (Hmeas (λ x, k <= x)).
     apply closed_ray_borel_ge.
   Qed.
 
-  Lemma measurable_fun_le_const {A: Type} {F: sigma_algebra A} f k:
-    measurable f F (borel _) →
-    F (λ x, f x <= k).
+  Lemma measurable_fun_le_const {A: Type} {F: measurable_space A} f k:
+    measurable f →
+    is_measurable (λ x, f x <= k).
   Proof.
     intros Hmeas. eapply (Hmeas (λ x, x <= k)).
     apply closed_ray_borel_le.
   Qed.
 
-  Lemma measurable_fun_lt_p_infty {A: Type} {F: sigma_algebra A} f:
-    measurable f F Rbar_sigma →
-    F (λ x, Rbar_lt (f x) p_infty).
+  Lemma measurable_fun_lt_p_infty {A: Type} {F: measurable_space A} f:
+    measurable f →
+    is_measurable (λ x, Rbar_lt (f x) p_infty).
   Proof.
     intros Hmeas.
+    rewrite /is_measurable.
     assert ((λ x, Rbar_lt (f x) p_infty)  ≡ compl (fun_inv f {[p_infty]})) as ->.
     { intros x. rewrite /fun_inv/compl//=. split.
       - intros Hlt Heq. inversion Heq as [Heq']. rewrite Heq' in Hlt.
@@ -868,10 +874,10 @@ Section borel_R.
     apply Rbar_sigma_pt.
   Qed.
 
-  Lemma measurable_fun_eq_inv {A: Type} {F: sigma_algebra A} f g:
-    measurable f F (borel R_UniformSpace) →
-    measurable g F (borel R_UniformSpace) →
-    F (λ x, f x = g x).
+  Lemma measurable_fun_eq_inv {A: Type} {F: measurable_space A} (f g: A → R):
+    measurable f →
+    measurable g →
+    is_measurable (λ x, f x = g x).
   Proof.
     intros Hmeas1 Hmeas2.
     apply (sigma_proper _ _ (λ x, f x - g x = 0)).
@@ -879,10 +885,10 @@ Section borel_R.
     apply measurable_fun_eq_0. measurable.
   Qed.
 
-  Lemma measurable_fun_le_inv {A: Type} {F: sigma_algebra A} f g:
-    measurable f F (borel R_UniformSpace) →
-    measurable g F (borel R_UniformSpace) →
-    F (λ x, f x <= g x).
+  Lemma measurable_fun_le_inv {A: Type} {F: measurable_space A} f g:
+    measurable f →
+    measurable g →
+    is_measurable (λ x, f x <= g x).
   Proof.
     intros Hmeas1 Hmeas2.
     apply (sigma_proper _ _ (λ x, f x - g x <= 0)).
@@ -890,10 +896,10 @@ Section borel_R.
     apply measurable_fun_le_const. measurable.
   Qed.
 
-  Lemma measurable_fun_eq_inv_Rbar {A: Type} {F: sigma_algebra A} f g:
-    measurable f F Rbar_sigma →
-    measurable g F Rbar_sigma →
-    F (λ x, f x = g x).
+  Lemma measurable_fun_eq_inv_Rbar {A: Type} {F: measurable_space A} (f g: A → Rbar):
+    measurable f →
+    measurable g →
+    is_measurable (λ x, f x = g x).
   Proof.
     intros Hmeas1 Hmeas2.
     apply (sigma_proper _ _ (λ x, Rbar_minus (f x) (g x) = 0)).
@@ -907,9 +913,9 @@ Section borel_R.
     apply measurable_Rbar_plus, measurable_Rbar_opp; auto.
   Qed.
 
-  Lemma measure_ex_lim_seq {A: Type} (F: sigma_algebra A) (fn : nat → A → R):
-    (∀ n, measurable (fn n) F (borel _)) →
-    F (λ x, ex_lim_seq (λ n, fn n x)).
+  Lemma measure_ex_lim_seq {A: Type} {F: measurable_space A} (fn : nat → A → R):
+    (∀ n, measurable (fn n)) →
+    is_measurable (λ x, ex_lim_seq (λ n, fn n x)).
   Proof.
     intros Hmeas.
     eapply sigma_proper.
@@ -917,9 +923,9 @@ Section borel_R.
     apply measurable_fun_eq_inv_Rbar; auto using measurable_LimSup, measurable_LimInf.
   Qed.
 
-  Lemma measure_ex_finite_lim_seq {A: Type} (F: sigma_algebra A) (fn : nat → A → R):
-    (∀ n, measurable (fn n) F (borel _)) →
-    F (λ x, ex_finite_lim_seq (λ n, fn n x)).
+  Lemma measure_ex_finite_lim_seq {A: Type} {F: measurable_space A} (fn : nat → A → R):
+    (∀ n, measurable (fn n)) →
+    is_measurable (λ x, ex_finite_lim_seq (λ n, fn n x)).
   Proof.
     intros Hmeas.
     eapply (sigma_proper _ _ ((λ x, ex_lim_seq (λ n, fn n x))
@@ -944,10 +950,10 @@ Section borel_R.
     - apply measurable_Lim; eauto. apply sigma_closed_complements, Rbar_sigma_pt.
   Qed.
 
-  Lemma measure_is_lim_seq {A: Type} (F: sigma_algebra A) (fn : nat → A → R) (f: A → Rbar):
-    (∀ n, measurable (fn n) F (borel _)) →
-    measurable f F Rbar_sigma →
-    F (λ x, is_lim_seq (λ n, fn n x) (f x)).
+  Lemma measure_is_lim_seq {A: Type} {F: measurable_space A} (fn : nat → A → R) (f: A → Rbar):
+    (∀ n, measurable (fn n)) →
+    measurable f →
+    is_measurable (λ x, is_lim_seq (λ n, fn n x) (f x)).
   Proof.
     intros.
     assert (Hequiv: (λ x, is_lim_seq (λ n, fn n x) (f x))
@@ -958,6 +964,7 @@ Section borel_R.
         by apply is_lim_seq_unique.
       - intros (Hex&Heq). rewrite -Heq. apply Lim_seq_correct; eauto.
     }
+    rewrite /is_measurable.
     rewrite Hequiv. apply sigma_closed_pair_intersect.
     - apply measure_ex_lim_seq; eauto.
     - apply measurable_fun_eq_inv_Rbar; eauto using measurable_Lim.

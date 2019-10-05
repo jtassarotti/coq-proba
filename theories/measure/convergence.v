@@ -8,15 +8,15 @@ Require Import ClassicalEpsilon SetoidList.
 Section convergence.
 
   Context {A: Type}.
-  Context {F: sigma_algebra A}.
-  Context (μ: measure F).
+  Context {F: measurable_space A}.
+  Context (μ: measure A).
 
   Definition converge_in_measure (fn: nat → A → R) (f: A → R) :=
     ∀ (eps : posreal), is_lim_seq (λ n, μ (λ x, Rabs (fn n x - f x) > eps)) 0.
 
   Lemma convergence_ae_measure fn (f: A → R):
-    (∀ n, measurable (fn n) F (borel _)) →
-    measurable f F (borel _) →
+    (∀ n, measurable (fn n)) →
+    measurable f →
     (* I think this next assumption could be weakened or removed *)
     F (λ x, ¬ is_lim_seq (λ n, fn n x) (f x))→
     μ (λ x, ¬ is_lim_seq (λ n, fn n x) (f x)) = 0 →
@@ -25,7 +25,7 @@ Section convergence.
     intros Hmeas_fn Hmeas Hmeas0 Hae.
     intros eps.
     set (h := λ n x, Rabs (fn n x - f x)).
-    assert (Hh_meas: ∀ n, measurable (h n) F (borel _)).
+    assert (Hh_meas: ∀ n, measurable (h n)).
     { intros n. rewrite /h. measurable. }
     set (An := λ n, (fun_inv (h n) (λ x, x > eps))).
     set (Bn := λ n, unionF (λ k, An (n + k)%nat)).
@@ -66,8 +66,8 @@ Section convergence.
   Qed.
 
   Lemma convergence_pointwise_measure fn (f: A → R):
-    (∀ n, measurable (fn n) F (borel _)) →
-    measurable f F (borel _) →
+    (∀ n, measurable (fn n)) →
+    measurable f →
     (∀ x, is_lim_seq (λ n, fn n x) (f x)) →
     converge_in_measure fn f.
   Proof.

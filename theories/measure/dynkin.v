@@ -1,6 +1,6 @@
 Require Import Reals Psatz Omega.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
-From discprob.measure Require Export sets measurable_space.
+From discprob.measure Require Export sets sigma_algebra.
 From stdpp Require Import tactics.
 
 
