@@ -2,7 +2,7 @@ Require Import Reals Psatz Omega Fourier.
 From stdpp Require Import tactics list.
 From discprob.basic Require Import seq_ext.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
-From discprob.measure Require Export dynkin borel integral.
+From discprob.measure Require Export borel integral.
 Require Import ClassicalEpsilon.
 
 Definition complete {A: Type} {F: sigma_algebra A} (μ: measure F) :=
@@ -103,12 +103,9 @@ Proof.
   - apply completion_closed_union.
 Defined.
 
-Definition completion_fun {A: Type} {F: sigma_algebra A} (μ : measure F) :
-  (A → Prop) → R.
-Proof.
-  intros U. refine (sval (completeness (λ r, ∃ V, F V ∧ le_prop V U ∧ μ V = r) _ _)).
-
-
+(*
 Definition completion {A: Type} {F: sigma_algebra A} (μ: measure F): measure (sigma_completion μ).
 Proof.
   refine {| measure_fun :=
+
+*)

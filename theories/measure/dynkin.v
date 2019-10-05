@@ -1,6 +1,6 @@
 Require Import Reals Psatz Omega.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
-From discprob.measure Require Export sets measures.
+From discprob.measure Require Export sets measurable_space.
 From stdpp Require Import tactics.
 
 
@@ -202,46 +202,3 @@ Definition is_pi_system {A: Type} F :=
 Lemma pi_of_is_pi_system {A: Type} F (His: @is_pi_system A F) : pi_system A.
 Proof. refine {| pi_sets := F |}; destruct His; auto. Defined.
 
-Lemma pi_measure_equiv {A: Type} (pi: (A → Prop) → Prop) (μ ν : measure (minimal_sigma pi)):
-  is_pi_system pi →
-  μ (λ _, True) = ν (λ _, True) →
-  (∀ U, pi U → μ U = ν U) →
-  (∀ U, (minimal_sigma pi) U → μ U = ν U).
-Proof.
-  intros His_pi Hfull Hpi.
-  set (D := λ U, minimal_sigma pi U ∧ μ U = ν U).
-  assert (HDfull: D (λ _, True)).
-  { rewrite /D//=. }
-  assert (HDproper: Proper (eq_prop ==> iff) D).
-  { rewrite /D. by intros ?? ->. }
-  assert (HDclosed_minus: ∀ P Q, D P → D Q → Q ⊆ P → D (set_minus P Q)).
-  { rewrite /D. intros P Q (?&HP) (?&HQ) Hsub.
-    split.
-    - apply sigma_closed_set_minus; auto.
-    - rewrite ?measure_set_minus; auto. nra.
-  }
-  assert (HDunion: ∀ Ps : nat → (A → Prop), (∀ i, D (Ps i)) →
-                                            (∀ i, Ps i ⊆ Ps (S i)) → D (unionF Ps)).
-  {
-    rewrite /D. intros Ps HD Hmono; split.
-    - apply sigma_closed_unions. intros i. destruct (HD i); eauto.
-    - feed pose proof (measure_incr_seq μ Ps); auto.
-      { intros i. destruct (HD i); eauto. }
-      feed pose proof (measure_incr_seq ν Ps) as Hnu; auto.
-      { intros i. destruct (HD i); eauto. }
-      eapply is_lim_seq_ext in Hnu; last first.
-      { intros n. destruct (HD n) as (?&Heq). symmetry; apply Heq. }
-      cut (Finite (μ (unionF Ps)) = Finite (ν (unionF Ps))).
-      { congruence. }
-      etransitivity; last eapply is_lim_seq_unique; eauto.
-      symmetry. by apply is_lim_seq_unique.
-  }
-  set (D' := mkDynkin _ D HDproper HDfull HDclosed_minus HDunion).
-  intros ? HU. replace pi with (pi_sets _ (pi_of_is_pi_system _ His_pi)) in HU by auto.
-  apply pi_sigma_equiv_dynkin in HU.
-  assert (D' U) as (?&?); last by done.
-  { eapply minimal_dynkin_lub in HU; eauto.
-    intros V. rewrite //=/D => HV. split; auto.
-    apply minimal_sigma_ub. done.
-  }
-Qed.

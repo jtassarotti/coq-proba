@@ -13,11 +13,13 @@ theories/basic/exp_ext.v
 theories/basic/Reals_ext.v
 theories/basic/classic_proof_irrel.v
 theories/measure/sets.v
+theories/measure/measurable_space.v
 theories/measure/measures.v
 theories/measure/borel.v
 theories/measure/outer_measure.v
 theories/measure/lebesgue_measure.v
 theories/measure/convergence.v
+theories/measure/completion.v
 theories/measure/isomorphism.v
 theories/measure/integral.v
 theories/measure/dynkin.v

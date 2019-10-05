@@ -1,5 +1,5 @@
 Require Import Reals Psatz Omega.
-From discprob.measure Require Export measures borel.
+From discprob.measure Require Export measures.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 
 Record outer_measure (A: Type)  :=

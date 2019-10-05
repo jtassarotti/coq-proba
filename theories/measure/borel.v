@@ -1,6 +1,6 @@
 From stdpp Require Import tactics.
 Require Import Reals Psatz Omega Fourier.
-From discprob.measure Require Export measures.
+From discprob.measure Require Export measurable_space.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 Require ClassicalEpsilon.
 
