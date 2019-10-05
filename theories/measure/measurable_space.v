@@ -1,231 +1,84 @@
 Require Import Reals Psatz Omega ClassicalEpsilon.
 From stdpp Require Import tactics.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
-From discprob.measure Require Export sets.
+From discprob.measure Require Export sets sigma_algebra.
 
-Record sigma_algebra (A: Type) :=
-  mkSigma {
-      sigma_sets:> (A → Prop) → Prop;
-      sigma_proper : Proper (@eq_prop A ==> iff) sigma_sets;
-      sigma_full : sigma_sets (λ _, True);
-      sigma_closed_complements :
-        ∀ P, sigma_sets P → sigma_sets (compl P);
-      sigma_closed_unions :
-               ∀ Ps : nat → (A → Prop), (∀ i, sigma_sets (Ps i)) →
-                                        sigma_sets (unionF Ps)
-    }.
+Class measurable_space (A: Type) := { measurable_space_sigma : sigma_algebra A }.
+Coercion measurable_space_sigma : measurable_space >-> sigma_algebra.
 
-Definition eq_sigma {A: Type} (F1 F2: sigma_algebra A) := eq_prop F1 F2.
-Definition le_sigma {A: Type} (F1 F2: sigma_algebra A) := le_prop F1 F2.
+Section measurable_space.
+
+Context `{F: measurable_space A}.
+
+Definition is_measurable (s: A → Prop) :=
+  sigma_sets _ F s.
+
+Lemma is_measurable_empty : is_measurable ∅.
+Proof. apply sigma_empty_set. Qed.
+
+Lemma is_measurable_pair_union X Y:
+  is_measurable X → is_measurable Y → is_measurable (X ∪ Y).
+Proof. apply sigma_closed_pair_union. Qed.
+
+Lemma is_measurable_pair_intersect X Y:
+  is_measurable X → is_measurable Y → is_measurable (X ∩ Y).
+Proof. apply sigma_closed_pair_intersect. Qed.
+
+Lemma is_measurable_minus X Y:
+  is_measurable X → is_measurable Y → is_measurable (X ∖ Y).
+Proof. apply sigma_closed_set_minus. Qed.
+
+Lemma is_measurable_compl X:
+  is_measurable X → is_measurable (compl X).
+Proof. apply sigma_closed_complements. Qed.
+
+Lemma is_measurable_full:
+  is_measurable (λ _, True).
+Proof. apply sigma_full. Qed.
+
+Lemma is_measurable_union (Ps : nat → (A → Prop)):
+  (∀ i, is_measurable (Ps i)) →
+  is_measurable (unionF Ps).
+Proof. apply sigma_closed_unions. Qed.
+
+Lemma is_measurable_intersect (Ps : nat → (A → Prop)):
+  (∀ i, is_measurable (Ps i)) →
+  is_measurable (intersectF Ps).
+Proof. apply sigma_closed_intersections. Qed.
+
+End measurable_space.
+
+Definition measurable `{F1: measurable_space A} `{F2: measurable_space B} (f: A → B) : Prop :=
+  sigma_measurable f F1 F2.
+
+Section measurable_functions.
+
+Context `{measurable_space A} `{measurable_space B} `{measurable_space Z}.
+
+Lemma measurable_ext (f1 f2: A → B) :
+  (∀ x, f1 x = f2 x) →
+  measurable f1 →
+  measurable f2.
+Proof. apply sigma_measurable_ext. Qed.
+
+Lemma measurable_comp (f: A → B) (g: B → Z) :
+  measurable f →
+  measurable g →
+  measurable (λ x, g (f x)).
+Proof. apply sigma_measurable_comp. Qed.
+
+Lemma measurable_id:
+  measurable (@id A).
+Proof. apply sigma_measurable_id. Qed.
+
+Lemma measurable_const (b: B):
+  measurable (λ a : A, b).
+Proof. apply sigma_measurable_const. Qed.
+
+End measurable_functions.
 
 (*
-Global Instance le_sigma_Transitive {X}: Transitive (@le_sigma X).
-Proof. rewrite /le_sigma => ??? Heq1 Heq2 x. intros. by apply Heq2, Heq1. Qed.
-Global Instance le_sigma_Reflexive {X}: Reflexive (@le_sigma X).
-Proof. rewrite /le_sigma //=. intros ??. done. Qed.
-
-Global Instance eq_sigma_Transitive {X}: Transitive (@eq_sigma X).
-Proof. rewrite /eq_sigma/eq_prop => ??? Heq1 Heq2 x. by rewrite Heq1 Heq2.  Qed.
-Global Instance eq_sigma_Reflexive {X}: Reflexive (@eq_sigma X).
-Proof. rewrite /eq_sigma. by apply eq_prop_Reflexive. Qed.
-Global Instance eq_sigma_Symmetry {X}: Symmetric (@eq_sigma X).
-Proof. rewrite /eq_sigma/eq_prop => ?? Heq x. by rewrite Heq. Qed.
-Global Instance eq_sigma_Equivalence {X}: Equivalence (@eq_sigma X).
-Proof. split; apply _. Qed.
-*)
-
-
-Global Instance sigma_algebra_proper {A: Type} X : Proper (@eq_prop A ==> iff) (@sigma_sets A X).
-Proof. apply sigma_proper. Qed.
-
-Lemma sigma_closed_intersections {A: Type} (X: sigma_algebra A) (Ps: nat → (A → Prop)) :
-  (∀ i, X (Ps i)) → X (intersectF Ps).
-Proof.
-  intros Hmem.
-  assert (eq_prop (λ x : A, ∀ i, Ps i x) (λ x, ¬ (∃ i, ¬ (Ps i x)))) as ->.
-  { intros x; split.
-    - intros Hall (i&Hnot). apply Hnot. auto.
-    - intros Hnot i. eapply Classical_Pred_Type.not_ex_not_all in Hnot. eauto.
-  }
-  apply sigma_closed_complements, sigma_closed_unions.
-  intros i. apply sigma_closed_complements. auto.
-Qed.
-
-Lemma union_pair_unionF {A: Type} (X Y: A → Prop) :
-  eq_prop (X ∪ Y)
-          (unionF (λ n : nat, match n with
-                              | O => X
-                              | S O => Y
-                              | _ => ∅ end)).
-Proof.
-  rewrite /eq_prop/union/unionF; split.
-  * intros [?|?]; [exists O | exists (S O)]; auto.
-  * intros (n&H).
-    destruct n; first by left.
-    destruct n; first by right.
-    inversion H.
-Qed.
-
-Lemma intersect_pair_intersectF {A: Type} (X Y: A → Prop) :
-  eq_prop (X ∩ Y)
-          (intersectF (λ n : nat, match n with
-                              | O => X
-                              | S O => Y
-                              | _ => (λ _, True) end)).
-Proof.
-  rewrite /eq_prop/intersect/intersectF; split.
-  * intros [? ?] [|[|]]; auto.
-  * intros H; split.
-    ** apply (H O).
-    ** apply (H (S O)).
-Qed.
-
-Lemma sigma_empty_set {A: Type} (F: sigma_algebra A) :
-  F ∅.
-Proof.
-  eapply sigma_proper; last apply sigma_closed_complements, sigma_full.
-  intros x; split => [] []; auto.
-Qed.
-
-Hint Resolve sigma_empty_set sigma_full sigma_closed_complements sigma_closed_unions.
-
-Lemma sigma_closed_pair_union {A: Type} (F: sigma_algebra A) X Y:
-  F X → F Y → F (X ∪ Y).
-Proof.
-  intros. rewrite union_pair_unionF.  apply sigma_closed_unions.
-  intros [|[|]]; auto.
-Qed.
-
-Lemma range_union_S {A: Type} (Us: nat → A → Prop) n:
-  (λ x, ∃ i, (i <= S n)%nat ∧ Us i x) ≡ (λ x, ∃i, (i <= n)%nat ∧ Us i x) ∪ (Us (S n)).
-Proof.
-  intros x; split.
-  - intros (?&Hle&?). inversion Hle; subst; firstorder.
-  - firstorder.
-Qed.
-
-Lemma sigma_closed_range_union {A: Type} (F: sigma_algebra A) Us n:
-  (∀ i, (i <= n)%nat → F (Us i)) → F (λ x, ∃ i, (i <= n)%nat ∧ Us i x).
-Proof.
-  induction n.
-  - intros Hle. apply (sigma_proper _ _ (Us O)); eauto.
-    intros x; split.
-    * firstorder.
-    * intros (i&Hle'&?). inversion Hle'; firstorder.
-  - intros.  setoid_rewrite range_union_S. apply sigma_closed_pair_union; eauto.
-Qed.
-
-Lemma sigma_closed_list_union {A: Type} (F: sigma_algebra A) l:
-  (∀ U, In U l → F U) → F (union_list l).
-Proof.
-  induction l => //=.
-  intros. apply sigma_closed_pair_union; eauto.
-Qed.
-
-Lemma sigma_closed_pair_intersect {A: Type} (F: sigma_algebra A) X Y:
-  F X → F Y → F (X ∩ Y).
-Proof.
-  intros. rewrite intersect_pair_intersectF. apply sigma_closed_intersections.
-  intros [|[|]]; auto.
-Qed.
-
-Lemma sigma_closed_set_minus {A: Type} (F: sigma_algebra A) X Y:
-  F X → F Y → F (X ∖ Y).
-Proof.
-  intros HX HY.
-  rewrite set_minus_union_complement.
-  apply sigma_closed_pair_intersect; auto.
-Qed.
-
-Hint Resolve sigma_closed_pair_union sigma_closed_pair_intersect sigma_closed_set_minus.
-
-Definition intersection_sigma {A: Type} (I: Type) (U: I → sigma_algebra A) : sigma_algebra A.
-  refine {| sigma_sets := λ x, ∀ i, (U i) x |}.
-  - abstract (intros X X' Heq; split => H i; [ rewrite -Heq | rewrite Heq ]; auto).
-  - abstract (intros; by apply sigma_full).
-  - abstract (intros; by apply sigma_closed_complements).
-  - abstract (intros; by apply sigma_closed_unions).
-Defined.
-
-Definition minimal_sigma {A: Type} (F: (A → Prop) → Prop) : sigma_algebra A :=
-  intersection_sigma { F' : sigma_algebra A | le_prop F F' } sval.
-
-Lemma minimal_sigma_ub {A: Type} (F : (A → Prop) → Prop) :
-  le_prop F (minimal_sigma F).
-Proof.
-  intros i HF (F'&Hle) => //=. by apply Hle.
-Qed.
-
-Lemma minimal_sigma_lub {A: Type} (F : (A → Prop) → Prop) (F': sigma_algebra A) :
-  le_prop F F' → le_prop (minimal_sigma F) F'.
-Proof.
-  intros Hle X. rewrite /minimal_sigma/intersection_sigma => //=.
-  intros H. specialize (H (exist _ F' Hle)). apply H.
-Qed.
-
-Definition measurable {A B: Type} f (F1: sigma_algebra A) (F2: sigma_algebra B) :=
-  ∀ U, F2 U → F1 (fun_inv f U).
-
-Lemma measurable_proper {A B: Type} f :
-  Proper (@eq_sigma A ==> @eq_sigma B ==> iff) (@measurable A B f).
-Proof.
-  intros F1 F1' Heq1 F2 F2' Heq2.
-  split; intros Hmeasure U.
-  - rewrite -Heq1 -Heq2. auto.
-  - rewrite Heq1 Heq2. auto.
-Qed.
-
-Global Instance measurable_proper' {A B: Type} :
-  Proper (pointwise_relation _ eq ==> eq ==> eq ==> iff) (@measurable A B).
-Proof.
-  intros f1 f2 Heq ?? ? ?? ?; subst.
-  assert (Heq': eq_fun f1 f2).
-  { intros x; eauto. }
-  split; intros Hmeasure U.
-  - rewrite -Heq'. eauto.
-  - rewrite Heq'. eauto.
-Qed.
-
-Lemma measurable_ext {A B: Type} F1 F2 f1 f2 :
-  (∀ x, f1 x = f2 x) →
-  @measurable A B f1 F1 F2 →
-  @measurable A B f2 F1 F2.
-Proof.
-  intros Heq Hmeas. eapply measurable_proper'; eauto.
-  intros x. done.
-Qed.
-
-Global Instance measurable_mono {A B: Type} f :
-  Proper (@le_sigma A ==> @le_sigma B --> impl) (@measurable A B f).
-Proof.
-  intros F1 F1' Heq1 F2 F2' Heq2.
-  intros Hmeas U HU. by apply Heq2, Hmeas, Heq1 in HU.
-Qed.
-
-Lemma measurable_comp {A B C: Type} (f: A → B) (g: B → C) F1 F2 F3 :
-  measurable f F1 F2 →
-  measurable g F2 F3 →
-  measurable (λ x, g (f x)) F1 F3.
-Proof. intros Hf Hg ? HU. by apply Hg, Hf in HU. Qed.
-
-Lemma measurable_id {A: Type}  F:
-  measurable (@id A) F F.
-Proof. intros U HF => //=. Qed.
-
-Lemma measurable_const {A B: Type} (b: B) F G:
-  measurable (λ a : A, b) F G.
-Proof.
-  intros U HF => //=.
-  destruct (Classical_Prop.classic (U b)).
-  - eapply sigma_proper; last eapply sigma_full. rewrite /fun_inv.
-    split; intuition.
-  - eapply sigma_proper; last eapply sigma_empty_set. rewrite /fun_inv.
-    split.
-    * contradiction.
-    * inversion 1.
-Qed.
-
-(* Any function f : A  → B on a measurable space A induces a sigma algebra on B *)
+(* Any function f : A  → B on a sigma_measurable space A induces a sigma algebra on B *)
 Definition fun_sigma {A B: Type} (F: sigma_algebra A) (f: A → B) : sigma_algebra B.
   refine {| sigma_sets := λ U, F (fun_inv f U) |}.
   - abstract (by intros ?? ->).
@@ -234,9 +87,9 @@ Definition fun_sigma {A B: Type} (F: sigma_algebra A) (f: A → B) : sigma_algeb
   - abstract (intros Ps HF; rewrite fun_inv_unionF; auto).
 Defined.
 
-Lemma measurable_intersection {I} {A B: Type} f (F1: sigma_algebra A) (F2 : I → sigma_algebra B):
-  (∃ i, measurable f F1 (F2 i)) →
-  measurable f F1 (intersection_sigma _ F2).
+Lemma sigma_measurable_intersection {I} {A B: Type} f (F1: sigma_algebra A) (F2 : I → sigma_algebra B):
+  (∃ i, sigma_measurable f F1 (F2 i)) →
+  sigma_measurable f F1 (intersection_sigma _ F2).
 Proof.
   intros HF2 U HminU.
   cut (le_prop (intersection_sigma _ F2) (fun_sigma F1 f)).
@@ -245,40 +98,28 @@ Proof.
   edestruct HF2 as (i&Hmeas). eapply Hmeas; eauto.
 Qed.
 
-Lemma measurable_generating_sets {A B: Type} f (F1: sigma_algebra A) (F2 : (B → Prop) → Prop):
+Lemma sigma_measurable_generating_sets {A B: Type} f (F1: sigma_algebra A) (F2 : (B → Prop) → Prop):
   (∀ U, F2 U → F1 (fun_inv f U)) →
-  measurable f F1 (minimal_sigma F2).
+  sigma_measurable f F1 (minimal_sigma F2).
 Proof.
   intros HF2 U HminU.
   cut (le_prop (minimal_sigma F2) (fun_sigma F1 f)).
   { intros Hle. by apply Hle. }
   apply minimal_sigma_lub. rewrite /fun_sigma//=.
 Qed.
+*)
 
-Definition disjoint_sum_sigma {A1 A2: Type} (F1: sigma_algebra A1) (F2: sigma_algebra A2)
-  : sigma_algebra (A1 + A2).
-Proof.
-  refine {| sigma_sets := λ U, F1 (fun_inv inl U) ∧ F2 (fun_inv inr U) |}.
-  - intros U1 U2 Heq. rewrite Heq. done.
-  - split; rewrite //=.
-  - intros U (HF1&HF2).
-    split.
-    * apply sigma_closed_complements in HF1. eapply sigma_proper; eauto.
-      firstorder.
-    * apply sigma_closed_complements in HF2. eapply sigma_proper; eauto.
-      firstorder.
-  - intros Us.
-    intros Hi. split.
-    * assert (Hinl: ∀ i, F1 (fun_inv inl (Us i))); first by firstorder.
-      apply sigma_closed_unions in Hinl.
-      eapply sigma_proper; eauto.
-      firstorder.
-    * assert (Hinr: ∀ i, F2 (fun_inv inr (Us i))); first by firstorder.
-      apply sigma_closed_unions in Hinr.
-      eapply sigma_proper; eauto.
-      firstorder.
-Defined.
+Global Instance measurable_space_sum (A1 A2: Type) {F1: measurable_space A1} {F2: measurable_space A2}
+  : measurable_space (A1 + A2).
+Proof. econstructor; apply disjoint_sum_sigma; [ apply F1 | apply F2 ]. Defined.
 
+Global Instance measurable_space_unit : measurable_space unit.
+Proof. econstructor; apply discrete_algebra. Defined.
+
+Global Instance measurable_space_nat : measurable_space nat.
+Proof. econstructor; apply discrete_algebra. Defined.
+
+(*
 Lemma inv_union {A B: Type} (f: A → B) (Us: nat → B → Prop):
     eq_prop (fun_inv f (unionF Us))
             (unionF (λ i : nat, fun_inv f (Us i))).
@@ -292,19 +133,19 @@ Defined.
 Definition initial_algebra {I: Type} {A: Type} {B: Type} (Y : sigma_algebra B) (f: I → A → B)
   : sigma_algebra A.
 Proof.
-  set (S := { σ : sigma_algebra A | ∀ i, measurable (f i) σ Y }).
+  set (S := { σ : sigma_algebra A | ∀ i, sigma_measurable (f i) σ Y }).
   exact (intersection_sigma S sval).
 Defined.
 
 Lemma initial_algebra_meas {I} {A B: Type} (Y: sigma_algebra B) (f: I → A → B) (i: I):
-  measurable (f i) (initial_algebra Y f) Y.
+  sigma_measurable (f i) (initial_algebra Y f) Y.
 Proof.
   intros U HYU (σ&Hspec) => //=.
   eapply Hspec. eauto.
 Qed.
 
 Lemma initial_algebra_lb {I} {A B: Type} (Y: sigma_algebra B) (f: I → A → B) (X: sigma_algebra A):
-  (∀ i, measurable (f i) X Y) →
+  (∀ i, sigma_measurable (f i) X Y) →
   le_sigma (initial_algebra Y f) X.
 Proof.
   intros Hmeas. intros U HU.
@@ -313,11 +154,11 @@ Qed.
 
 Lemma initial_algebra_codom_meas {I} {C A B: Type} (X: sigma_algebra C)
       (Y: sigma_algebra B) (f: I → A → B) g:
-  (∀ i, measurable (λ x, (f i (g x))) X Y) →
-  measurable g X (initial_algebra Y f).
+  (∀ i, sigma_measurable (λ x, (f i (g x))) X Y) →
+  sigma_measurable g X (initial_algebra Y f).
 Proof.
   intros Hspec.
-  apply measurable_intersection.
+  apply sigma_measurable_intersection.
   unshelve (eexists).
   { exists (fun_sigma X g). eauto. }
   rewrite //=.
@@ -338,9 +179,9 @@ Definition initial_algebra1 {A: Type} {B: Type} (Y : sigma_algebra B) (f: A → 
   : sigma_algebra A := @initial_algebra unit A B Y (λ _, f).
 
 Lemma initial_algebra1_meas {A B: Type} (Y: sigma_algebra B) (f: A → B) :
-  measurable f (initial_algebra1 Y f) Y.
+  sigma_measurable f (initial_algebra1 Y f) Y.
 Proof.
-  eapply measurable_ext; last first.
+  eapply sigma_measurable_ext; last first.
   { eapply (initial_algebra_meas _ _ tt).  }
   done.
 Qed.
@@ -348,12 +189,12 @@ Qed.
 
 Lemma initial_algebra1_codom_meas {C A B: Type} (X: sigma_algebra C)
       (Y: sigma_algebra B) (f: A → B) g:
-  measurable (λ x, (f (g x))) X Y →
-  measurable g X (initial_algebra1 Y f).
+  sigma_measurable (λ x, (f (g x))) X Y →
+  sigma_measurable g X (initial_algebra1 Y f).
 Proof. intros. by eapply initial_algebra_codom_meas. Qed.
 
 Lemma initial_algebra1_lb {A B: Type} (Y: sigma_algebra B) (f: A → B) (X: sigma_algebra A):
-  measurable f X Y →
+  sigma_measurable f X Y →
   le_sigma (initial_algebra1 Y f) X.
 Proof. intros. eapply initial_algebra_lb; eauto. Qed.
 
@@ -393,4 +234,5 @@ Proof.
     rewrite /fun_ing.
     rewrite Hequiv.
   destruct Hinit.
+*)
 *)

@@ -13,6 +13,7 @@ theories/basic/exp_ext.v
 theories/basic/Reals_ext.v
 theories/basic/classic_proof_irrel.v
 theories/measure/sets.v
+theories/measure/sigma_algebra.v
 theories/measure/measurable_space.v
 theories/measure/measures.v
 theories/measure/borel.v
