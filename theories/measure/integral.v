@@ -21,8 +21,8 @@ Hint Resolve R_singleton_closed.
 Section integral.
 
   Context {A: Type}.
-  Context {F: sigma_algebra A}.
-  Context (μ: measure F).
+  Context {F: measurable_space A}.
+  Context (μ: measure A).
 
   Record partition :=
     { partition_list :> list (A → Prop);
@@ -489,7 +489,7 @@ Section integral.
     measurable (λ x, if excluded_middle_informative (U x) then
                            1
                          else
-                           0) F (borel R_UniformSpace).
+                           0).
   Proof.
     intros HU V HV.
     rewrite /fun_inv.
@@ -511,7 +511,7 @@ Section integral.
       ** intros. contradiction; eauto.
   Qed.
 
-  Lemma wpt_fun_measurable wpt : measurable (wpt_fun wpt) F (borel _).
+  Lemma wpt_fun_measurable wpt : measurable (wpt_fun wpt).
   Proof.
     assert (Hmeas: ∀ r U, In (r, U) wpt → F U).
     { intros. eapply In_wpt_snd_measurable with (rU := (r, U)); eauto. }
@@ -525,7 +525,7 @@ Section integral.
       ** eapply sigma_proper; last eapply sigma_empty_set.
          intros a; split; auto; last by intros [].
          rewrite big_nil. auto.
-    * eapply (measurable_proper'
+    * eapply (measurable_proper
               (λ x, r * (if excluded_middle_informative (U x) then 1 else 0)
                     + \big[Rplus/0]_(aU <- l) (if excluded_middle_informative (aU.2 x) then
                                                  aU.1
@@ -533,8 +533,6 @@ Section integral.
       { intros x.
         rewrite big_cons. f_equal. destruct excluded_middle_informative; auto =>//=; nra.
       }
-      { reflexivity. }
-      { reflexivity. }
       apply measurable_plus; last first.
       { eapply IHl. intros. eapply Hmeas. right. eauto.  }
       apply measurable_scal.
@@ -1234,7 +1232,7 @@ Section integral.
   Qed.
 
   Definition is_pos_integral (f: A → R) v :=
-    measurable f F (borel R_UniformSpace) ∧
+    measurable f ∧
     is_lub (λ r, ∃ wpt, (∀ x, wpt_fun wpt x <= f x) ∧ wpt_integral wpt = r) v.
 
   Definition ex_pos_integral f := ∃ v, is_pos_integral f v.
@@ -1257,11 +1255,9 @@ Section integral.
   Proof.
     intros H (Hmeas&Hlub).
     split.
-    - eapply measurable_proper'.
+    - eapply measurable_proper.
       * intros x. rewrite -H. reflexivity.
-      * reflexivity.
-      * reflexivity.
-      *  eauto.
+      * eauto.
     - split.
       * intros ? (wpt&?&?). apply Hlub; exists wpt; split_and!; eauto.
         intros. rewrite H. done.
@@ -1372,7 +1368,7 @@ Section integral.
     (λ r, ∃ wpt, (∀ x, wpt_fun wpt x <= f x) ∧ wpt_integral wpt = r).
 
   Lemma measurable_bounded_simple_ex_pos_integral (f: A → R):
-    measurable f F (borel R_UniformSpace) →
+    measurable f →
     bound (pos_int_simple_below f) →
     (∃ r, pos_int_simple_below f r) →
     ex_pos_integral f.
@@ -1424,7 +1420,7 @@ Section integral.
   Qed.
 
   Lemma wpt_mono_lim_ex_eps wpt_n f:
-    measurable f F (borel _) →
+    measurable f →
     (∀ x, is_lim_seq (λ n, wpt_fun (wpt_n n) x) (f x : R)) →
     (∀ x, ∀ n, wpt_fun (wpt_n n) x <= wpt_fun (wpt_n (S n)) x) →
     ∀ wpt, (∀ x, wpt_fun wpt x <= f x) →
@@ -1503,7 +1499,7 @@ Section integral.
   Qed.
 
   Lemma is_pos_integral_mct_wpt_ex wpt_n f:
-    measurable f F (borel _) →
+    measurable f →
     (∀ x, is_lim_seq (λ n, wpt_fun (wpt_n n) x) (f x : R)) →
     (∀ x, ∀ n, wpt_fun (wpt_n n) x <= wpt_fun (wpt_n (S n)) x) →
     bound (λ r, ∃ n, wpt_integral (wpt_n n) = r) →
@@ -1571,7 +1567,7 @@ Section integral.
   Qed.
 
   Lemma is_pos_integral_mct_wpt wpt_n f (v: R):
-    measurable f F (borel _) →
+    measurable f →
     (∀ x, is_lim_seq (λ n, wpt_fun (wpt_n n) x) (f x : R)) →
     (∀ x, ∀ n, wpt_fun (wpt_n n) x <= wpt_fun (wpt_n (S n)) x) →
     is_lim_seq (λ n, wpt_integral (wpt_n n)) v →
@@ -1619,7 +1615,7 @@ Section integral.
 
   Lemma wpt_approx_measurable1 f:
     (∀ x, 0 <= f x) →
-    measurable f F (borel _) →
+    measurable f →
     ∃ wpt_n, (∀ n x, wpt_fun (wpt_n n) x <= wpt_fun (wpt_n (S n)) x) ∧
              (∀ x, is_lim_seq (λ n, wpt_fun (wpt_n n) x) (f x)) ∧
              (∀ n x, 0 <= wpt_fun (wpt_n n) x).
@@ -1858,7 +1854,7 @@ Section integral.
 
   Lemma wpt_approx_measurable f:
     (∀ x, 0 <= f x) →
-    measurable f F (borel _) →
+    measurable f →
     ∃ wpt_n, (∀ n x, wpt_fun (wpt_n n) x <= wpt_fun (wpt_n (S n)) x) ∧
              (∀ x, is_lim_seq (λ n, wpt_fun (wpt_n n) x) (f x)) ∧
              (∀ n x, wpt_fun (wpt_n n) x <= f x) ∧
@@ -1870,7 +1866,7 @@ Section integral.
   Qed.
 
   Lemma is_pos_integral_measurable f v:
-    is_pos_integral f v → measurable f F (borel R_UniformSpace).
+    is_pos_integral f v → measurable f.
   Proof. destruct 1; eauto. Qed.
 
   Hint Resolve is_pos_integral_measurable.
@@ -1901,7 +1897,7 @@ Section integral.
   Qed.
 
   Lemma is_pos_integral_mct_wpt' wpt_n f (v: R):
-    measurable f F (borel _) →
+    measurable f →
     (∀ x, is_lim_seq (λ n, wpt_fun (wpt_n n) x) (f x : R)) →
     (∀ x, ∀ n, wpt_fun (wpt_n n) x <= wpt_fun (wpt_n (S n)) x) →
     is_pos_integral f v →
@@ -1982,7 +1978,7 @@ Section integral.
   Lemma is_pos_integral_mono_ex f1 f2 v2:
     (∀ x, 0 <= f1 x) →
     (∀ x, f1 x <= f2 x) →
-    measurable f1 F (borel _) →
+    measurable f1 →
     is_pos_integral f2 v2 →
     ex_pos_integral f1 ∧ Pos_integral f1 <= v2.
   Proof.
@@ -2001,7 +1997,7 @@ Section integral.
   Qed.
 
   Definition is_integral (f: A → R) v :=
-    measurable f F (borel R_UniformSpace) ∧
+    measurable f ∧
     ∃ v1 v2, is_pos_integral (λ x, Rmax (f x) 0) v1 ∧
              is_pos_integral (λ x, Rmax (- f x) 0) v2 ∧
              v = v1 - v2.
@@ -2189,10 +2185,8 @@ Section integral.
   Proof.
     intros Heq (Hmeas&Hp).
     split.
-    - eapply measurable_proper'.
+    - eapply measurable_proper.
       * intros x. rewrite -Heq. reflexivity.
-      * reflexivity.
-      * reflexivity.
       * eauto.
     - destruct Hp as (v1&v2&?&?&?).
       exists v1, v2; split_and!; eauto.
@@ -2359,11 +2353,11 @@ Section integral.
   Qed.
 
   Lemma is_integral_measurable f v:
-    is_integral f v → measurable f F (borel R_UniformSpace).
+    is_integral f v → measurable f.
   Proof. destruct 1; eauto. Qed.
 
   Lemma ex_integral_measurable f:
-    ex_integral f → measurable f F (borel R_UniformSpace).
+    ex_integral f → measurable f.
   Proof. destruct 1 as (?&?); eauto using is_integral_measurable. Qed.
 
   Hint Resolve is_integral_measurable ex_integral_measurable.
@@ -2485,7 +2479,7 @@ Section integral.
 
   Lemma ex_integral_mono_ex f1 f2:
     (∀ x, Rabs (f1 x) <= f2 x) →
-    measurable f1 F (borel _) →
+    measurable f1 →
     ex_integral f2 →
     ex_integral f1.
   Proof.
@@ -2509,7 +2503,7 @@ Section integral.
   Qed.
 
   Lemma ex_integral_Rabs f:
-    measurable f F (borel _) →
+    measurable f →
     ex_integral f ↔ ex_integral (λ x, Rabs (f x)).
   Proof.
     intros Hmeas.
@@ -2530,7 +2524,7 @@ Section integral.
   Lemma Integral_mono_pos f1 f2:
     (∀ x, 0 <= f1 x) →
     (∀ x, f1 x <= f2 x) →
-    measurable f1 F (borel _) →
+    measurable f1 →
     ex_integral f2 →
     Integral f1 <= Integral f2.
   Proof.
@@ -2588,7 +2582,7 @@ Section integral.
   Qed.
 
   Lemma is_integral_pos_ae_0 f:
-    measurable f F (borel _) →
+    measurable f →
     (∀ x, 0 <= f x) →
     almost_everywhere_meas μ (λ x, f x = 0) →
     is_integral f 0.
@@ -2606,7 +2600,7 @@ Section integral.
   Qed.
 
   Lemma is_integral_alt (f: A → R) v :
-    (measurable f F (borel R_UniformSpace) ∧
+    (measurable f ∧
     ∃ v1 v2, is_integral (λ x, Rmax (f x) 0) v1 ∧
              is_integral (λ x, Rmax (- f x) 0) v2 ∧
              v = v1 - v2) ↔ is_integral f v.
@@ -2623,7 +2617,7 @@ Section integral.
   Qed.
 
   Lemma ex_integral_alt (f: A → R) :
-    (measurable f F (borel R_UniformSpace) ∧
+    (measurable f ∧
      ex_integral (λ x, Rmax (f x) 0) ∧
      ex_integral (λ x, Rmax (- f x) 0))
     ↔ ex_integral f.
@@ -2646,7 +2640,7 @@ Section integral.
   Qed.
 
   Lemma is_integral_ae_0 f:
-    measurable f F (borel _) →
+    measurable f →
     almost_everywhere_meas μ (λ x, f x = 0) →
     is_integral f 0.
   Proof.
@@ -2670,7 +2664,7 @@ Section integral.
 
   Lemma is_integral_ae_ext f1 f2 v:
     almost_everywhere_meas μ (λ x, f1 x = f2 x) →
-    measurable f2 F (borel _) →
+    measurable f2 →
     is_integral f1 v →
     is_integral f2 v.
   Proof.
@@ -2684,7 +2678,7 @@ Section integral.
 
   Lemma ex_integral_ae_ext f1 f2:
     almost_everywhere_meas μ (λ x, f1 x = f2 x) →
-    measurable f2 F (borel _) →
+    measurable f2 →
     ex_integral f1 →
     ex_integral f2.
   Proof.
@@ -2693,7 +2687,7 @@ Section integral.
 
   Lemma Integral_ae_ext_weak f1 f2:
     almost_everywhere_meas μ (λ x, f1 x = f2 x) →
-    measurable f2 F (borel _) →
+    measurable f2 →
     ex_integral f1 →
     Integral f1 = Integral f2.
   Proof.
@@ -2704,7 +2698,7 @@ Section integral.
 
 
   Lemma is_integral_levi_pos_ex fn f:
-    measurable f F (borel _) →
+    measurable f →
     (∀ x, is_lim_seq (λ n, fn n x) (f x : R)) →
     (∀ x, ∀ n, 0 <= fn n x) →
     (∀ x, ∀ n, fn n x <= fn (S n) x) →
@@ -2720,14 +2714,7 @@ Section integral.
     { intros n x.
       apply: (is_lim_seq_incr_compare (λ n, fn n x) (f x)); eauto.
     }
-    (*
-    assert (Hf_bounded_g: ∀ x, f x <= g x).
-    { intros x.
-      apply (is_lim_seq_le (λ n, fn n x) (λ _, g x) (f x) (g x)); eauto.
-      apply is_lim_seq_const.
-    }
-     *)
-    assert (Hfn_meas: ∀ n, measurable (fn n) F (borel _)).
+    assert (Hfn_meas: ∀ n, measurable (fn n)).
     { intros n. auto. }
     set (gnk_wit := λ n, constructive_indefinite_description _
                     (wpt_approx_measurable (fn n) (λ x, Hpos x n) (Hfn_meas n))).
@@ -2863,7 +2850,7 @@ Section integral.
   Qed.
 
   Lemma is_integral_levi_ex fn f:
-    measurable f F (borel _) →
+    measurable f →
     (∀ x, is_lim_seq (λ n, fn n x) (f x : R)) →
     (∀ x, ∀ n, fn n x <= fn (S n) x) →
     (∀ n, ex_integral (fn n)) →
@@ -2916,7 +2903,7 @@ Section integral.
   Qed.
 
   Lemma ae_equal_mult_indicator_compl_0:
-    ∀ f U Hmeas, measurable f F (borel _) → μ (compl U) = 0 →
+    ∀ f U Hmeas, measurable f → μ (compl U) = 0 →
                  almost_everywhere_meas μ (λ x, f x * wpt_fun (wpt_indicator U Hmeas) x = f x).
   Proof.
     intros g U Hmeas Hmeasg Heq0.
@@ -2931,7 +2918,7 @@ Section integral.
   Qed.
 
   Lemma ae_equal_mult_indicator_compl_0':
-    ∀ f U Hmeas, measurable f F (borel _) → μ (compl U) = 0 →
+    ∀ f U Hmeas, measurable f → μ (compl U) = 0 →
                  almost_everywhere_meas μ (λ x, f x = f x * wpt_fun (wpt_indicator U Hmeas) x).
   Proof.
     intros.
@@ -2940,7 +2927,7 @@ Section integral.
   Qed.
 
   Lemma is_integral_levi_ae_ex fn f:
-    measurable f F (borel _) →
+    measurable f →
     almost_everywhere_meas μ (λ x, is_lim_seq (λ n, fn n x) (f x : R)) →
     almost_everywhere_meas μ (λ x, ∀ n, fn n x <= fn (S n) x) →
     (∀ n, ex_integral (fn n)) →
@@ -3001,7 +2988,7 @@ Section integral.
   Qed.
 
   Lemma is_integral_mct_ex fn f g:
-    measurable f F (borel _) →
+    measurable f →
     (∀ x, is_lim_seq (λ n, fn n x) (f x : R)) →
     (∀ x, ∀ n, fn n x <= fn (S n) x) →
     (∀ x, ∀ n, Rabs (fn n x) <= g x) →
@@ -3039,7 +3026,7 @@ Section integral.
   Qed.
 
   Lemma measurable_non_ex_pos_integral_0 f:
-    measurable f F (borel R_UniformSpace) →
+    measurable f →
     ¬ ex_pos_integral f →
     Pos_integral f = 0.
   Proof.
@@ -3050,7 +3037,7 @@ Section integral.
   Qed.
 
   Lemma Integral_pos_mct fn f:
-    measurable f F (borel _) →
+    measurable f →
     (∀ x, is_lim_seq (λ n, fn n x) (f x : R)) →
     (∀ x, ∀ n, 0 <= fn n x) →
     (∀ x, ∀ n, fn n x <= fn (S n) x) →
@@ -3111,7 +3098,7 @@ Section integral.
 
   Lemma ex_integral_Rmin f:
     (∀ x, 0 <= f x) →
-    measurable f F (borel _) →
+    measurable f →
     ∀ n, ex_integral (λ x, Rmin (f x) (INR n)).
   Proof.
     { intros Hpos Hmeas n. apply (ex_integral_mono_ex _ (λ x, INR n)).
@@ -3125,7 +3112,7 @@ Section integral.
 
   Lemma ex_integral_ex_finite_lim_min f:
     (∀ x, 0 <= f x) →
-    measurable f F (borel _) →
+    measurable f →
     ex_finite_lim_seq (λ n, Integral (λ x, Rmin (f x) (INR n))) ↔
             ex_integral f.
   Proof.
@@ -3157,7 +3144,7 @@ Section integral.
 
   Lemma ex_integral_sup_min f:
     (∀ x, 0 <= f x) →
-    measurable f F (borel _) →
+    measurable f →
     bound (λ r, ∃ n, Integral (λ x, Rmin (f x) (INR n)) = r) ↔
             ex_integral f.
   Proof.
@@ -3208,7 +3195,7 @@ Section integral.
   Qed.
 
   Lemma Integral_Rabs f:
-    (ex_integral f ∨ (measurable f F (borel _) ∧ ex_integral (λ x, Rabs (f x)))) →
+    (ex_integral f ∨ (measurable f ∧ ex_integral (λ x, Rabs (f x)))) →
     Rabs (Integral f) <= Integral (λ x, (Rabs (f x))).
   Proof.
     intros Hex.
@@ -3275,7 +3262,7 @@ Section integral.
 
   Lemma ex_integral_ae_mono_ex f1 f2:
     almost_everywhere_meas μ (λ x, Rabs (f1 x) <= f2 x) →
-    measurable f1 F (borel _) →
+    measurable f1 →
     ex_integral f2 →
     ex_integral f1.
   Proof.

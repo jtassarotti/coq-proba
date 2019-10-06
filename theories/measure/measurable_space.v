@@ -53,7 +53,9 @@ Definition measurable `{F1: measurable_space A} `{F2: measurable_space B} (f: A 
 
 Section measurable_functions.
 
-Context `{measurable_space A} `{measurable_space B} `{measurable_space Z}.
+  Context {A: Type} {FA: measurable_space A}.
+  Context {B: Type} {FB: measurable_space B}.
+  Context {C: Type} {FC: measurable_space C}.
 
 Lemma measurable_ext (f1 f2: A → B) :
   (∀ x, f1 x = f2 x) →
@@ -61,7 +63,7 @@ Lemma measurable_ext (f1 f2: A → B) :
   measurable f2.
 Proof. apply sigma_measurable_ext. Qed.
 
-Lemma measurable_comp (f: A → B) (g: B → Z) :
+Lemma measurable_comp (f: A → B) (g: B → C) :
   measurable f →
   measurable g →
   measurable (λ x, g (f x)).
@@ -75,7 +77,16 @@ Lemma measurable_const (b: B):
   measurable (λ a : A, b).
 Proof. apply sigma_measurable_const. Qed.
 
+Lemma measurable_eta (f: A → B) :
+  measurable f →
+  measurable (λ x, f x).
+Proof. apply sigma_measurable_ext; eauto. Qed.
+
 End measurable_functions.
+
+Global Instance measurable_proper {A B: Type} {F1 F2} :
+  Proper (pointwise_relation _ eq ==> iff) (@measurable A F1 B F2).
+Proof. intros ?? Heq. rewrite /measurable. by rewrite Heq. Qed.
 
 (*
 (* Any function f : A  → B on a sigma_measurable space A induces a sigma algebra on B *)
