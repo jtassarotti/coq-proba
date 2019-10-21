@@ -6,29 +6,8 @@ From discprob.measure Require Export dynkin borel integral.
 Require Import ClassicalEpsilon.
 
 
-(*
-Lemma img_compl {A B: Type} (f: A → B) (U: A → Prop):
-  (∀ x y, f x = f y → x = y) →
-    eq_prop (fun_img f (compl U))
-            (compl (fun_img f U)).
-Proof.
-  intros Hinj z. split.
-  * intros (x&Hcomp&Heq').
-    intros (x'&?&?).
-    assert (x' = x).
-    { apply Hinj. congruence. }
-    subst. eapply Hcomp. eauto.
-  * intros Hcomp.
-    eexists.
-    destruct Hunion as (i&Hi). exists i.
-    eexists; split; eauto.
-  * intros (i&(x&Hi&Heq)).
-    exists x. split; auto. exists i; done.
-Qed.
-*)
-
-Record is_pt_hom {A1 A2} {F1 : sigma_algebra A1} {F2: sigma_algebra A2}
-       (f: A1 → A2) (μ1: measure F1) (μ2: measure F2) : Prop :=
+Record is_pt_hom {A1 A2} {F1 : measurable_space A1} {F2: measurable_space A2}
+       (f: A1 → A2) (μ1: measure A1) (μ2: measure A2) : Prop :=
   {
     pt_hom_sigma:
       ∀ U, F2 U → F1 (fun_inv f U);
@@ -36,8 +15,8 @@ Record is_pt_hom {A1 A2} {F1 : sigma_algebra A1} {F2: sigma_algebra A2}
       ∀ U, F2 U → μ2 U = μ1 (fun_inv f U)
   }.
 
-Record is_pt_img_hom {A1 A2} {F1 : sigma_algebra A1} {F2: sigma_algebra A2}
-       (f: A1 → A2) (μ1: measure F1) (μ2: measure F2) : Prop :=
+Record is_pt_img_hom {A1 A2} {F1 : measurable_space A1} {F2: measurable_space A2}
+       (f: A1 → A2) (μ1: measure A1) (μ2: measure A2) : Prop :=
   {
     pt_img_hom_sigma:
       ∀ U, F1 U → F2 (fun_img f U);
@@ -45,8 +24,8 @@ Record is_pt_img_hom {A1 A2} {F1 : sigma_algebra A1} {F2: sigma_algebra A2}
       ∀ U, F1 U → μ1 U = μ2 (fun_img f U)
   }.
 
-Record is_pt_iso {A1 A2} {F1 : sigma_algebra A1} {F2: sigma_algebra A2}
-       (f: A1 → A2) (μ1: measure F1) (μ2: measure F2) : Prop :=
+Record is_pt_iso {A1 A2} {F1 : measurable_space A1} {F2: measurable_space A2}
+       (f: A1 → A2) (μ1: measure A1) (μ2: measure A2) : Prop :=
   { pt_iso_inj: ∀ x y, f x = f y → x = y;
     pt_iso_surj: ∀ y, ∃ x, f x = y;
     pt_iso_sigma1:
@@ -59,8 +38,8 @@ Record is_pt_iso {A1 A2} {F1 : sigma_algebra A1} {F2: sigma_algebra A2}
       ∀ U, F2 U → μ2 U = μ1 (fun_inv f U)
   }.
 
-Lemma is_pt_hom_comp {A1 A2 A3} {F1 : sigma_algebra A1} {F2 : sigma_algebra A2} {F3: sigma_algebra A3}
-      (f1: A1 → A2) (f2 : A2 → A3) (μ1: measure F1) (μ2: measure F2) (μ3: measure F3):
+Lemma is_pt_hom_comp {A1 A2 A3} {F1 : measurable_space A1} {F2 : measurable_space A2} {F3: measurable_space A3}
+      (f1: A1 → A2) (f2 : A2 → A3) (μ1: measure A1) (μ2: measure A2) (μ3: measure A3):
   is_pt_hom f1 μ1 μ2 →
   is_pt_hom f2 μ2 μ3 →
   is_pt_hom (λ x, f2 (f1 x)) μ1 μ3.
@@ -76,14 +55,14 @@ Proof.
     eapply pt_hom_sigma; eauto.
 Qed.
 
-Lemma is_pt_hom_id {A} {F: sigma_algebra A} (μ : measure F) :
+Lemma is_pt_hom_id {A} {F: measurable_space A} (μ : measure A) :
   is_pt_hom id μ μ.
 Proof.
   split; rewrite //=.
 Qed.
 
-Lemma is_pt_img_hom_inl {A1 A2} {F1 : sigma_algebra A1} {F2 : sigma_algebra A2}
-      (μ1: measure F1) (μ2: measure F2):
+Lemma is_pt_img_hom_inl {A1 A2} {F1 : measurable_space A1} {F2 : measurable_space A2}
+      (μ1: measure A1) (μ2: measure A2):
   is_pt_img_hom inl μ1 (disjoint_sum_measure μ1 μ2).
 Proof.
   split.
@@ -100,8 +79,8 @@ Proof.
       clear; firstorder.
 Qed.
 
-Lemma is_pt_img_hom_inr {A1 A2} {F1 : sigma_algebra A1} {F2 : sigma_algebra A2}
-      (μ1: measure F1) (μ2: measure F2):
+Lemma is_pt_img_hom_inr {A1 A2} {F1 : measurable_space A1} {F2 : measurable_space A2}
+      (μ1: measure A1) (μ2: measure A2):
   is_pt_img_hom inr μ2 (disjoint_sum_measure μ1 μ2).
 Proof.
   split.
@@ -113,21 +92,22 @@ Proof.
       clear; firstorder.
   - rewrite //=. intros U HF. rewrite -[a in a = _](Rplus_0_l).
     f_equal.
-    * symmetry. erewrite <-measure_empty; first apply measure_proper.
-      clear; firstorder.
+    * symmetry.
+      assert (@fun_inv A1 (A1 + A2) inl (fun_img inr U) ≡ ∅) as ->; first by (clear; firstorder).
+      apply measure_empty.
     * apply measure_proper. clear; firstorder.
 Qed.
 
-Lemma measurable_inl {A1 A2} {F1: sigma_algebra A1} {F2: sigma_algebra A2}:
-  measurable inl F1 (disjoint_sum_sigma F1 F2).
+Lemma measurable_inl {A1 A2} {F1: measurable_space A1} {F2: measurable_space A2}:
+  measurable (@inl A1 A2).
 Proof. intros ? (?&?); done. Qed.
 
-Lemma measurable_inr {A1 A2} {F1: sigma_algebra A1} {F2: sigma_algebra A2}:
-  measurable inr F2 (disjoint_sum_sigma F1 F2).
+Lemma measurable_inr {A1 A2} {F1: measurable_space A1} {F2: measurable_space A2}:
+  measurable (@inr A1 A2).
 Proof. intros ? (?&?); done. Qed.
 
 Lemma is_pt_hom_sum {A1 A2 A1' A2'} F1 F2 F1' F2'
-      (μ1: measure F1) (μ2: measure F2) (μ1': measure F1') (μ2': measure F2')
+      (μ1: @measure _ F1) (μ2: @measure _ F2) (μ1': @measure _ F1') (μ2': @measure _ F2')
       (f1: A1 → A1') (f2: A2 → A2'):
   is_pt_hom f1 μ1 μ1' →
   is_pt_hom f2 μ2 μ2' →
@@ -137,7 +117,7 @@ Lemma is_pt_hom_sum {A1 A2 A1' A2'} F1 F2 F1' F2'
                             end)
             (disjoint_sum_measure μ1 μ2) (disjoint_sum_measure μ1' μ2').
 Proof.
-  intros Hhom1 Hom2.
+  intros Hhom1 Hhom2.
   split.
   - intros U (?&?). split.
     * eapply (sigma_proper _ _ _ (fun_inv f1 (fun_inv inl U))).
@@ -147,12 +127,12 @@ Proof.
       { split; clear; firstorder. }
       eapply pt_hom_sigma; eauto.
   - intros U (?&?); rewrite //=. f_equal.
-    * erewrite pt_hom_meas; eauto.
-    * erewrite pt_hom_meas; eauto.
+    * rewrite (pt_hom_meas _ _ _ Hhom1); eauto.
+    * rewrite (pt_hom_meas _ _ _ Hhom2); eauto.
 Qed.
 
 Lemma is_pt_hom_sum_swap {A1 A2} F1 F2
-      (μ1: measure F1) (μ2: measure F2):
+      (μ1: @measure A1 F1) (μ2: @measure A2 F2):
   is_pt_hom (λ x : A1 + A2, match x with
                             | inl x1 => inr x1
                             | inr x2 => inl x2
@@ -286,8 +266,8 @@ Proof.
       ** intros ([[|]|]&?&Heq); inversion Heq; subst; eauto.
 Qed.
 
-Lemma is_pt_img_hom_comp {A1 A2 A3} {F1 : sigma_algebra A1} {F2 : sigma_algebra A2}
-      {F3: sigma_algebra A3}
+Lemma is_pt_img_hom_comp {A1 A2 A3} {F1 : measurable_space A1} {F2 : measurable_space A2}
+      {F3: measurable_space A3}
       (f1: A1 → A2) (f2 : A2 → A3) (μ1: measure F1) (μ2: measure F2) (μ3: measure F3):
   is_pt_img_hom f1 μ1 μ2 →
   is_pt_img_hom f2 μ2 μ3 →
@@ -306,7 +286,7 @@ Proof.
     * eapply pt_img_hom_sigma; eauto.
 Qed.
 
-Lemma is_pt_img_hom_id {A} {F: sigma_algebra A} (μ : measure F) :
+Lemma is_pt_img_hom_id {A} {F: measurable_space A} (μ : measure F) :
   is_pt_img_hom id μ μ.
 Proof.
   split; rewrite //=.
@@ -314,7 +294,7 @@ Proof.
   * intros U HFU. eapply measure_proper; clear; firstorder.
 Qed.
 
-Lemma is_pt_hom_ae {A1 A2} {F1: sigma_algebra A1} {F2: sigma_algebra A2}
+Lemma is_pt_hom_ae {A1 A2} {F1: measurable_space A1} {F2: measurable_space A2}
       (μ1: measure F1) (μ2: measure F2) f U:
   is_pt_hom f μ1 μ2 →
   almost_everywhere_meas μ2 U → almost_everywhere_meas μ1 (λ a, U (f a)).
