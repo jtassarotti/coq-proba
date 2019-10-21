@@ -7,4 +7,6 @@ depends: [
   "coq-coquelicot" { (= "3.0.2") }
   "coq-interval" { (= "3.4.0") }
   "coq-stdpp" { (= "1.2.0") | (= "dev") }
+  "coq-mathcomp-ssreflect" { (= "1.9.0") }
+  "coq-flocq" { (= "3.2.0") }
 ]
