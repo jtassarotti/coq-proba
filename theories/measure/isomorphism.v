@@ -5,7 +5,6 @@ From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigo
 From discprob.measure Require Export dynkin borel integral.
 Require Import ClassicalEpsilon.
 
-
 Record is_pt_hom {A1 A2} {F1 : measurable_space A1} {F2: measurable_space A2}
        (f: A1 → A2) (μ1: measure A1) (μ2: measure A2) : Prop :=
   {
@@ -145,7 +144,7 @@ Proof.
 Qed.
 
 Lemma is_pt_hom_sum_assoc {A1 A2 A3} F1 F2 F3
-      (μ1: measure F1) (μ2: measure F2) (μ3: measure F3):
+      (μ1: @measure A1 F1) (μ2: @measure A2 F2) (μ3: @measure A3 F3):
         is_pt_hom (λ x : (A1 + A2) + A3,
                          match x with
                          | inl (inl x1) => inl x1
@@ -161,7 +160,7 @@ Proof.
 Qed.
 
 Lemma is_pt_img_hom_sum {A1 A2 A1' A2'} F1 F2 F1' F2'
-      (μ1: measure F1) (μ2: measure F2) (μ1': measure F1') (μ2': measure F2')
+      (μ1: @measure A1 F1) (μ2: @measure A2 F2) (μ1': @measure A1' F1') (μ2': @measure A2' F2')
       (f1: A1 → A1') (f2: A2 → A2'):
   is_pt_img_hom f1 μ1 μ1' →
   is_pt_img_hom f2 μ2 μ2' →
@@ -171,7 +170,7 @@ Lemma is_pt_img_hom_sum {A1 A2 A1' A2'} F1 F2 F1' F2'
                             end)
             (disjoint_sum_measure μ1 μ2) (disjoint_sum_measure μ1' μ2').
 Proof.
-  intros Hhom1 Hom2.
+  intros Hhom1 Hhom2.
   split.
   - intros U (?&?). split.
     * eapply (sigma_proper _ _ _ (fun_img f1 (fun_inv inl U))).
@@ -183,12 +182,12 @@ Proof.
         intros x. firstorder. destruct x; try firstorder. congruence.  }
       eapply pt_img_hom_sigma; eauto.
   - intros U (?&?); rewrite //=. f_equal.
-    * erewrite pt_img_hom_meas; eauto.
-      { apply measure_proper.
+    * rewrite (pt_img_hom_meas _ _ _ Hhom1); eauto.
+      { eapply measure_proper.
         { intros z; split; clear; try (firstorder; done).
           intros x. firstorder. destruct x; try firstorder. congruence.  }
       }
-    * erewrite pt_img_hom_meas; eauto.
+    * rewrite (pt_img_hom_meas _ _ _ Hhom2); eauto.
       { apply measure_proper.
         { intros z; split; clear; try (firstorder; done).
           intros x. firstorder. destruct x; try firstorder. congruence.  }
@@ -196,7 +195,7 @@ Proof.
 Qed.
 
 Lemma is_pt_img_hom_sum_swap {A1 A2} F1 F2
-      (μ1: measure F1) (μ2: measure F2):
+      (μ1: @measure A1 F1) (μ2: @measure A2 F2):
   is_pt_img_hom (λ x : A1 + A2, match x with
                             | inl x1 => inr x1
                             | inr x2 => inl x2
@@ -225,7 +224,7 @@ Proof.
 Qed.
 
 Lemma is_pt_img_hom_sum_assoc {A1 A2 A3} F1 F2 F3
-      (μ1: measure F1) (μ2: measure F2) (μ3: measure F3):
+      (μ1: @measure A1 F1) (μ2: @measure A2 F2) (μ3: @measure A3 F3):
         is_pt_img_hom (λ x : (A1 + A2) + A3,
                          match x with
                          | inl (inl x1) => inl x1
@@ -268,7 +267,7 @@ Qed.
 
 Lemma is_pt_img_hom_comp {A1 A2 A3} {F1 : measurable_space A1} {F2 : measurable_space A2}
       {F3: measurable_space A3}
-      (f1: A1 → A2) (f2 : A2 → A3) (μ1: measure F1) (μ2: measure F2) (μ3: measure F3):
+      (f1: A1 → A2) (f2 : A2 → A3) (μ1: @measure A1 F1) (μ2: @measure A2 F2) (μ3: @measure A3 F3):
   is_pt_img_hom f1 μ1 μ2 →
   is_pt_img_hom f2 μ2 μ3 →
   is_pt_img_hom (λ x, f2 (f1 x)) μ1 μ3.
@@ -286,7 +285,7 @@ Proof.
     * eapply pt_img_hom_sigma; eauto.
 Qed.
 
-Lemma is_pt_img_hom_id {A} {F: measurable_space A} (μ : measure F) :
+Lemma is_pt_img_hom_id {A} {F: measurable_space A} (μ : @measure A F) :
   is_pt_img_hom id μ μ.
 Proof.
   split; rewrite //=.
@@ -295,7 +294,7 @@ Proof.
 Qed.
 
 Lemma is_pt_hom_ae {A1 A2} {F1: measurable_space A1} {F2: measurable_space A2}
-      (μ1: measure F1) (μ2: measure F2) f U:
+      (μ1: @measure _ F1) (μ2: @measure _ F2) f U:
   is_pt_hom f μ1 μ2 →
   almost_everywhere_meas μ2 U → almost_everywhere_meas μ1 (λ a, U (f a)).
 Proof.
@@ -303,7 +302,7 @@ Proof.
   assert (Hequiv: eq_prop (compl (λ a : A1, U (f a))) (fun_inv f (compl U))).
   { clear; firstorder. }
   split.
-  - eapply pt_hom_sigma in Hm; eauto.
+  - eapply @pt_hom_sigma in Hm; last eapply Hhom.
     eapply sigma_proper; eauto.
   - rewrite Hequiv. rewrite -Heq0.
     symmetry; eapply pt_hom_meas; eauto.
@@ -312,10 +311,10 @@ Qed.
 Section iso_props.
 
   Context {A1 A2: Type}.
-  Context {F1 : sigma_algebra A1}.
-  Context {F2 : sigma_algebra A2}.
-  Context (μ1: measure F1).
-  Context (μ2: measure F2).
+  Context {F1 : measurable_space A1}.
+  Context {F2 : measurable_space A2}.
+  Context (μ1: measure A1).
+  Context (μ2: measure A2).
   Context (f: A1 → A2).
 
   Lemma is_pt_iso_inv_hom:
@@ -403,7 +402,7 @@ Section iso_props.
       exists x'; split; eauto.
   Qed.
 
-  Lemma iso_measurable: measurable f F1 F2.
+  Lemma iso_measurable: measurable f.
   Proof. intros U ?; eapply pt_iso_sigma2; eauto. Qed.
 
   Lemma iso_inv_iso: is_pt_iso iso_inv μ2 μ1.
@@ -457,7 +456,7 @@ Section iso_props.
 
 End iso_props.
 
-Lemma is_pt_iso_id {A} (F: sigma_algebra A) (μ: measure F):
+Lemma is_pt_iso_id {A} (F: measurable_space A) (μ: @measure A F):
   is_pt_iso id μ μ.
 Proof.
   apply is_pt_iso_bij_hom.
@@ -468,7 +467,7 @@ Proof.
 Qed.
 
 Lemma is_pt_iso_sum_swap {A1 A2} F1 F2
-      (μ1: measure F1) (μ2: measure F2):
+      (μ1: @measure A1 F1) (μ2: @measure A2 F2):
     is_pt_iso (λ x : A1 + A2, match x with
                               | inl x1 => inr x1
                               | inr x2 => inl x2
@@ -485,7 +484,7 @@ Proof.
 Qed.
 
 Lemma is_pt_iso_sum_assoc {A1 A2 A3} F1 F2 F3
-      (μ1: measure F1) (μ2: measure F2) (μ3: measure F3):
+      (μ1: @measure A1 F1) (μ2: @measure A2 F2) (μ3: @measure A3 F3):
         is_pt_iso (λ x : (A1 + A2) + A3,
                          match x with
                          | inl (inl x1) => inl x1
@@ -510,10 +509,10 @@ Arguments iso_inv {_ _ _ _ _ _} _ _.
 
 Section wpt.
   Context {A1 A2: Type}.
-  Context {F1 : sigma_algebra A1}.
-  Context {F2 : sigma_algebra A2}.
-  Context (μ1: measure F1).
-  Context (μ2: measure F2).
+  Context {F1 : measurable_space A1}.
+  Context {F2 : measurable_space A2}.
+  Context (μ1: measure A1).
+  Context (μ2: measure A2).
   Context (f: A1 → A2).
 
 
@@ -611,11 +610,11 @@ Arguments wpt_iso {_ _ _ _ _ _} _ _ _.
 
 Section integral1.
   Context {A1 A2: Type}.
-  Context {F1 : sigma_algebra A1}.
-  Context {F2 : sigma_algebra A2}.
+  Context {F1 : measurable_space A1}.
+  Context {F2 : measurable_space A2}.
   Context (f: A1 → A2).
-  Context (μ1: measure F1).
-  Context (μ2: measure F2).
+  Context (μ1: measure A1).
+  Context (μ2: measure A2).
   Context (Hiso: is_pt_iso f μ1 μ2).
 
   Lemma is_pos_integral_iso g v:
@@ -654,11 +653,11 @@ End integral1.
 
 Section integral2.
   Context {A1 A2: Type}.
-  Context {F1 : sigma_algebra A1}.
-  Context {F2 : sigma_algebra A2}.
+  Context {F1 : measurable_space A1}.
+  Context {F2 : measurable_space A2}.
   Context (f: A1 → A2).
-  Context (μ1: measure F1).
-  Context (μ2: measure F2).
+  Context (μ1: @measure A1 F1).
+  Context (μ2: @measure A2 F2).
   Context (Hiso: is_pt_iso f μ1 μ2).
 
   Lemma is_integral_iso g v:
@@ -679,7 +678,7 @@ Section integral2.
 
   Lemma Pos_integral_iso g:
     (∀ x, 0 <= g x) →
-    measurable g F2 (borel R_UniformSpace) →
+    measurable g →
     Pos_integral μ1 (λ x, g (f x)) = Pos_integral μ2 g.
   Proof.
     intros Hpos Hmeas.
@@ -699,7 +698,7 @@ Section integral2.
   Qed.
 
   Lemma Integral_iso g:
-    measurable g F2 (borel R_UniformSpace) →
+    measurable g →
     Integral μ1 (λ x, g (f x)) = Integral μ2 g.
   Proof.
     intros Hmeas.
@@ -744,8 +743,11 @@ Definition sub_sigma {A: Type} (F: sigma_algebra A) (U : A → Prop) : sigma_alg
   - apply sub_sigma_closed.
 Defined.
 
-Definition sub_measure {A: Type} {F: sigma_algebra A} (μ: measure F) U (HU: F U)
-  : measure (sub_sigma F U).
+Instance sub_measurable_space {A: Type} (F: measurable_space A) (U : A → Prop) : measurable_space (sig U).
+Proof. econstructor. apply sub_sigma, measurable_space_sigma. Defined.
+
+Definition sub_measure {A: Type} {F: measurable_space A} (μ: @measure A F) U (HU: F U)
+  : measure (sig U).
   refine {| measure_fun := λ A, μ (λ x, ∃ Hp, A (exist _ x Hp)) |}.
   - intros V V' Heq.
     apply measure_proper.
@@ -787,9 +789,9 @@ Definition sub_measure {A: Type} {F: sigma_algebra A} (μ: measure F) U (HU: F U
 Defined.
 
 
-Record is_mod0_iso {A1 A2} {F1 : sigma_algebra A1} {F2: sigma_algebra A2}
+Record is_mod0_iso {A1 A2} {F1} {F2}
        (U1 : A1 → Prop) (U2 : A2 → Prop)
-       (f: sig U1 → sig U2) (μ1: measure F1) (μ2: measure F2) : Prop :=
+       (f: sig U1 → sig U2) (μ1: @measure A1 F1) (μ2: @measure A2 F2) : Prop :=
   {
     mod0_iso_ae1: almost_everywhere_meas μ1 U1;
     mod0_iso_ae2: almost_everywhere_meas μ2 U2;
@@ -798,9 +800,9 @@ Record is_mod0_iso {A1 A2} {F1 : sigma_algebra A1} {F2: sigma_algebra A2}
                        (sub_measure μ2 U2 (almost_everywhere_meas_meas μ2 _ mod0_iso_ae2))
   }.
 
-Record is_mod0_hom {A1 A2} {F1 : sigma_algebra A1} {F2: sigma_algebra A2}
+Record is_mod0_hom {A1 A2} {F1} {F2}
        (U1 : A1 → Prop) (U2 : A2 → Prop)
-       (f: sig U1 → sig U2) (μ1: measure F1) (μ2: measure F2) : Prop :=
+       (f: sig U1 → sig U2) (μ1: @measure A1 F1) (μ2: @measure A2 F2) : Prop :=
   {
     mod0_hom_ae1: almost_everywhere_meas μ1 U1;
     mod0_hom_ae2: almost_everywhere_meas μ2 U2;
@@ -809,8 +811,8 @@ Record is_mod0_hom {A1 A2} {F1 : sigma_algebra A1} {F2: sigma_algebra A2}
                        (sub_measure μ2 U2 (almost_everywhere_meas_meas μ2 _ mod0_hom_ae2))
   }.
 
-Record is_mod0_embedding {A1 A2} {F1: sigma_algebra A1} {F2: sigma_algebra A2}
-       (f : A1 → A2) (μ1: measure F1) (μ2: measure F2) : Prop :=
+Record is_mod0_embedding {A1 A2} {F1} {F2}
+       (f : A1 → A2) (μ1: @measure A1 F1) (μ2: @measure A2 F2) : Prop :=
   {
     mod0_embedding_ae: almost_everywhere_meas μ2 (fun_img f (λ _, True));
     mod0_embedding_inj: ∀ x y, f x = f y → x = y;
@@ -819,7 +821,7 @@ Record is_mod0_embedding {A1 A2} {F1: sigma_algebra A1} {F2: sigma_algebra A2}
   }.
 
 Lemma almost_everywhere_meas_inter_measure
-      {A: Type} {F: sigma_algebra A} {μ1: measure F} (U1 U2: A → Prop) (HF: F U2):
+      {A: Type} {F} {μ1: @measure A F} (U1 U2: A → Prop) (HF: F U2):
    almost_everywhere_meas μ1 U1 →
    μ1 U2 = μ1 (U2 ∩ U1).
 Proof.
@@ -832,7 +834,7 @@ Proof.
   * apply measure_mono; eauto; clear; firstorder.
 Qed.
 
-Lemma is_pt_hom_ae_sval {A: Type} {F: sigma_algebra A} (μ1: measure F) (U1: A → Prop) (HU: F U1)
+Lemma is_pt_hom_ae_sval {A: Type} {F} (μ1: @measure A F) (U1: A → Prop) (HU: F U1)
   (Hae: almost_everywhere_meas μ1 U1):
   is_pt_hom sval (sub_measure μ1 U1 HU) μ1.
 Proof.
@@ -845,7 +847,7 @@ Proof.
       * intros (?&?). split; eauto.
 Qed.
 
-Lemma is_pt_img_hom_ae_sval {A: Type} {F: sigma_algebra A} (μ1: measure F) (U1: A → Prop) (HU: F U1)
+Lemma is_pt_img_hom_ae_sval {A: Type} {F} (μ1: @measure A F) (U1: A → Prop) (HU: F U1)
   (Hae: almost_everywhere_meas μ1 U1):
   is_pt_img_hom sval (sub_measure μ1 U1 HU) μ1.
 Proof.
@@ -864,8 +866,8 @@ Proof.
     * intros ((z&Hpf)&?&?). subst => //=. exists Hpf; auto.
 Qed.
 
-Lemma mod0_embedding_sigma_inv {A1 A2: Type} (F1: sigma_algebra A1) (F2: sigma_algebra A2)
-  (μ1: measure F1) (μ2: measure F2) f U:
+Lemma mod0_embedding_sigma_inv {A1 A2: Type} F1 F2
+  (μ1: @measure A1 F1) (μ2: @measure A2 F2) f U:
     is_mod0_embedding f μ1 μ2 →
     F2 U →
     F1 (fun_inv f U).
@@ -873,8 +875,8 @@ Proof.
   intros Hmod. eapply pt_hom_sigma; eauto. apply mod0_embedding_hom. eauto.
 Qed.
 
-Lemma mod0_embedding_sigma_img {A1 A2: Type} (F1: sigma_algebra A1) (F2: sigma_algebra A2)
-  (μ1: measure F1) (μ2: measure F2) f U:
+Lemma mod0_embedding_sigma_img {A1 A2: Type} F1 F2
+  (μ1: @measure A1 F1) (μ2: @measure A2 F2) f U:
     is_mod0_embedding f μ1 μ2 →
     F1 U →
     F2 (fun_img f U).
@@ -882,8 +884,8 @@ Proof.
   intros Hmod. eapply pt_img_hom_sigma; eauto. apply mod0_embedding_img_hom. eauto.
 Qed.
 
-Lemma mod0_embedding_meas_inv {A1 A2: Type} (F1: sigma_algebra A1) (F2: sigma_algebra A2)
-  (μ1: measure F1) (μ2: measure F2) f U:
+Lemma mod0_embedding_meas_inv {A1 A2: Type} F1 F2
+  (μ1: @measure A1 F1) (μ2: @measure A2 F2) f U:
     is_mod0_embedding f μ1 μ2 →
     F2 U →
     μ1 (fun_inv f U) = μ2 U.
@@ -891,8 +893,8 @@ Proof.
   intros Hmod. symmetry. eapply pt_hom_meas; eauto. apply mod0_embedding_hom. done.
 Qed.
 
-Lemma mod0_embedding_meas_img {A1 A2: Type} (F1: sigma_algebra A1) (F2: sigma_algebra A2)
-  (μ1: measure F1) (μ2: measure F2) f U:
+Lemma mod0_embedding_meas_img {A1 A2: Type} F1 F2
+  (μ1: @measure A1 F1) (μ2: @measure A2 F2) f U:
     is_mod0_embedding f μ1 μ2 →
     F1 U →
     μ2 (fun_img f U) = μ1 U.
@@ -900,8 +902,8 @@ Proof.
   intros Hmod. symmetry. eapply pt_img_hom_meas; eauto. apply mod0_embedding_img_hom. done.
 Qed.
 
-Lemma mod0_embedding_meas_full {A1 A2: Type} (F1: sigma_algebra A1) (F2: sigma_algebra A2)
-      (μ1: measure F1) (μ2: measure F2) f:
+Lemma mod0_embedding_meas_full {A1 A2: Type} F1 F2
+      (μ1: @measure A1 F1) (μ2: @measure A2 F2) f:
     is_mod0_embedding f μ1 μ2 →
     μ1 (λ _, True) = μ2 (λ _, True).
 Proof.
@@ -910,8 +912,8 @@ Proof.
   apply mod0_embedding_meas_inv; eauto.
 Qed.
 
-Lemma mod0_embedding_ae_inv  {A1 A2: Type} (F1: sigma_algebra A1) (F2: sigma_algebra A2)
-      (μ1: measure F1) (μ2: measure F2) f U:
+Lemma mod0_embedding_ae_inv  {A1 A2: Type} F1 F2
+      (μ1: @measure A1 F1) (μ2: @measure A2 F2) f U:
     is_mod0_embedding f μ1 μ2 →
     almost_everywhere_meas μ2 U →
     almost_everywhere_meas μ1 (fun_inv f U).
@@ -929,8 +931,8 @@ Proof.
   symmetry; eapply mod0_embedding_meas_full; eauto.
 Qed.
 
-Lemma mod0_embedding_ae_img  {A1 A2: Type} (F1: sigma_algebra A1) (F2: sigma_algebra A2)
-      (μ1: measure F1) (μ2: measure F2) f U:
+Lemma mod0_embedding_ae_img  {A1 A2: Type} F1 F2
+      (μ1: @measure A1 F1) (μ2: @measure A2 F2) f U:
     is_mod0_embedding f μ1 μ2 →
     almost_everywhere_meas μ1 U →
     almost_everywhere_meas μ2 (fun_img f U).
@@ -954,7 +956,7 @@ Proof.
   intros z. split; firstorder.
 Qed.
 
-Lemma is_mod0_embedding_id {A} {F : sigma_algebra A} (μ: measure F):
+Lemma is_mod0_embedding_id {A} {F} (μ: @measure A F):
   is_mod0_embedding id μ μ.
 Proof.
   assert (Hequiv: ∀ U : (A → Prop), fun_img id U ≡ U).
@@ -967,8 +969,8 @@ Proof.
 Qed.
 
 Lemma is_mod0_embedding_comp {A1 A2 A3}
-      {F1 : sigma_algebra A1} {F2 : sigma_algebra A2} {F3: sigma_algebra A3}
-      (f1: A1 → A2) (f2 : A2 → A3) (μ1: measure F1) (μ2: measure F2) (μ3: measure F3):
+      F1 F2 F3
+      (f1: A1 → A2) (f2 : A2 → A3) (μ1: @measure A1 F1) (μ2: @measure A2 F2) (μ3: @measure A3 F3):
   is_mod0_embedding f1 μ1 μ2 →
   is_mod0_embedding f2 μ2 μ3 →
   is_mod0_embedding (λ x, f2 (f1 x)) μ1 μ3.
@@ -979,19 +981,23 @@ Proof.
     eapply (mod0_embedding_ae_img); eauto.
     eapply (mod0_embedding_ae_img); eauto.
   - intros x y Heq.
-    eapply mod0_embedding_inj; eauto.
-    eapply mod0_embedding_inj; eauto.
-  - eapply is_pt_hom_comp; eauto using mod0_embedding_hom.
-  - eapply is_pt_img_hom_comp; eauto using mod0_embedding_img_hom.
+    eapply mod0_embedding_inj in Heq; eauto.
+    eapply mod0_embedding_inj in Heq; eauto.
+  - eapply is_pt_hom_comp.
+    eapply mod0_embedding_hom; first eauto.
+    eapply mod0_embedding_hom; first eauto.
+  - eapply is_pt_img_hom_comp.
+    * eapply mod0_embedding_img_hom. eauto.
+    * eapply mod0_embedding_img_hom. eauto.
 Qed.
 
 Section mod0_props.
 
   Context {A1 A2: Type}.
-  Context {F1 : sigma_algebra A1}.
-  Context {F2 : sigma_algebra A2}.
-  Context (μ1: measure F1).
-  Context (μ2: measure F2).
+  Context {F1 : measurable_space A1}.
+  Context {F2 : measurable_space A2}.
+  Context (μ1: @measure A1 F1).
+  Context (μ2: @measure A2 F2).
 
   Lemma is_mod0_iso_inv_hom U1 U2 f:
     is_mod0_hom U1 U2 f μ1 μ2 →
@@ -1001,8 +1007,8 @@ Section mod0_props.
   Proof.
     intros Hhom (f'&Hhom'&Hrl&Hlr).
     unshelve (econstructor).
-    - eapply mod0_hom_ae1; eauto.
-    - eapply mod0_hom_ae2; eauto.
+    - eapply mod0_hom_ae1. eauto.
+    - eapply @mod0_hom_ae2 in Hhom. eauto.
     - apply is_pt_iso_inv_hom.
       * apply mod0_hom_is_hom.
       * exists f'. split.
@@ -1016,7 +1022,7 @@ Section mod0_props.
 
   Lemma is_mod0_iso_common_embedding U1 U2 f:
     is_mod0_iso U1 U2 f μ1 μ2 →
-    (∃ (G: sigma_algebra (sig U1)) (μ: measure G),
+    (∃ (G: measurable_space (sig U1)) (μ: @measure _ G),
         is_mod0_embedding sval μ μ1 ∧ is_mod0_embedding (λ x, sval (f x)) μ μ2).
   Proof.
     intros Hiso.
@@ -1035,7 +1041,7 @@ Section mod0_props.
       ** apply is_pt_img_hom_ae_sval. eapply mod0_iso_ae1; eauto.
     * split.
       ** eapply almost_everywhere_meas_ext; last first.
-         { eapply mod0_iso_ae2; eauto. }
+         { eapply mod0_iso_ae2 in Hiso. eauto. }
          rewrite /fun_img. intros x.
          split.
          *** intros HU.
@@ -1043,18 +1049,19 @@ Section mod0_props.
              rewrite iso_inv_rinv. done.
          *** intros (?&?&<-). destruct (f _) => //=.
       ** intros ?? ?%sval_inj_pi.
-         destruct Hiso; eapply pt_iso_inj; eauto.
+         destruct Hiso as [? ? is_iso].
+         eapply pt_iso_inj in is_iso; eauto.
       ** eapply is_pt_hom_comp.
          *** eapply is_pt_hom_iso. eapply (mod0_iso_is_iso _ _ _ _ _ Hiso).
-         *** apply is_pt_hom_ae_sval. eapply mod0_iso_ae2; eauto.
+         *** apply is_pt_hom_ae_sval. eapply mod0_iso_ae2 in Hiso; eauto.
       ** eapply is_pt_img_hom_comp.
          *** eapply is_pt_img_hom_iso. eapply (mod0_iso_is_iso _ _ _ _ _ Hiso).
-         *** apply is_pt_img_hom_ae_sval. eapply mod0_iso_ae2; eauto.
+         *** apply is_pt_img_hom_ae_sval. eapply mod0_iso_ae2 in Hiso; eauto.
   Qed.
 
   Lemma is_mod0_iso_common_embedding':
     (∃ U1 U2 f, is_mod0_iso U1 U2 f μ1 μ2) →
-    (∃ B (G : sigma_algebra B) (μ: measure G) f1 f2, is_mod0_embedding f1 μ μ1 ∧
+    (∃ B (G : measurable_space B) (μ: @measure _ G) f1 f2, is_mod0_embedding f1 μ μ1 ∧
                                                      is_mod0_embedding f2 μ μ2).
   Proof.
     intros (U1&U2&f&Hmod).
@@ -1075,7 +1082,7 @@ Section mod0_props.
 
 
   Lemma common_embedding_is_mod0_iso
-        B (G : sigma_algebra B) (μ: measure G) f1 f2:
+        B (G : measurable_space B) (μ: @measure _ G) f1 f2:
     is_mod0_embedding f1 μ μ1 →
     is_mod0_embedding f2 μ μ2 →
     is_mod0_iso (fun_img f1 (λ _, True)) (fun_img f2 (λ _, True))
@@ -1090,7 +1097,7 @@ Section mod0_props.
          destruct constructive_indefinite_description as (?&(?&?)) => //=.
          destruct constructive_indefinite_description as (?&(?&?)) => //=.
          subst. inversion 1. apply sval_inj_pi => //=. f_equal.
-         eapply mod0_embedding_inj; eauto.
+         eapply (mod0_embedding_inj f2); eauto.
       ** intros (y&(b&(?&Heq))).
          unshelve (eexists).
          { exists (f1 b). eexists; eauto. }
@@ -1210,7 +1217,7 @@ Section mod0_props.
   Qed.
 
   Lemma common_embedding_is_mod0_iso':
-    (∃ B (G : sigma_algebra B) (μ: measure G) f1 f2, is_mod0_embedding f1 μ μ1 ∧
+    (∃ B (G : measurable_space B) (μ: @measure _ G) f1 f2, is_mod0_embedding f1 μ μ1 ∧
                                                      is_mod0_embedding f2 μ μ2) →
     (∃ U1 U2 f, is_mod0_iso U1 U2 f μ1 μ2).
   Proof.
@@ -1223,8 +1230,8 @@ Section mod0_props.
 
   Section pullback.
   Context {C: Type}.
-  Context (G: sigma_algebra C).
-  Context (μ: measure G).
+  Context (G: measurable_space C).
+  Context (μ: @measure C G).
   Context (f1: A1 → C).
   Context (f2: A2 → C).
   Context (Hmod1: is_mod0_embedding f1 μ1 μ).
@@ -1307,7 +1314,10 @@ Section mod0_props.
     - apply mod0_pullback_sigma_union.
   Defined.
 
-  Definition mod0_pullback_measure: measure mod0_pullback_sigma.
+  Instance mod0_pullback_measurable_space : measurable_space mod0_pullback.
+  Proof. econstructor. eapply mod0_pullback_sigma. Defined.
+
+  Definition mod0_pullback_measure: measure mod0_pullback.
   Proof.
     unshelve (econstructor).
     - intros U. apply (μ1 (fun_img (λ x, (fst (sval x))) U)).
@@ -1327,12 +1337,12 @@ Section mod0_props.
       setoid_rewrite img_union.
       eapply measure_additivity.
       * intros i. specialize (Hin i).
-        eapply pt_hom_sigma in Hin; last (eapply (mod0_embedding_hom _ _ _ Hmod1); eauto).
+        eapply @pt_hom_sigma in Hin; last (eapply (mod0_embedding_hom _ _ _ Hmod1); eauto).
         eapply sigma_proper; last eapply Hin.
         intros z; split.
         ** intros (?&?&?). eexists; split; eauto. f_equal; done.
         ** rewrite /fun_inv. intros (?&?&?).
-           eexists; split; eauto. eapply (mod0_embedding_inj); eauto.
+           eexists; split; eauto. eapply (mod0_embedding_inj f1); eauto.
       * intros i j Hneq x (Hin1&Hin2).
         destruct Hin1 as (((a1&a2)&Hpf)&?&Heq).
         destruct Hin2 as (((a1'&a2')&Hpf')&?&Heq').
@@ -1404,7 +1414,7 @@ Section mod0_props.
       subst. eexists; split; eauto.
     - intros (((x1&x2)&Hpf)&HU&Heq1).
       subst. eexists; split; eauto => //=.
-      rewrite //= in Heq1. eapply mod0_embedding_inj; eauto.
+      rewrite //= in Heq1. eapply (mod0_embedding_inj f1); eauto.
   Qed.
 
   Lemma mod0_pullback_embedding1:
@@ -1426,7 +1436,7 @@ Section mod0_props.
     - intros ((a1&a2)&Hpf) ((a1'&a2')&Hpf'). rewrite //= => ?; subst.
       apply sval_inj_pi => //=. f_equal.
       rewrite //= in Hpf Hpf'.
-      eapply mod0_embedding_inj; eauto. congruence.
+      eapply (mod0_embedding_inj f2); eauto. congruence.
     - apply mod0_pullback_embedding1_hom.
     - apply mod0_pullback_embedding1_img_hom.
   Qed.
@@ -1509,16 +1519,16 @@ Section mod0_props.
           subst. eexists; split; eauto.
         - intros (((x1&x2)&Hpf)&HU&Heq1).
           subst. eexists; split; eauto => //=.
-          rewrite //= in Heq1. eapply mod0_embedding_inj; eauto.
+          rewrite //= in Heq1. eapply (mod0_embedding_inj f2); eauto.
           rewrite //= in Hpf HU. congruence.
       }
     }
     split; auto.
     - rewrite //= => U HG.
-      erewrite <-mod0_embedding_meas_img; eauto; last first.
+      erewrite <-(mod0_embedding_meas_img _ _ _ _ _ _ Hmod1); eauto; last first.
       { eapply mod0_pullback_embedding1_img_hom. eauto. }
       symmetry.
-      erewrite <-mod0_embedding_meas_img; eauto.
+      erewrite <-(mod0_embedding_meas_img _ _ _ _ _ _ Hmod2); eauto.
       apply measure_proper.
       intros z; split.
       * intros (x2&Himg&?).
@@ -1553,7 +1563,7 @@ Section mod0_props.
     - intros ((a1&a2)&Hpf) ((a1'&a2')&Hpf'). rewrite //= => ?; subst.
       apply sval_inj_pi => //=. f_equal.
       rewrite //= in Hpf Hpf'.
-      eapply mod0_embedding_inj; eauto. congruence.
+      eapply (mod0_embedding_inj f1); eauto. congruence.
     - apply mod0_pullback_embedding2_hom.
     - apply mod0_pullback_embedding2_img_hom.
   Qed.
@@ -1578,10 +1588,10 @@ Section mod0_props.
 
   Lemma mod0_embedding_sum
     {A1' A2': Type}
-    {F1' : sigma_algebra A1'}
-    {F2' : sigma_algebra A2'}
-    (μ1': measure F1')
-    (μ2': measure F2')
+    {F1' : measurable_space A1'}
+    {F2' : measurable_space A2'}
+    (μ1': @measure _ F1')
+    (μ2': @measure _ F2')
     f1 f2:
     is_mod0_embedding f1 μ1 μ1' →
     is_mod0_embedding f2 μ2 μ2' →
@@ -1637,9 +1647,15 @@ Section mod0_props.
         destruct (mod0_embedding_ae _ _ _ Hmod1) as (?&->).
         destruct (mod0_embedding_ae _ _ _ Hmod2) as (?&->).
         nra.
-    - intros [|] [|]; inversion 1 as [Heq]; f_equal; eapply mod0_embedding_inj; eauto.
-    - apply is_pt_hom_sum; eauto using mod0_embedding_hom.
-    - apply is_pt_img_hom_sum; eauto using mod0_embedding_img_hom.
+    - intros [|] [|]; inversion 1 as [Heq]; f_equal.
+      * eapply (mod0_embedding_inj f1); eauto.
+      * eapply (mod0_embedding_inj f2); eauto.
+    - eapply (mod0_embedding_hom) in Hmod1.
+      eapply (mod0_embedding_hom) in Hmod2.
+      apply is_pt_hom_sum; eauto. 
+    - eapply (mod0_embedding_img_hom) in Hmod1.
+      eapply (mod0_embedding_img_hom) in Hmod2.
+      apply is_pt_img_hom_sum; eauto.
   Qed.
 
   Lemma is_pt_iso_mod0_embedding f:
