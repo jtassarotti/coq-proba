@@ -1,13 +1,10 @@
-# SLTCert
-
-A (WIP) formalization of Statistical Learning Theory in the Lean Theorem Prover. 
+A formal proof that decisions stumps are PAC learnable.  
 
 ## Getting it working
 We assume you have [leanpkg](https://github.com/leanprover/lean/tree/master/leanpkg) installed. 
 
 ```
-git clone https://github.com/jtristan/SLTCert
-cd SLTCert
+cd stump-learnable
 leanpkg configure
 update-mathlib ## optional
 leanpkg build
