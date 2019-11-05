@@ -4,8 +4,8 @@ Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
 
 import data.set
 import analysis.complex.exponential
-import ..lib.dvector 
-import ..lib.basic
+import .attributed.dvector 
+import lib.basic
 import topology.constructions
 
 local attribute [instance] classical.prop_decidable

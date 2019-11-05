@@ -2,8 +2,8 @@
 Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
 -/
 
-import lib.probability_theory
-import lib.dvector lib.to_mathlib
+import lib.attributed.probability_theory
+import lib.attributed.dvector lib.attributed.to_mathlib
 import measure_theory.giry_monad
 import measure_theory.measure_space
 import data.complex.exponential

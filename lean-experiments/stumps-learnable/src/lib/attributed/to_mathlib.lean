@@ -7,7 +7,7 @@ Authors: Johannes Holzl, John Tristan, Koundinya Vajjha
 -/
 import tactic.tidy 
 import measure_theory.giry_monad measure_theory.integration measure_theory.borel_space .dvector
-import lib.probability_theory 
+import .probability_theory 
 import analysis.complex.exponential 
 
 local attribute [instance] classical.prop_decidable
