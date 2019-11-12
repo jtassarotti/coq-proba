@@ -1434,7 +1434,7 @@ Proof.
     replace 1 with (IZR 1) by auto. move /le_IZR => ?; omega.
   - move /eqP => ?. intros. cut (Int_part x < 1)%Z; first by (intros; omega).
     apply lt_IZR. destruct (base_fp x) as (Hge0&Hlt1). replace (IZR 1) with 1 by auto.
-    move: Hgt. move /Zgt_lt/IZR_lt.
+    move: Hgt. move /Z.gt_lt/IZR_lt.
     rewrite plus_IZR. replace (IZR 1) with 1 by auto.
     replace (IZR 0) with 0 by auto. inversion Hge0; intros; [fourier|nra].
 Qed.
@@ -1512,7 +1512,7 @@ Proof.
          assert (Hrgt0: (round r (size x) > 0)%Z).
          {
            rewrite /round.
-           rewrite -Rceil_0. apply Zlt_gt, Rceil_mono_strict. apply frac_part_0.
+           rewrite -Rceil_0. apply Z.lt_gt, Rceil_mono_strict. apply frac_part_0.
            apply Rdiv_lt_0_compat.
            - nra.
            - apply a_pos. nra.

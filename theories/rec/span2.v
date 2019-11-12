@@ -937,7 +937,7 @@ Proof.
     }
     assert (Hrgt0: (round r (size x) > 0)%Z).
     {
-      rewrite /round. rewrite -Rceil_0. apply Zlt_gt, Rceil_mono_strict. apply frac_part_0.
+      rewrite /round. rewrite -Rceil_0. apply Z.lt_gt, Rceil_mono_strict. apply frac_part_0.
       apply Rdiv_lt_0_compat.
       - nra.
       - apply a_pos. nra.

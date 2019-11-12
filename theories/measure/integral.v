@@ -1701,7 +1701,7 @@ Section integral.
           assert (Haux: f x < INR (n * 2^n) / 2^n).
           { eapply Rlt_le_trans; eauto.
             apply Rle_div_l; auto. specialize (Hpown n). field_simplify; last nra.
-            rewrite /Rdiv Rinv_1 ?Rmult_1_r.
+            try rewrite /Rdiv Rinv_1 ?Rmult_1_r.
             rewrite -S_INR. apply le_INR.
             lia.
           }
@@ -1776,13 +1776,13 @@ Section integral.
          specialize (Hpown (S n)).
          *** apply (Rmult_le_reg_r (2^ (S n))); eauto.
              field_simplify; last nra.
-             rewrite /Rdiv Rinv_1 ?Rmult_1_r.
+             try rewrite /Rdiv Rinv_1 ?Rmult_1_r.
              replace 2 with (INR 2) by auto.
              rewrite -pow_INR -mult_INR.
              assert (Hineq: INR n < INR (S k) / 2 ^ (S n)) by nra.
              apply (Rmult_lt_compat_r (2^(S n))) in Hineq; last nra.
              field_simplify in Hineq; last nra.
-             rewrite /Rdiv Rinv_1 ?Rmult_1_r in Hineq.
+             try rewrite /Rdiv Rinv_1 ?Rmult_1_r in Hineq.
              replace 2 with (INR 2) in Hineq by auto.
              rewrite -pow_INR -mult_INR in Hineq.
              apply le_INR. apply INR_lt in Hineq. lia.
@@ -1790,7 +1790,7 @@ Section integral.
          rewrite Heq. specialize (Hpown n).
          apply (Rmult_le_reg_r (2^n)); first nra.
          field_simplify; last nra.
-         rewrite /Rdiv Rinv_1 ?Rmult_1_r.
+         try rewrite /Rdiv Rinv_1 ?Rmult_1_r.
          replace 2 with (INR 2) by auto.
          rewrite -pow_INR -mult_INR.
          apply le_INR. rewrite mult_comm.
@@ -1806,13 +1806,14 @@ Section integral.
          rewrite S_INR in Hineq.
          rewrite //= in Hineq.
          field_simplify in Hineq; try nra.
-         rewrite -S_INR /Rdiv Rinv_1 ?Rmult_1_r in Hineq.
+         rewrite -S_INR in Hineq.
+         try rewrite /Rdiv Rinv_1 ?Rmult_1_r in Hineq.
          replace 2 with (INR 2) in Hineq by auto. rewrite -mult_INR in Hineq.
          apply INR_lt in Hineq.
          apply (Rmult_le_reg_r (2^(S n))); first nra.
          rewrite //=.
          field_simplify; try nra.
-         rewrite /Rdiv Rinv_1 ?Rmult_1_r.
+         try rewrite /Rdiv Rinv_1 ?Rmult_1_r.
          replace 2 with (INR 2) by auto. rewrite -mult_INR.
          apply le_INR. lia.
     * intros x. intros P (eps&HP).

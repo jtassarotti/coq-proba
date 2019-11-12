@@ -1035,7 +1035,7 @@ Section recurrence_work3.
       }
       destruct Rlt_dec.
       * field_simplify; last nra.
-        rewrite /Rdiv Rinv_1 Rmult_1_r. nra.
+        try rewrite /Rdiv Rinv_1 Rmult_1_r. nra.
       * rewrite /Rdiv Rinv_r; first fourier.
         apply Rgt_not_eq; fourier.
   Qed.

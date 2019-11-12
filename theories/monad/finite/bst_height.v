@@ -483,5 +483,5 @@ Proof.
     rewrite Hsize. rewrite /k. interval.
   - replace 208 with (INR 208); last first.
     { vm_compute. nra. }
-    etransitivity; first apply bound; auto; try nra. rewrite Hsize. interval.
+    etransitivity; first apply bound; auto; try nra; try rewrite Hsize; interval.
 Qed.
