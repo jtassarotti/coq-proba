@@ -41,4 +41,4 @@ paths we will quote are with respect to that.
 
 - measure/ -- Basic measure theory (lebesgue integral and measure, fubini's theorem, etc.)
 
-- monad/ -- Definitions of probabilistic choice monads, various examples from paper.
+- monad/ -- Definitions of probabilistic choice monads.
