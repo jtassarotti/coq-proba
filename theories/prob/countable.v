@@ -205,8 +205,8 @@ Proof.
   intros ?? ? x. rewrite /countable_sum. destruct pickle_inv; eauto.
 Qed.
 
-Global Instance countable_sum_Proper' {A: countType}:
-  Proper (pointwise_relation A (@eq R) ==> eq ==> eq) countable_sum.
+Global Instance countable_sum_Proper' {B: countType}:
+  Proper (pointwise_relation B (@eq R) ==> eq ==> eq) countable_sum.
 Proof.
   intros ?? ? x ??. subst. eapply countable_sum_ext; eauto.
 Qed.

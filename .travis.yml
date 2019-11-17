@@ -19,6 +19,7 @@ services:
 
 matrix:
   include:
+    - env: COQ_VERSION="8.10"
     - env: COQ_VERSION="8.9.1"
 
 #before_install:

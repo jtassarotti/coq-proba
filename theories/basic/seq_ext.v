@@ -287,7 +287,7 @@ Qed.
 
 Local Open Scope Z.
 Lemma fold_left_Zmax_init l x:
-  x <= fold_left Zmax l x.
+  x <= fold_left Z.max l x.
 Proof.
   revert x. induction l => //=; first reflexivity.
   intros x. etransitivity; last eapply IHl.
@@ -295,7 +295,7 @@ Proof.
 Qed.
 
 Lemma fold_left_Zmax_ub l x:
-  (∀ r', In r' l → r' <= fold_left Zmax l x).
+  (∀ r', In r' l → r' <= fold_left Z.max l x).
 Proof.
   revert x. induction l as [| a l] => //=.
   intros x r [Hhd|Htl].
@@ -305,7 +305,7 @@ Qed.
 
 Lemma fold_left_Zmax_mono_init l x x':
   x <= x' →
-  fold_left Zmax l x <= fold_left Zmax l x'.
+  fold_left Z.max l x <= fold_left Z.max l x'.
 Proof.
   revert x x'. induction l => //=.
   intros. eapply IHl.
@@ -313,7 +313,7 @@ Proof.
 Qed.
 
 Lemma fold_left_Zmax_cons a l x:
-   fold_left Zmax l x <= fold_left Zmax (a :: l) x.
+   fold_left Z.max l x <= fold_left Z.max (a :: l) x.
 Proof.
   revert a x. destruct l.
   - intros; apply Z.le_max_l.
@@ -322,7 +322,7 @@ Proof.
 Qed.
 
 Lemma fold_left_Zle_max_lub l r x:
-  (∀ r', In r' l → r' <= r) → x <= r → fold_left Zmax l x <= r.
+  (∀ r', In r' l → r' <= r) → x <= r → fold_left Z.max l x <= r.
 Proof.
   revert r x. induction l as [| a l] => //=.
   intros r x Hglb Hinit. eapply IHl.
@@ -331,11 +331,11 @@ Proof.
 Qed.
 
 Lemma fold_left_Zmax_witness1 l x:
-  (∃ r, In r l ∧ r = fold_left Zmax l x) ∨ ((∀ r, In r l → r < x) ∧ fold_left Zmax l x = x).
+  (∃ r, In r l ∧ r = fold_left Z.max l x) ∨ ((∀ r, In r l → r < x) ∧ fold_left Z.max l x = x).
 Proof.
   revert x. induction l as [| a l] => //=.
   - right. split; auto; intros ? [].
-  - intros x. edestruct (IHl (Zmax x a)) as [(r&Hin&Heq)|Hlt].
+  - intros x. edestruct (IHl (Z.max x a)) as [(r&Hin&Heq)|Hlt].
     * left. exists r. split; auto.
     * destruct (Z_gt_dec x a).
       ** right; split.
@@ -363,7 +363,7 @@ Proof.
 Qed.
 
 Lemma fold_left_Pmax_ub l x:
-  (∀ r', In r' l → r' <= fold_left Pmax l x).
+  (∀ r', In r' l → r' <= fold_left Pos.max l x).
 Proof.
   revert x. induction l as [| a l] => //=.
   intros x r [Hhd|Htl].
@@ -373,7 +373,7 @@ Qed.
 
 Lemma fold_left_Pmax_mono_init l x x':
   x <= x' →
-  fold_left Pmax l x <= fold_left Pmax l x'.
+  fold_left Pos.max l x <= fold_left Pos.max l x'.
 Proof.
   revert x x'. induction l => //=.
   intros. eapply IHl.
@@ -381,7 +381,7 @@ Proof.
 Qed.
 
 Lemma fold_left_Pmax_cons a l x:
-   fold_left Pmax l x <= fold_left Pmax (a :: l) x.
+   fold_left Pos.max l x <= fold_left Pos.max (a :: l) x.
 Proof.
   revert a x. destruct l.
   - intros; apply Pos.le_max_l.
@@ -390,7 +390,7 @@ Proof.
 Qed.
 
 Lemma fold_left_Ple_max_lub l r x:
-  (∀ r', In r' l → r' <= r) → x <= r → fold_left Pmax l x <= r.
+  (∀ r', In r' l → r' <= r) → x <= r → fold_left Pos.max l x <= r.
 Proof.
   revert r x. induction l as [| a l] => //=.
   intros r x Hglb Hinit. eapply IHl.
@@ -399,11 +399,11 @@ Proof.
 Qed.
 
 Lemma fold_left_Pmax_witness1 l x:
-  (∃ r, In r l ∧ r = fold_left Pmax l x) ∨ ((∀ r, In r l → r < x) ∧ fold_left Pmax l x = x).
+  (∃ r, In r l ∧ r = fold_left Pos.max l x) ∨ ((∀ r, In r l → r < x) ∧ fold_left Pos.max l x = x).
 Proof.
   revert x. induction l as [| a l] => //=.
   - right. split; auto; intros ? [].
-  - intros x. edestruct (IHl (Pmax x a)) as [(r&Hin&Heq)|Hlt].
+  - intros x. edestruct (IHl (Pos.max x a)) as [(r&Hin&Heq)|Hlt].
     * left. exists r. split; auto.
     *
       assert (x > a ∨ ¬ (x > a)) as [Hgt|Hngt].

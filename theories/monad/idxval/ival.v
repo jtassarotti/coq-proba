@@ -597,13 +597,13 @@ Proof.
     **  apply eq_ival_sym. apply iscale_0_l.
 Qed.
 
-Global Instance eq_ival_Transitivite {X}: Transitive (@eq_ival X).
+Global Instance eq_ival_Transitivite {Y}: Transitive (@eq_ival Y).
 Proof. intros ???. apply eq_ival_trans. Qed.
-Global Instance eq_ival_Reflexive {X}: Reflexive (@eq_ival X).
+Global Instance eq_ival_Reflexive {Y}: Reflexive (@eq_ival Y).
 Proof. intros ?. apply eq_ival_refl. Qed.
-Global Instance eq_ival_Symmetry {X}: Symmetric (@eq_ival X).
+Global Instance eq_ival_Symmetry {Y}: Symmetric (@eq_ival Y).
 Proof. intros ??. apply eq_ival_sym. Qed.
-Global Instance eq_ival_Equivalence {X}: Equivalence (@eq_ival X).
+Global Instance eq_ival_Equivalence {Y}: Equivalence (@eq_ival Y).
 Proof. split; apply _. Qed.
 
 Global Instance iplus_proper : Proper (@eq_ival X ==> @eq_ival X ==> @eq_ival X) (@iplus X).

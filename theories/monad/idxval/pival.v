@@ -224,19 +224,19 @@ Proof.
   split; eauto using punion_le_pival.
 Qed.
 
-Global Instance eq_pival_Transitivite {X}: Transitive (@eq_pival X).
+Global Instance eq_pival_Transitivite {Y}: Transitive (@eq_pival Y).
 Proof. intros ???. apply eq_pival_trans. Qed.
-Global Instance eq_pival_Reflexive {X}: Reflexive (@eq_pival X).
+Global Instance eq_pival_Reflexive {Y}: Reflexive (@eq_pival Y).
 Proof. intros ?. apply eq_pival_refl. Qed.
-Global Instance eq_pival_Symmetry {X}: Symmetric (@eq_pival X).
+Global Instance eq_pival_Symmetry {Y}: Symmetric (@eq_pival Y).
 Proof. intros ??. apply eq_pival_sym. Qed.
 
-Global Instance le_pival_Transitivite {X}: Transitive (@le_pival X).
+Global Instance le_pival_Transitivite {Y}: Transitive (@le_pival Y).
 Proof. intros ???. apply le_pival_trans. Qed.
-Global Instance le_pival_Reflexive {X}: Reflexive (@le_pival X).
+Global Instance le_pival_Reflexive {Y}: Reflexive (@le_pival Y).
 Proof. intros ?. apply le_pival_refl. Qed.
 
-Global Instance le_pival_proper {X}: Proper (@eq_pival X ==> @eq_pival X ==> iff) (@le_pival X).
+Global Instance le_pival_proper {Y}: Proper (@eq_pival Y ==> @eq_pival Y ==> iff) (@le_pival Y).
 Proof.
   intros Is1 Is1' Heq1 Is2 Is2' Heq2; split => Hle;
   destruct Heq1 as (Hle1&Hle1'); destruct Heq2 as (Hle2&Hle2').

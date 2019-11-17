@@ -270,8 +270,7 @@ Proof.
     rewrite Hsize. rewrite /k. interval.
   - replace 169 with (INR 169); last first.
     { vm_compute. nra. }
-    etransitivity; first apply bound; auto; try nra.
-    interval.
+    etransitivity; first apply bound; auto; try nra; try interval.
 Qed.
 
 
@@ -294,8 +293,7 @@ Proof.
     rewrite Hsize. rewrite /k. interval.
   - replace 41 with (INR 41); last first.
     { vm_compute. nra. }
-    etransitivity; first apply bound; auto; try nra.
-    interval.
+    etransitivity; first apply bound; auto; try nra; try interval.
 Qed.
 
 
@@ -318,6 +316,5 @@ Proof.
     rewrite Hsize. rewrite /k. interval.
   - replace 19 with (INR 19); last first.
     { vm_compute. nra. }
-    etransitivity; first apply bound; auto; try nra.
-    interval.
+    etransitivity; first apply bound; auto; try nra; try interval.
 Qed.

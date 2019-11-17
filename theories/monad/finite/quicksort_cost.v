@@ -899,7 +899,7 @@ Proof.
   - replace 147 with (INR 147); last first.
     { vm_compute. nra. }
     rewrite -Hsize.
-    etransitivity; first apply bound; auto; try nra. rewrite Hsize. interval.
+    etransitivity; first apply bound; auto; try nra; try rewrite Hsize; interval.
 Qed.
 
 Remark concrete2:
@@ -913,5 +913,5 @@ Proof.
   - replace 129 with (INR 129); last first.
     { vm_compute. nra. }
     rewrite -Hsize.
-    etransitivity; first apply bound; auto; try nra. rewrite Hsize. interval.
+    etransitivity; first apply bound; auto; try nra; try rewrite Hsize; interval.
 Qed.
