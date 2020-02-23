@@ -8,6 +8,11 @@ Require Import ClassicalEpsilon.
 Definition product_sigma {A B: Type} (F1: sigma_algebra A) (F2: sigma_algebra B) :=
   minimal_sigma (λ UV, ∃ U V, F1 U ∧ F2 V ∧ UV ≡ (λ ab, U (fst ab) ∧ V (snd ab))).
 
+Global Instance product_measurable_space {A B: Type}
+       {F1: measurable_space A} {F2: measurable_space B}:
+  measurable_space (A * B).
+Proof. econstructor. apply product_sigma; eapply measurable_space_sigma. Defined.
+
 Definition left_section {A B: Type} (E: A * B → Prop) (a: A) : B → Prop :=
   λ b, E (a, b).
 
@@ -108,31 +113,39 @@ Proof.
     firstorder.
 Qed.
 
-Lemma fun_left_measurable {A B C: Type} F1 F2 F3 (f : A * B → C) x:
-  measurable f (product_sigma F1 F2) F3 →
-  measurable (λ y, f (x, y)) F2 F3.
+Lemma fun_left_measurable {A B C: Type}
+      {F1: measurable_space A} {F2: measurable_space B} {F3: measurable_space C}
+      (f : A * B → C) x:
+  measurable f →
+  measurable (λ y, f (x, y)).
 Proof.
   intros Hmeas U HU.
-  eapply sigma_proper; last eapply (left_section_measurable (fun_inv f U) x);
-    eauto; firstorder.
+  eapply sigma_proper; last eapply (left_section_measurable (fun_inv f U) x).
+  - firstorder.
+  - eapply Hmeas in HU. eapply HU.
 Qed.
 
-Lemma fun_right_measurable {A B C: Type} F1 F2 F3 (f : A * B → C) y:
-  measurable f (product_sigma F1 F2) F3 →
-  measurable (λ x, f (x, y)) F1 F3.
+Lemma fun_right_measurable {A B C: Type}
+      {F1: measurable_space A} {F2: measurable_space B} {F3: measurable_space C}
+      (f : A * B → C) y:
+  measurable f →
+  measurable (λ x, f (x, y)).
 Proof.
   intros Hmeas U HU.
-  eapply sigma_proper; last eapply (right_section_measurable (fun_inv f U) y);
-    eauto; firstorder.
+  eapply sigma_proper; last eapply (right_section_measurable (fun_inv f U) y).
+  - firstorder.
+  - eapply Hmeas in HU. eapply HU.
 Qed.
 
-Lemma pair_measurable {A B C: Type} F1 F2 F3 (f : A → B) (g: A → C):
-  measurable f F1 F2 →
-  measurable g F1 F3 →
-  measurable (λ x, (f x, g x)) F1 (product_sigma F2 F3).
+Lemma pair_measurable {A B C: Type}
+      {F1: measurable_space A} {F2: measurable_space B} {F3: measurable_space C}
+      (f : A → B) (g: A → C):
+  measurable f →
+  measurable g →
+  measurable (λ x, (f x, g x)).
 Proof.
   intros Hmeasf Hmeasg.
-  apply measurable_generating_sets.
+  apply sigma_measurable_generating_sets.
   intros ? (U&V&HU&HV&->).
   rewrite /fun_inv//=.
   assert ((λ a, U (f a) ∧ V (g a)) ≡ fun_inv f U ∩ fun_inv g V) as ->.
@@ -142,17 +155,17 @@ Qed.
 
 Section product_measure.
   Context {A B: Type}.
-  Context {F1: sigma_algebra A} {F2: sigma_algebra B}.
-  Context (μ: measure F1) (ν: measure F2).
+  Context {F1: measurable_space A} {F2: measurable_space B}.
+  Context (μ: measure A) (ν: measure B).
 
-  Lemma wpt_indicator_left_section U (Hmeas : product_sigma F1 F2 U) x:
+  Lemma wpt_indicator_left_section (U: A * B → Prop) Hmeas x:
     (∀ y, wpt_fun (wpt_indicator U Hmeas) (x, y) =
           wpt_fun (wpt_indicator (left_section U x) (left_section_measurable _ _ Hmeas)) y).
   Proof. intros y. rewrite ?wpt_indicator_spec/left_section//=. Qed.
 
-  Lemma wpt_indicator_right_section U (Hmeas : product_sigma F1 F2 U) y:
+  Lemma wpt_indicator_right_section (U: A * B → Prop) Hmeas y:
     (∀ x, wpt_fun (wpt_indicator U Hmeas) (x, y) =
-          wpt_fun (wpt_indicator (right_section U y) (right_section_measurable _ _ Hmeas)) x).
+          @wpt_fun _ F1 (wpt_indicator (right_section U y) (right_section_measurable _ _ Hmeas)) x).
   Proof. intros x. rewrite ?wpt_indicator_spec/right_section//=. Qed.
 
   Lemma measure_left_section_rectangle (U: A → Prop) (V: B → Prop) (x: A) (Hmeas: F1 U):
@@ -177,18 +190,18 @@ Section product_measure.
     destruct (excluded_middle_informative).
     * rewrite Rmult_1_r. apply measure_proper.
       split; intuition.
-    * rewrite Rmult_0_r. etransitivity; last eapply measure_empty.
-      apply measure_proper. split.
+    * rewrite Rmult_0_r. etransitivity; last eapply (@measure_empty A).
+      apply (measure_proper _ μ). split.
       ** intros (?&?); intuition.
       ** inversion 1.
   Qed.
 
   Lemma measurable_measure_left U:
     product_sigma F1 F2 U →
-    measurable (λ x : A, ν (left_section U x)) F1 (borel R_UniformSpace).
+    measurable (λ x : A, ν (left_section U x)).
   Proof.
     intros HU.
-    set (F := (λ U, product_sigma F1 F2 U ∧ measurable (λ x, ν (left_section U x)) F1 (borel _))).
+    set (F := (λ U, product_sigma F1 F2 U ∧ measurable (λ x, ν (left_section U x)))).
     cut (eq_prop (product_sigma F1 F2) F).
     { intros Heq. destruct (Heq U) as (Himpl1&Himpl2); eauto.
       destruct (Himpl1); eauto. }
