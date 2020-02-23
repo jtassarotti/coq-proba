@@ -8,7 +8,7 @@ Require Import ClassicalEpsilon.
 Definition product_sigma {A B: Type} (F1: sigma_algebra A) (F2: sigma_algebra B) :=
   minimal_sigma (λ UV, ∃ U V, F1 U ∧ F2 V ∧ UV ≡ (λ ab, U (fst ab) ∧ V (snd ab))).
 
-Global Instance product_measurable_space {A B: Type}
+Instance product_measurable_space {A B: Type}
        {F1: measurable_space A} {F2: measurable_space B}:
   measurable_space (A * B).
 Proof. econstructor. apply product_sigma; eapply measurable_space_sigma. Defined.
@@ -289,10 +289,10 @@ Section product_measure.
 
   Lemma measurable_measure_right V:
     product_sigma F1 F2 V →
-    measurable (λ x : B, μ (right_section V x)) F2 (borel R_UniformSpace).
+    measurable (λ x : B, μ (right_section V x)).
   Proof.
     intros HU.
-    set (F := (λ U, product_sigma F1 F2 U ∧ measurable (λ x, μ (right_section U x)) F2 (borel _))).
+    set (F := (λ U, product_sigma F1 F2 U ∧ measurable (λ x, μ (right_section U x)))).
     cut (eq_prop (product_sigma F1 F2) F).
     { intros Heq. destruct (Heq V) as (Himpl1&Himpl2); eauto.
       destruct (Himpl1); eauto. }
@@ -424,14 +424,14 @@ Section product_measure.
       {
         exists (μ (λ _, True) * ν (λ _, True)).
         intros ? (n&His).
-        eapply (is_integral_mono _ _ _ (λ x_, ν (λ _, True))); eauto.
+        eapply (is_integral_mono μ _ _ (λ x_, ν (λ _, True))); eauto.
         { intros; rewrite //=. rewrite -measure_sum_n_additivity.
           * apply measure_mono; last by done; auto.
             ** apply sigma_closed_range_union. intros.
                eapply left_section_measurable; eauto.
             ** auto.
           * intros; eapply left_section_measurable; eauto.
-          * apply disjointF_left_section; auto.
+          * apply disjointF_left_section; eauto.
         }
         rewrite Rmult_comm.
         apply is_integral_const.
@@ -499,7 +499,7 @@ Section product_measure.
     }
   Qed.
 
-  Definition product_measure : measure (product_sigma F1 F2).
+  Definition product_measure : measure (A * B).
   Proof.
     refine {| measure_fun := λ UV, Integral μ (λ x, ν (left_section UV x)) |}.
     - abstract (intros UV UV' Heq; setoid_rewrite Heq; done).
@@ -509,7 +509,7 @@ Section product_measure.
     - apply product_measure_additivity1.
   Defined.
 
-  Definition product_measure_alt : measure (product_sigma F1 F2).
+  Definition product_measure_alt : measure (A * B).
   Proof.
     refine {| measure_fun := λ UV, Integral ν (λ x, μ (right_section UV x)) |}.
     - abstract (intros UV UV' Heq; setoid_rewrite Heq; done).
@@ -530,6 +530,7 @@ Section product_measure.
         exists (U1 ∩ U2), (V1 ∩ V2).
         split_and!; auto.
         rewrite Heq1 Heq2. clear; firstorder.
+    - rewrite //=.
     - rewrite //=. rewrite /left_section/right_section ?Integral_const. nra.
     - intros ? (U&V&HU&HV&->).
       rewrite //=. rewrite /left_section/right_section //=.
@@ -562,17 +563,17 @@ End product_measure.
 
 Definition swap {A1 A2: Type} (a: A1 * A2) := (snd a, fst a).
 
-Lemma swap_measurable {A1 A2 F1 F2}:
-  measurable (@swap A1 A2) (product_sigma F1 F2) (product_sigma F2 F1).
+Lemma swap_measurable {A1 A2} {F1: measurable_space A1} {F2: measurable_space A2}:
+  measurable (@swap A1 A2).
 Proof.
-  apply measurable_generating_sets.
+  apply sigma_measurable_generating_sets.
   intros ? (V&U&HV&HU&->).
   apply minimal_sigma_ub.
   exists U, V; split_and!; eauto.
   firstorder.
 Qed.
 
-Lemma swap_is_pt_iso {A1 A2 F1 F2} (μ1: measure F1) (μ2: measure F2):
+Lemma swap_is_pt_iso {A1 A2} {F1: measurable_space A1} {F2: measurable_space A2} (μ1: measure A1) (μ2: measure A2):
   is_pt_iso (@swap A1 A2) (product_measure μ1 μ2) (product_measure μ2 μ1).
 Proof.
   split.
@@ -598,16 +599,16 @@ Qed.
 Section fubini_tonelli_lr.
 
   Context {A B: Type}.
-  Context {F1: sigma_algebra A} {F2: sigma_algebra B}.
-  Context (μ: measure F1) (ν: measure F2).
+  Context {F1: measurable_space A} {F2: measurable_space B}.
+  Context (μ: measure A) (ν: measure B).
 
-  Definition wpt_proj2 (wpt: weighted_partition (product_sigma F1 F2)) (x: A)
+  Definition wpt_proj2 (wpt: weighted_partition (@product_measurable_space A B _ _)) (x: A)
     : weighted_partition F2.
   Proof.
     refine (wpt_indicator_scal_list (map (λ rU, (fst rU, left_section (snd rU) x)) wpt) _).
-    { abstract (intros r U (rU&Heq&Hin)%in_map_iff;
+    abstract (intros r U (rU&Heq&Hin)%in_map_iff;
                 inversion Heq; subst; eapply (@left_section_measurable _ _ F1); eauto;
-                eapply In_wpt_snd_measurable; eauto). }
+                specialize (In_wpt_snd_measurable _ _ Hin) => //= ).
   Defined.
 
   Lemma wpt_proj2_spec wpt x y:
