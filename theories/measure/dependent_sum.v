@@ -7,11 +7,11 @@ Require Import ClassicalEpsilon.
 
 Section dep_sum_sigma.
 Context {A: Type} {B: A → Type} {C: Type}.
-Context (F1: sigma_algebra A).
-Context (F2: ∀ a, sigma_algebra (B a)).
-Context (F3: sigma_algebra C).
+Context (F1: measurable_space A).
+Context (F2: ∀ a, measurable_space (B a)).
+Context (F3: measurable_space C).
 Context (f: ∀ a, B a → C).
-Context (Hfmeas: ∀ a, measurable (f a) (F2 a) F3).
+Context (Hfmeas: ∀ a, measurable (f a)).
 
 Definition dep_sum_sigma :=
   minimal_sigma (λ UV, ∃ U Vc, F1 U ∧ F3 Vc ∧
@@ -105,9 +105,12 @@ Proof.
     intros (?&?&?&
 *)
 
-Lemma fun_dep_measurable {D: Type} F (g : sigT B → D) x:
-  measurable g dep_sum_sigma F →
-  measurable (λ y, g (existT x y)) (F2 x) F.
+Instance measurable_space_dep_sum : measurable_space {x : A & B x}.
+Proof. econstructor; eapply dep_sum_sigma. Defined.
+
+Lemma fun_dep_measurable `{HMEAS: measurable_space D} (g : sigT B → D) x:
+  measurable g (F1 := measurable_space_dep_sum) →
+  measurable (λ y, g (existT x y)).
 Proof.
   intros Hmeas U HU.
   eapply sigma_proper; last eapply (dep_section_measurable (fun_inv g U) x);
@@ -129,7 +132,7 @@ Qed.
 *)
 
 Lemma fun_decode_measurable:
-  measurable (λ xy, f (projT1 xy) (projT2 xy)) dep_sum_sigma F3.
+  measurable (λ xy, f (projT1 xy) (projT2 xy)) (F1 := measurable_space_dep_sum).
 Proof.
   intros V HV Hspec.
   destruct Hspec as (F'&Hle).
