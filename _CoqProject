@@ -25,7 +25,6 @@ theories/measure/isomorphism.v
 theories/measure/integral.v
 theories/measure/dynkin.v
 theories/measure/product.v
-theories/measure/dependent_sum.v
 theories/measure/pushforward.v
 theories/prob/countable.v
 theories/prob/prob.v

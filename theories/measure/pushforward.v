@@ -7,13 +7,13 @@ Require Import ClassicalEpsilon.
 
 Section pushforward.
   Context {A1 A2: Type}.
-  Context {F1 : sigma_algebra A1}.
-  Context {F2 : sigma_algebra A2}.
-  Context (μ: measure F1).
+  Context {F1 : measurable_space A1}.
+  Context {F2 : measurable_space A2}.
+  Context (μ: measure A1).
   Context (f: A1 → A2).
-  Context (Hmeas: measurable f F1 F2).
+  Context (Hmeas: measurable f).
 
-  Definition pushforward : measure F2.
+  Definition pushforward : measure A2.
   Proof.
     refine {| measure_fun := λ U, μ (fun_inv f U) |}.
     - abstract (by intros ?? ->).
@@ -102,7 +102,7 @@ Section pushforward.
       rewrite ?wpt_integral_scal; f_equal; eauto.
   Qed.
 
-  Lemma is_pos_integral_change_of_variables (g: A2 → R) (Hmeasg: measurable g F2 (borel _)) v:
+  Lemma is_pos_integral_change_of_variables (g: A2 → R) (Hmeasg: measurable g) v:
     (∀ x, 0 <= g x) →
     is_pos_integral μ (λ x, g (f x)) v ↔ is_pos_integral pushforward g v.
   Proof.
@@ -134,7 +134,7 @@ Section pushforward.
       eapply is_pos_integral_mct_wpt'; eauto.
   Qed.
 
-  Lemma is_integral_change_of_variables (g: A2 → R) (Hmeasg: measurable g F2 (borel _)) v:
+  Lemma is_integral_change_of_variables (g: A2 → R) (Hmeasg: measurable g) v:
     is_integral μ (λ x, g (f x)) v ↔ is_integral pushforward g v.
   Proof.
     split.
@@ -156,7 +156,7 @@ Section pushforward.
         intros; apply Rmax_case_strong; nra.
   Qed.
 
-  Lemma Pos_integral_change_of_variables (g: A2 → R) (Hmeasg: measurable g F2 (borel _)):
+  Lemma Pos_integral_change_of_variables (g: A2 → R) (Hmeasg: measurable g):
     (∀ x, 0 <= g x) →
     Pos_integral μ (λ x, g (f x)) = Pos_integral pushforward g.
   Proof.
@@ -173,7 +173,7 @@ Section pushforward.
     * symmetry; apply measurable_non_ex_pos_integral_0; eauto.
   Qed.
 
-  Lemma Integral_change_of_variables (g: A2 → R) (Hmeasg: measurable g F2 (borel _)):
+  Lemma Integral_change_of_variables (g: A2 → R) (Hmeasg: measurable g):
     Integral μ (λ x, g (f x)) = Integral pushforward g.
   Proof.
     rewrite /Integral; f_equal.
@@ -185,8 +185,10 @@ Section pushforward.
 
 End pushforward.
 
-Definition measure_restrict {A: Type} (F F': sigma_algebra A) (μ: measure F') (Hle: le_sigma F F'):
-  measure F.
+(*
+Definition measure_restrict {A: Type} (F F': sigma_algebra A) (μ: measure A) (Hle: le_sigma F F'):
+  measure A.
 Proof.
   apply (pushforward μ id); abstract auto.
 Defined.
+*)
