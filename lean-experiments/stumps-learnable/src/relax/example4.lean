@@ -131,6 +131,10 @@ begin
 	repeat {sorry},
 end
 
+lemma inv_one : (1 : nnreal) ⁻¹ = (1: nnreal) := nnreal.eq $ inv_one
+lemma div_one : ∀ (t: nnreal), t/(1 : nnreal) = t :=
+begin assume t, by rw [nnreal.div_def, inv_one, mul_one] end
+
 lemma maj_:
 	∀ t: ℍ, 
 	cond_prob (γ μ) male_selected_ (B_ t) = t :=
@@ -144,10 +148,9 @@ begin
 
 	rw rw_gamma_1,
 	rw rw_gamma_2,
-
-	sorry,
-
+        rw div_one,
 end
+
 
 noncomputable
 def code (u: (ℍ × ℕ) × ℍ × ℍ): (ℍ × ℕ) × (ℍ × ℕ) :=
