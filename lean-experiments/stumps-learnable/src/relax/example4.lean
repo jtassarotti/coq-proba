@@ -163,9 +163,39 @@ def code (u: (ℍ × ℕ) × ℍ × ℍ): (ℍ × ℕ) × (ℍ × ℕ) :=
 	((theta,X),(phi,Y))
 
 @[simp]
-lemma measurable_code:measurable ( λ (u: (ℍ × ℕ) × ℍ × ℍ),code u) := 
+lemma measurable_code: measurable ( λ (u: (ℍ × ℕ) × ℍ × ℍ),code u) := 
 begin
-	sorry,
+  unfold code,
+  simp,
+  apply measurable.prod; simp,
+  { apply measurable_fst, apply measurable_id },
+  apply measurable.prod; simp,
+  { 
+    apply measurable.comp,
+    { apply uniform_measurable },
+    {
+      apply measurable.prod; simp,
+      { sorry },
+      apply measurable.prod; simp,
+      { apply measurable_const },
+      apply measurable_fst,
+      apply measurable_snd,
+      apply measurable_id,
+    }
+  },
+  apply measurable.comp,
+  { apply binomial_measurable, },
+  apply measurable.prod; simp,
+  { apply measurable.comp,
+    { apply uniform_measurable },
+    apply measurable.prod; simp,
+    { sorry },
+    apply measurable.prod; simp,
+    { apply measurable_const },
+    apply measurable_fst,
+    apply measurable_snd,
+    apply measurable_id,
+  },
 end
 
 noncomputable
