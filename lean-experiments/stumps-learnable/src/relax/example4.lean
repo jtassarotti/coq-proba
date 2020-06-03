@@ -21,9 +21,36 @@ def maj_code (u: ℍ × ℍ): (ℍ × ℕ) :=
 	(theta,X)
 
 @[simp]
-lemma measurable_maj_code:measurable ( λ (u: ℍ × ℍ),maj_code u) := 
+lemma measurable_maj_code: measurable ( λ (u: ℍ × ℍ),maj_code u) := 
 begin
-	sorry,
+  unfold maj_code,
+  simp,
+  apply measurable.prod; simp,
+  { 
+    apply measurable.comp,
+    { apply uniform_measurable },
+    {
+      apply measurable.prod; simp,
+      { apply measurable_const },
+      apply measurable.prod; simp,
+      { apply measurable_const },
+      apply measurable_fst,
+      apply measurable_id,
+    }
+  },
+  apply measurable.comp,
+  { apply binomial_measurable, },
+  apply measurable.prod; simp,
+  { apply measurable.comp,
+    { apply uniform_measurable },
+    apply measurable.prod; simp,
+    { apply measurable_const },
+    apply measurable.prod; simp,
+    { apply measurable_const },
+    apply measurable_fst,
+    apply measurable_id,
+  },
+  apply measurable_snd, apply measurable_id
 end
 
 noncomputable
@@ -55,7 +82,10 @@ begin
 	rw t_rw at *, 
 
 	/- Measures-/
-	repeat {sorry},
+        { sorry },
+        { sorry },
+        { apply measurable_maj_code },
+	{ sorry },
 
 end
 
