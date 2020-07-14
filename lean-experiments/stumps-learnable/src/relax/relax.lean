@@ -54,9 +54,6 @@ axiom generate_uniform_variate_simple: ℝ × ℝ × ℍ → ℍ
 
 def E_uni (t: ℍ) := {v: ℍ | generate_uniform_variate_simple(0, 1, v) = t}
 
-axiom generate_uniform_variate_simple_prop: 
-    ∀ t, μ (E_uni t) = 1 
-
 axiom generate_uniform_variate_simple_in:
     ∀ v: ℍ, ∀ a: ℍ, ∀ b: ℍ, 
     a ≤ generate_uniform_variate_simple(a, b, v) ∧ 
@@ -66,8 +63,7 @@ axiom generate_uniform_variate_simple_in:
 axiom uniform_measurable: measurable generate_uniform_variate_simple 
 
 @[simp]
-axiom uniform_event_measurable: ∀ t, is_measurable (E_uni t)
-
+axiom uniform_event_measurable: ∀ t, is_measurable {v: ℍ | generate_uniform_variate_simple(0, 1, v) = t}
 
 /- Binomial distribution -/
 
@@ -79,7 +75,7 @@ def E_bin (t: ℍ) := {v: ℍ | generate_binomial_variate_simple(t,v) = 1}
 axiom binomial_measurable: measurable generate_binomial_variate_simple 
 
 @[simp]
-axiom binomial_event_measurable: ∀ t, is_measurable (E_bin t)
+axiom binomial_event_measurable: ∀ t, is_measurable {v: ℍ | generate_binomial_variate_simple(t,v) = 1}
 
 axiom generate_binomial_variate_simple_prop: 
     ∀ t, μ (E_bin t) = t 
