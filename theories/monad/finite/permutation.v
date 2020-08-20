@@ -10,16 +10,16 @@ Local Open Scope nat_scope.
 (* TODO: should make unif generic over ``cost'' or not, so don't have to repeat this
    across other examples *)
 Require Import Reals Fourier FunctionalExtensionality.
+Local Open Scope R_scope.
 Program Definition unif n : ldist { x : nat | (leq x n) } :=
   mklDist [ seq (1/(INR (n.+1)), (exist _ (nat_of_ord i) _)) | i <- enum 'I_(n.+1) ] _ _.
-Next Obligation. intros n (?&?); rewrite -ltnS. done. Qed.
+Next Obligation. rewrite -ltnS. done. Qed.
 Next Obligation.
-  intros ?.
   apply /allP => r.
   rewrite -map_comp //= (@eq_map _ _ _ (λ x, 1 / INR (S n))); last by done.
   rewrite (nat_of_ord_map_iota (S n) (λ x, 1 / INR (S n))).
   rewrite //=. induction (iota 1 n) => //=.
-  - rewrite in_cons. move /orP => [Heq|Hin]; eauto.
+  - rewrite seq.in_cons. rewrite //=. move /orP => [Heq|Hin]; eauto.
     move /eqP in Heq. rewrite Heq.
     destruct (Rle_dec) as [|Hn]; [ by auto | exfalso; apply Hn].
     left. apply Rdiv_lt_0_compat; first fourier.
@@ -27,7 +27,7 @@ Next Obligation.
     replace 0 with (INR O) by auto.
     cut (INR 0 < INR (S n)); intros; first by fourier.
     apply lt_INR. omega.
-  - rewrite in_cons. move /orP => [Heq|Hin]; eauto.
+  - rewrite seq.in_cons. move /orP => [Heq|Hin]; eauto.
     move /eqP in Heq. rewrite Heq.
     destruct (Rle_dec 0 (1 / _)) as [|Hn]; [ by auto | exfalso; apply Hn].
     left. apply Rdiv_lt_0_compat; first fourier.
@@ -37,7 +37,6 @@ Next Obligation.
     apply lt_INR; omega.
 Qed.
 Next Obligation.
-  intros ?.
   rewrite -map_comp //= (@eq_map _ _ _ (λ x, 1 / INR (S n))); last by done.
   rewrite (nat_of_ord_map_iota (S n) (λ x, 1 / INR (S n))).
   cut (∀ o k, \big[Rplus/0]_(a<-[seq (1 / INR n.+1) | i <- iota k o]) a
@@ -104,8 +103,8 @@ Section perm.
 Variable (A: eqType).
 Program Definition draw_next (a : A) (l: list A) : ldist { x : A | x \in (a :: l) } :=
   idx ← unif (size l);
-  mret (exist _ (nth a (a :: l) (sval idx)) _).
-Next Obligation. intros a l (?&?); rewrite mem_nth //. Qed.
+  mret (exist _ (seq.nth a (a :: l) (sval idx)) _).
+Next Obligation. rewrite seq.mem_nth //. Qed.
 
 
 Definition rand_perm_list : list A → ldist (list A).
@@ -229,6 +228,8 @@ Proof.
     * rewrite -(perm_mem Heq). apply /negP. rewrite Hnin. done.
     * apply /negP. rewrite Hnin. done.
 Qed.
+
+Import seq.
 
 Lemma rand_perm_list_initial {A: eqType} (l1 l2 lt: seq A):
   perm_eq l1 l2 →

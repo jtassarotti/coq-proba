@@ -15,7 +15,7 @@ Proof.
 Defined.
 
 Definition In_pidist {X} (I: ivdist X) (Is: pidist X) : Prop :=
-  ∃ I', eq_ival I I' ∧ In I' Is.
+  ∃ I', eq_ival I I' ∧ pival.In I' (pidist_pival Is).
 
 Lemma In_pidist_le_singleton {X} (I: ivdist X) Is:
   In_pidist I Is ↔ le_pidist (singleton I) Is.
@@ -75,6 +75,7 @@ Proof.
     eexists; split; last first;
     rewrite /In/singleton//= in Hin. subst.
     etransitivity; first by (symmetry; eauto).
+      inversion Hin. subst.
 
     eapply eq_ival_nondep_option_suffice.
     unshelve (eexists).
@@ -103,7 +104,7 @@ Proof.
     }
     repeat split => //=.
     * intros (i&ifx) => //=.
-      intros Hgt. destruct Rgt_dec => //=; last first.
+      intros Hgt. simpl. destruct Rgt_dec => //=; last first.
       { specialize (val_nonneg (f (ind I i)) ifx). nra. }
       match goal with
       | [ |- context [ eq_rect_r _ _ ?Hpf ] ] => destruct Hpf => //=
@@ -147,9 +148,9 @@ Proof.
     rewrite /singleton//=/In.
     f_equal.
     * rewrite /pscale/pscale_aux//= in Hin1.
-      firstorder.
+      firstorder congruence.
     * rewrite /pscale/pscale_aux//= in Hin2.
-      firstorder.
+      firstorder congruence.
 Qed.
 
 Lemma singleton_bind_comm {X Y Z} (I1: ivdist X) (I2: ivdist Y) (f: X → Y → pidist Z) :

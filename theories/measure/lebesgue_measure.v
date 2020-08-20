@@ -43,7 +43,7 @@ Proof.
   { intros n.  specialize (Hneg (/(INR (n+1)))).
     apply ClassicalEpsilon.constructive_indefinite_description in Hneg as (x&Hspec).
     exact x.
-    abstract (apply Rinv_0_lt_compat, pos_INR'; omega).
+    abstract (apply Rinv_0_lt_compat, pos_INR'; lia).
   }
   edestruct (Bolzano_Weierstrass un) as (x&Hneighbor); eauto.
   { intros.  rewrite /un. destruct ClassicalEpsilon.constructive_indefinite_description.
@@ -78,7 +78,7 @@ Proof.
      * assert (0 < INR N) by (apply pos_INR'; omega).
        assert (0 < INR (N' + 1)) by (apply pos_INR'; omega).
        nra.
-     * apply lt_INR. omega.
+     * apply lt_INR. lia.
   }
   eapply ball_triangle; eauto.
 Qed.

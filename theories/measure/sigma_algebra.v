@@ -111,7 +111,7 @@ Proof.
   - intros Hle. apply (sigma_proper _ _ (Us O)); eauto.
     intros x; split.
     * firstorder.
-    * intros (i&Hle'&?). inversion Hle'; firstorder.
+    * intros (i&Hle'&?). inversion Hle'; firstorder congruence.
   - intros.  setoid_rewrite range_union_S. apply sigma_closed_pair_union; eauto.
 Qed.
 

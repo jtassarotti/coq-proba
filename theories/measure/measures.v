@@ -6,6 +6,7 @@ From Coquelicot Require Export Rcomplements Rbar Series Lim_seq Hierarchy Markov
 From discprob.measure Require Export measurable_space.
 From discprob.measure Require Import dynkin.
 
+Local Open Scope R_scope.
 
 Record measure A {F: measurable_space A} :=
   { measure_fun :> (A → Prop) → R;
@@ -144,7 +145,7 @@ Section measure_props.
     intros. apply Hinter; auto.
     induction i.
     * eapply Hproper; last (apply Hcompl, Hempty). clear.
-      firstorder.
+      intros x; split; firstorder lia.
     * assert ((λ x : A, ∀ i' : nat, (i' < S i)%nat → ¬ Us i' x)
                 ≡ compl (Us i) ∩ ((λ x : A, ∀ i' : nat, (i' < i)%nat → ¬ Us i' x))) as Heq.
       { intros x; split.
@@ -181,8 +182,9 @@ Section measure_props.
     rewrite diff_below_unionF.
     eapply (is_lim_seq_ext (λ n, sum_n (λ i, μ (diff_below Us i)) n)).
     { intros n. induction n => //=.
-      * rewrite sum_O. apply measure_proper. clear; firstorder.
+      * rewrite sum_O. apply measure_proper. clear => ?. firstorder lia.
       * rewrite sum_Sn /plus IHn //=.
+        rewrite /Hierarchy.plus//=.
         rewrite -measure_finite_additivity; auto using diff_below_measurable.
         ** apply measure_proper. intros x; split.
            *** intros [Hle1|(?&?)]; eauto. eapply Hincr; done.

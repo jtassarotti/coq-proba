@@ -887,7 +887,7 @@ Proof.
     eapply Ex_max_partition.
 Qed.
 
-From Interval Require Import Interval_tactic.
+From Interval Require Import Tactic.
 Remark concrete:
   ∀ l, rsize l = 10 ^ 8 →
        pr_gt (T l) (10^8 * (8 * 1/(ln 2) * ln (10^8))) ≤ 1/(10^10).

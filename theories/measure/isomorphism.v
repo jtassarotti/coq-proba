@@ -67,15 +67,15 @@ Proof.
   split.
   - intros U ?. split; eauto.
     * eapply sigma_proper; eauto.
-      clear; firstorder.
+      intros x; clear; firstorder congruence.
     * eapply (sigma_proper _ _ _ empty_set).
-      ** clear; firstorder.
+      ** intros x; clear; firstorder congruence.
       ** apply sigma_empty_set.
   - rewrite //=. intros U HF. rewrite -[a in a = _](Rplus_0_r).
     f_equal.
-    * apply measure_proper. clear; firstorder.
+    * apply measure_proper. intros x; clear; firstorder congruence.
     * symmetry. erewrite <-measure_empty; first apply measure_proper.
-      clear; firstorder.
+      intros x; clear; firstorder congruence.
 Qed.
 
 Lemma is_pt_img_hom_inr {A1 A2} {F1 : measurable_space A1} {F2 : measurable_space A2}
@@ -85,16 +85,17 @@ Proof.
   split.
   - intros U ?. split; eauto.
     * eapply (sigma_proper _ _ _ empty_set).
-      ** clear; firstorder.
+      ** intros x; clear; firstorder congruence.
       ** apply sigma_empty_set.
     * eapply sigma_proper; eauto.
-      clear; firstorder.
+      intros x; clear; firstorder congruence.
   - rewrite //=. intros U HF. rewrite -[a in a = _](Rplus_0_l).
     f_equal.
     * symmetry.
-      assert (@fun_inv A1 (A1 + A2) inl (fun_img inr U) ≡ ∅) as ->; first by (clear; firstorder).
+      assert (@fun_inv A1 (A1 + A2) inl (fun_img inr U) ≡ ∅) as ->; first by (clear; intros x; firstorder).
       apply measure_empty.
-    * apply measure_proper. clear; firstorder.
+    * apply measure_proper.
+      intros x; clear; firstorder congruence.
 Qed.
 
 Lemma measurable_inl {A1 A2} {F1: measurable_space A1} {F2: measurable_space A2}:
@@ -174,23 +175,23 @@ Proof.
   split.
   - intros U (?&?). split.
     * eapply (sigma_proper _ _ _ (fun_img f1 (fun_inv inl U))).
-      { intros z; split; clear; try (firstorder; done).
-        intros x. firstorder. destruct x; try firstorder. congruence.  }
+      { intros z; split; clear; try (firstorder congruence; done).
+        intros x. firstorder. destruct x; firstorder congruence. congruence. }
       eapply pt_img_hom_sigma; eauto.
     * eapply (sigma_proper _ _ _ (fun_img f2 (fun_inv inr U))).
-      { intros z; split; clear; try (firstorder; done).
-        intros x. firstorder. destruct x; try firstorder. congruence.  }
+      { intros z; split; clear; try (firstorder congruence; done).
+        intros x. firstorder. destruct x; firstorder congruence. congruence. }
       eapply pt_img_hom_sigma; eauto.
   - intros U (?&?); rewrite //=. f_equal.
     * rewrite (pt_img_hom_meas _ _ _ Hhom1); eauto.
       { eapply measure_proper.
-        { intros z; split; clear; try (firstorder; done).
-          intros x. firstorder. destruct x; try firstorder. congruence.  }
+         { intros z; split; clear; try (firstorder congruence; done).
+           intros x. firstorder. destruct x; firstorder congruence. congruence. }
       }
     * rewrite (pt_img_hom_meas _ _ _ Hhom2); eauto.
       { apply measure_proper.
-        { intros z; split; clear; try (firstorder; done).
-          intros x. firstorder. destruct x; try firstorder. congruence.  }
+        { intros z; split; clear; try (firstorder congruence; done).
+          intros x. firstorder. destruct x; firstorder congruence. congruence. }
       }
 Qed.
 
@@ -274,7 +275,7 @@ Lemma is_pt_img_hom_comp {A1 A2 A3} {F1 : measurable_space A1} {F2 : measurable_
 Proof.
   intros Hhom1 Hhom2.
   assert (∀ U, fun_img (λ x, f2 (f1 x)) U ≡ fun_img f2 (fun_img f1 U)) as Hequiv.
-  { clear; firstorder. }
+  { clear; firstorder congruence. }
   split.
   - intros. rewrite Hequiv.
     apply Hhom2, Hhom1; eauto.
@@ -289,8 +290,8 @@ Lemma is_pt_img_hom_id {A} {F: measurable_space A} (μ : @measure A F) :
   is_pt_img_hom id μ μ.
 Proof.
   split; rewrite //=.
-  * intros U HFU. eapply sigma_proper; eauto; clear; firstorder.
-  * intros U HFU. eapply measure_proper; clear; firstorder.
+  * intros U HFU. eapply sigma_proper; eauto; clear; firstorder congruence.
+  * intros U HFU. eapply measure_proper; clear; firstorder congruence.
 Qed.
 
 Lemma is_pt_hom_ae {A1 A2} {F1: measurable_space A1} {F2: measurable_space A2}
@@ -953,14 +954,14 @@ Qed.
 Lemma fun_img_comp {A B C: Type} (f1: A → B) (f2: B → C) U:
   fun_img (λ x, f2 (f1 x)) U ≡ fun_img f2 (fun_img f1 U).
 Proof.
-  intros z. split; firstorder.
+  intros z. split; firstorder congruence.
 Qed.
 
 Lemma is_mod0_embedding_id {A} {F} (μ: @measure A F):
   is_mod0_embedding id μ μ.
 Proof.
   assert (Hequiv: ∀ U : (A → Prop), fun_img id U ≡ U).
-  { intros U. rewrite /fun_img. clear. split; firstorder. }
+  { intros U. rewrite /fun_img. clear. split; firstorder congruence. }
   split.
   - rewrite Hequiv. apply almost_everywhere_meas_True.
   - done.

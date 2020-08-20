@@ -7,8 +7,8 @@ Global Set Bullet Behavior "Strict Subproofs".
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype seq div choice fintype finset finfun bigop.
 Require Import stdpp.tactics.
 Local Open Scope R_scope.
-From discprob.monad.idxval Require Import ival pival ival_dist pival_dist pidist_singleton extrema.
 From discprob.prob Require Import prob countable finite stochastic_order.
+From discprob.monad.idxval Require Import ival pival ival_dist pival_dist pidist_singleton extrema.
 
 Definition pspec {A: Type} (m: pidist A) (P: A → Prop) :=
   ∀ y, In_psupport y m → P y.

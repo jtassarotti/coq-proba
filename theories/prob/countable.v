@@ -438,7 +438,7 @@ Proof.
   eapply is_series_ext; last apply (is_series_bump (pickle x')).
   intros n => //=.
   destruct (eq_nat_dec n (pickle x')) as [Heq|Hneq].
-  - by rewrite /countable_sum Heq pickleK_inv //= eq_refl.
+  - rewrite /countable_sum. subst. by rewrite pickleK_inv //= eq_refl.
   - rewrite /countable_sum//=. case_eq (@pickle_inv A n).
     * intros s Heq => //=. case: ifP.
       ** move /eqP; intros; subst. exfalso.

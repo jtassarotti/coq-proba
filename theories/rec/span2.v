@@ -778,9 +778,9 @@ Proof.
   rewrite D_Dalt_equiv.
   rewrite /kD. erewrite karp.D_Dalt_equiv; eauto.
   rewrite /Dalt /karp.Dalt.
-  destruct (Rle_dec) as [|?]; first by nra.
+  destruct (Rle_dec) as [|?] => //=; first by nra.
   rewrite /is_left.
-  destruct (Rle_dec) as [|Hled]; first nra.
+  destruct (Rle_dec) as [|Hled] => //=; first by nra.
   rewrite /is_left.
   destruct (Rlt_dec) as [Hr'%Rlt_le|?].
   { intros. rewrite Rmult_1_r.

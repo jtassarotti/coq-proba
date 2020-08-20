@@ -9,8 +9,8 @@ Global Set Bullet Behavior "Strict Subproofs".
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype finset finfun bigop.
 
 Local Open Scope R_scope.
-From discprob.monad.idxval Require Import ival pival ival_dist.
 From discprob.prob Require Import prob countable finite stochastic_order.
+From discprob.monad.idxval Require Import ival pival ival_dist.
 
 
 
@@ -294,7 +294,7 @@ Proof.
   apply pival_bind_congr; eauto.
 Qed.
 
-Definition dist_of_pidist {X} (I: ival X) (Is: pidist X) (Hin: In I Is) : distrib (idx I) :=
+Definition dist_of_pidist {X} (I: ival X) (Is: pidist X) (Hin: In I Is) : prob.distrib (idx I) :=
   dist_of_ivdist {| ivd_ival := I; val_sum1 := (all_sum1 Is I Hin) |}.
 
 Definition rvar_of_pidist {X: eqType} (I: ival X) (Is: pidist X) (Hin: In I Is) : rvar _ X :=

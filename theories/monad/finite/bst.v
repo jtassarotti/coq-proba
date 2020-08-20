@@ -232,6 +232,7 @@ Proof.
   rewrite alr_unfold_aux. destruct l => //. destruct l => //.
 Qed.
 
+Import seq.
 Lemma size_filter_lt {A: eqType} (l: seq A) (P: pred A):
   (∃ i, i \in l ∧ ~ P i) → (size [seq i <- l | P i] < size l)%nat.
 Proof.

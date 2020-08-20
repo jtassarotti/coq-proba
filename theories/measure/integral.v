@@ -708,7 +708,7 @@ Section integral.
          if (excluded_middle_informative (U x)) then 1 else 0.
   Proof.
     rewrite /wpt_fun//= => x. rewrite ?big_cons big_nil //=.
-    do 2 destruct excluded_middle_informative; nra.
+    do 2 destruct excluded_middle_informative => //=; nra.
   Qed.
 
   Definition wpt_bin_op (f: R → R → R) (wpt1 wpt2 : weighted_partition)  : weighted_partition.
@@ -794,7 +794,7 @@ Section integral.
     - intros x. rewrite /wpt_indicator_scal_list//= wpt_indicator_spec big_nil.
       destruct excluded_middle_informative as [[]|]; auto.
     - intros x. rewrite wpt_plus_spec. rewrite big_cons. f_equal.
-      * rewrite wpt_scal_spec wpt_indicator_spec //=. destruct excluded_middle_informative; nra.
+      * rewrite wpt_scal_spec wpt_indicator_spec //=. destruct excluded_middle_informative => //=; nra.
       * eapply IHl.
   Qed.
 
@@ -921,8 +921,7 @@ Section integral.
         ** edestruct (wpt_indicator_scal_list_spec_cons) as (?&?&->).
            rewrite wpt_plus_spec. rewrite -[a in _ = a]Rplus_0_r; f_equal.
            *** rewrite wpt_scal_spec wpt_indicator_spec;
-                 destruct excluded_middle_informative; eauto; first nra.
-               contradiction; eauto.
+                 destruct excluded_middle_informative => //=; eauto; first nra.
            *** edestruct IHl as [(?&?)|(?&?&Hfalse&?&?)].
                **** inversion Hdisj; eauto.
                **** eauto.
@@ -936,7 +935,7 @@ Section integral.
                **** eauto.
            *** rewrite wpt_plus_spec. rewrite -[a in _ = a]Rplus_0_r; f_equal; eauto.
                rewrite wpt_scal_spec wpt_indicator_spec.
-               destruct excluded_middle_informative; eauto; try nra; try contradiction.
+               destruct excluded_middle_informative => //=; eauto; try nra; try contradiction.
         ** right. do 2 eexists; split_and!; eauto.
            right. rewrite wpt_plus_spec.
            rewrite wpt_scal_spec wpt_indicator_spec.
@@ -1210,7 +1209,7 @@ Section integral.
       { symmetry. intros x. apply Heq. }
       assert (Hscal_val: ∀ x : A, 0 <= wpt_fun (wpt_scal r (wpt_indicator U pf1)) x).
       { intros. rewrite wpt_scal_spec wpt_indicator_spec.
-        destruct excluded_middle_informative; last nra.
+        destruct excluded_middle_informative => //=; last nra.
         rewrite Rmult_1_r. eapply Hpos; first by left. eauto. }
       assert (∀ x : A, 0 <= wpt_fun (wpt_indicator_scal_list l pf2) x).
       { intros x. rewrite wpt_indicator_scal_list_spec1.
@@ -1221,10 +1220,10 @@ Section integral.
       * destruct (Classical_Prop.classic (∃ x, U x)) as [(x&HU)|Hnex].
         ** apply Hscal; eauto.
            *** eapply Hpos; first by left. eauto.
-           *** intros x'. rewrite wpt_indicator_spec. destruct excluded_middle_informative; nra.
+           *** intros x'. rewrite wpt_indicator_spec. destruct excluded_middle_informative => //=; nra.
         ** eapply (Hext (wpt_indicator U pf1)); last apply Hind.
            intros x'. rewrite wpt_scal_spec ?wpt_indicator_spec.
-           destruct excluded_middle_informative; try nra.
+           destruct excluded_middle_informative => //=; try nra.
            exfalso. apply Hnex; eauto.
       * apply IHl.
         ** intros. eapply Hpos; eauto. by right.
@@ -1492,9 +1491,9 @@ Section integral.
         { lia. }
         rewrite /M. specialize (wpt_fun_ub_spec (wpt_plus wpt (wpt_scal (-1) (wpt_n O))) x).
         rewrite ?wpt_plus_spec ?wpt_scal_spec => Hle'.
-        apply Rmax_case_strong; nra.
+        apply Rmax_case_strong => //=; nra.
       * transitivity (f x); first by eauto.
-        apply Rnot_gt_le in Hn0. move: Hn0.
+        simpl. apply Rnot_gt_le in Hn0. move: Hn0.
         apply Rabs_case; nra.
   Qed.
 
@@ -1688,7 +1687,7 @@ Section integral.
         edestruct (wpt_indicator_scal_list_spec2 _ (Hln n (n * 2^n)%nat) (Hln_disj _ _) x)
                 as [(Hnin&Heq0)|(r&U&Hin&HU&Heq)].
         * rewrite Heq0 Rplus_0_l wpt_scal_spec wpt_indicator_spec.
-          destruct (excluded_middle_informative) as [?|Hneg]; first field.
+          destruct (excluded_middle_informative) as [?|Hneg] => //=; first field.
           exfalso. apply Hneg. apply not_in_list in Hnin.
           apply Hnin.
         * edestruct (Hln_in) as (k&Heq'&Hr&Hlt); eauto.
@@ -2382,9 +2381,9 @@ Section integral.
       rewrite (wpt_integral_proper wpt2 wpt1); auto.
         by symmetry.
     - apply is_integral_equiv_pos_integral.
-      { intros x. rewrite wpt_indicator_spec; destruct excluded_middle_informative; nra. }
+      { intros x. rewrite wpt_indicator_spec; destruct excluded_middle_informative => //=; nra. }
       apply is_pos_integral_wpt.
-      { intros x. rewrite wpt_indicator_spec; destruct excluded_middle_informative; nra. }
+      { intros x. rewrite wpt_indicator_spec; destruct excluded_middle_informative => //=; nra. }
     - rewrite wpt_integral_plus.
       eapply is_integral_ext.
       { intros x; by rewrite wpt_plus_spec. }
@@ -2554,7 +2553,7 @@ Section integral.
       apply Rle_antisym; last by apply Rge_le, measure_nonneg.
       rewrite -His0. apply measure_mono; auto.
       intros x HU Hneg. rewrite wpt_indicator_spec in Hneg.
-      destruct (excluded_middle_informative); try contradiction. nra.
+      destruct (excluded_middle_informative); try contradiction. simpl in Hneg; nra.
     - intros wpt1 wpt2 Hpos1 IH1 Hpos2 IH2 Hae.
       replace 0 with (0 + 0) by nra.
       eapply is_integral_ext.
@@ -3190,7 +3189,7 @@ Section integral.
     { right. rewrite Integral_wpt wpt_integral_scal wpt_integral_indicator. done. }
     apply Integral_mono; eauto.
     - intros x. rewrite wpt_scal_spec wpt_indicator_spec.
-      destruct excluded_middle_informative; auto; try nra. rewrite Rmult_0_r. eauto.
+      destruct excluded_middle_informative; auto; simpl; try nra. rewrite Rmult_0_r. eauto.
     - eexists; eauto.
   Qed.
 
@@ -3225,7 +3224,7 @@ Section integral.
     generalize (sigma_closed_complements _ F _ Hmeas). rewrite compl_involutive => HF.
     eapply (is_integral_ae_ext _ (λ x, f x * wpt_fun (wpt_indicator _ HF) x))  in His.
     { eapply is_integral_ge0; eauto. intros. rewrite //= wpt_indicator_spec.
-      destruct excluded_middle_informative as [Hc|Hnc]; nra.
+      destruct excluded_middle_informative as [Hc|Hnc]; simpl; nra.
     }
     - eapply ae_equal_mult_indicator_compl_0'; auto.
       eauto.

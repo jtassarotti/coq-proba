@@ -89,12 +89,12 @@ Proof.
 Qed.
 
 Require Import Reals Fourier FunctionalExtensionality.
+Local Open Scope R_scope.
 
 Program Definition unif n : ldist_cost { x : nat | (leq x n) } :=
   mklDist [ seq (1/(INR (n.+1)), (O, exist _ (nat_of_ord i) _)) | i <- enum 'I_(n.+1) ] _ _.
-Next Obligation. intros n i => //=. rewrite -ltnS. done. Qed.
+Next Obligation. rewrite -ltnS. done. Qed.
 Next Obligation.
-  intros n.
   apply /allP => r.
   rewrite -map_comp //= (@eq_map _ _ _ (λ x, 1 / INR (S n))); last by done.
   rewrite (nat_of_ord_map_iota (S n) (λ x, 1 / INR (S n))).
@@ -117,7 +117,6 @@ Next Obligation.
     apply lt_INR; omega.
 Qed.
 Next Obligation.
-  intros n.
   rewrite -map_comp //= (@eq_map _ _ _ (λ x, 1 / INR (S n))); last by done.
   rewrite (nat_of_ord_map_iota (S n) (λ x, 1 / INR (S n))).
   cut (∀ o k, \big[Rplus/0]_(a<-[seq (1 / INR n.+1) | i <- iota k o]) a
@@ -140,7 +139,7 @@ Qed.
 Program Definition draw_pivot (a : nat) (l: list nat) : ldist_cost { x : nat | x \in (a :: l) } :=
   idx ← unif (size l);
   mret (exist _ (nth O (a :: l) (sval idx)) _).
-Next Obligation. intros a l (?&?) => //=. rewrite mem_nth //. Qed.
+Next Obligation. rewrite mem_nth //. Qed.
 
 Definition qs : list nat → ldist_cost (list nat).
   refine(Fix (measure_wf lt_wf size) (fun _ => ldist_cost (list nat))

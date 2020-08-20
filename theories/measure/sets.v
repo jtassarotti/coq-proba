@@ -338,7 +338,7 @@ Definition fun_img {A B: Type} (f: A → B) (U: A → Prop) :=
   λ y, ∃ x, U x ∧ f x = y.
 
 Lemma fun_img_id {A: Type} (U : A → Prop): fun_img id U ≡ U.
-Proof. firstorder. Qed.
+Proof. rewrite /fun_img => x. firstorder; subst; eauto. Qed.
 
 Lemma fun_img_union {A B: Type} (f: A → B) (Us: nat → A → Prop):
     eq_prop (fun_img f (unionF Us))

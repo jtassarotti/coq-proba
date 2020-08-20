@@ -4,7 +4,7 @@ From discprob.prob Require Export prob countable stochastic_order markov indep b
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 From Coquelicot Require Import Derive Continuity.
 From Coquelicot Require AutoDerive.
-From Interval Require Import Interval_tactic.
+From Interval Require Import Tactic.
 
 
 (* See Chapter 4 of Mitzenmacher-Upfal, 2nd edition. *)

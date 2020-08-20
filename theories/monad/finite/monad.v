@@ -91,7 +91,6 @@ Global Program Instance dist_join: stdpp.base.MJoin ldist :=
   match ls with [::] => [::] | (r, l) :: ls => [seq (r * i.1, i.2) | i <- l] ++ go ls end in
   mklDist (go lld) _ _.
 Next Obligation.
-  rewrite //= => A lld.
   apply /allP => r.
   destruct lld as (l, pf1, pf2).
   rewrite //=; clear pf2.
@@ -137,7 +136,6 @@ Global Program Instance dist_fmap: stdpp.base.FMap ldist :=
   let fix go (l : seq (R * A)) := match l with [::] => [::] | (r, x) :: l => (r, f x) :: go l end in
   mklDist (go ld) _ _.
 Next Obligation.
-  intros A B f ld.
  apply /allP => r.
  destruct ld as (l, pf1, pf2).
  rewrite //=. clear pf2.
@@ -151,7 +149,6 @@ Next Obligation.
    destruct pf1; auto.
 Qed.
 Next Obligation.
- intros A B f ld.
  apply /eqP.
  destruct ld as (l, pf1, pf2).
  rewrite //=; clear pf1.
@@ -738,11 +735,9 @@ Qed.
 Program Definition bernoulli (p: R) (Hrange: (0 <= p <= 1)%R) : ldist bool :=
   mklDist [:: (p, true) ; (1 - p, false)%R] _ _.
 Next Obligation.
-  rewrite //=; intros p (?&?);
   repeat (apply /andP; split; auto); destruct (Rle_dec) => //. nra.
 Qed.
 Next Obligation.
-  rewrite //=; intros p (?&?);
   rewrite ?big_cons ?big_nil; apply /eqP => //=; field.
 Qed.
 
