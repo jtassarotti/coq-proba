@@ -410,7 +410,7 @@ Proof.
   - done.
 Qed.
 
-From Interval Require Import Interval_tactic.
+From Interval Require Import Tactic.
 Remark concrete_512:
   ∀ n, pr_gt (rvar_comp (rvar_of_ldist (leader_elect (S n) 512)) (λ x, INR (S n - fst x))) (64)
         ≤ 1/(10^5).

@@ -2,8 +2,8 @@ Require Import Reals Psatz.
 From stdpp Require Import tactics.
 From mathcomp Require Import ssrfun ssreflect eqtype ssrbool seq fintype choice.
 From discprob.basic Require Import base sval order monad bigop_ext nify.
-From discprob.monad.idxval Require Import pival_dist pival ival_dist ival ival_pair subset_coupling pidist_singleton extrema.
 From discprob.prob Require Import prob countable finite stochastic_order.
+From discprob.monad.idxval Require Import pival_dist pival ival_dist ival ival_pair subset_coupling pidist_singleton extrema.
 
 Record idist_pidist_couplingP {A1 A2} (I1: ivdist A1) (I2: pidist A2) (P: A1 → A2 → Prop) : Type :=
   mkIPCoupling { elem_coupling : ivdist A2;

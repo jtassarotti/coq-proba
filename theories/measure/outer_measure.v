@@ -1,6 +1,8 @@
 Require Import Reals Psatz Omega.
 From discprob.measure Require Export measures.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
+Export Hierarchy.
+Open Scope R_scope.
 
 Record outer_measure (A: Type)  :=
   { outer_measure_fun :> (A → Prop) → R;

@@ -1,8 +1,8 @@
 Require Import Reals Psatz.
 From mathcomp Require Import ssrfun ssreflect eqtype ssrbool seq fintype choice.
 From discprob.basic Require Import base sval order monad bigop_ext nify.
-From discprob.monad.idxval Require Import pival_dist pival ival_dist ival ival_pair pidist_singleton.
 From discprob.prob Require Import prob countable finite stochastic_order.
+From discprob.monad.idxval Require Import pival_dist pival ival_dist ival ival_pair pidist_singleton.
 
 (*
 Definition subset_couplingP {A1 A2} (Is1: pidist A1) (Is2: pidist A2) (P: A1 → A2 → Prop) :=
@@ -11,8 +11,8 @@ Definition subset_couplingP {A1 A2} (Is1: pidist A1) (Is2: pidist A2) (P: A1 →
 *)
 
 Definition subset_couplingP {A1 A2} (Is1: pidist A1) (Is2: pidist A2) (P: A1 → A2 → Prop) : Prop :=
-  ∀ (I1: ival A1), In (I1 : ival A1) Is1 →
-  ∃ (I2: ival A2), In (I2 : ival A2) Is2 ∧ ∃ (C: ival_couplingP I1 I2 P), True.
+  ∀ (I1: ival A1), pival.In (I1 : ival A1) Is1 →
+  ∃ (I2: ival A2), pival.In (I2 : ival A2) Is2 ∧ ∃ (C: ival_couplingP I1 I2 P), True.
 
 Lemma subset_coupling_eq {A} (Is1 Is2: pidist A)
       (Ic: subset_couplingP Is1 Is2 (λ x y, x = y)): le_pidist Is1 Is2.

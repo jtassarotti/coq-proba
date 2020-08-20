@@ -1,8 +1,10 @@
-From stdpp Require Import tactics.
+From stdpp Require Import tactics sets.
 Require Import Reals Psatz Omega Fourier.
 From discprob.measure Require Export measurable_space.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 Require ClassicalEpsilon.
+Export Hierarchy.
+Open Scope R_scope.
 
 
 (* Usually the Borel sigma algebra is defined for more general topological spaces,
@@ -131,7 +133,6 @@ Section borel_R.
     * apply minimal_sigma_ub. eexists; eauto.
     * apply sigma_closed_complements,  minimal_sigma_ub. eexists; eauto.
   Qed.
-
   Lemma borel_gen_closed_ray2 :
     le_prop (borel (R_UniformSpace))
     (minimal_sigma (λ (U : R → Prop), ∃ x, U = (λ z, z <= x))).
@@ -721,7 +722,7 @@ Section borel_R.
             destruct (f1 a), (f2 a); rewrite //=;
                                              try (left; right; firstorder; done);
             try (right; firstorder; done).
-            intros Hle. do 2 left. split_and!; auto; firstorder.
+            intros Hle. do 2 left. split_and!; auto; intros [Hin|Hin]; inversion Hin.
           - rewrite /base.union/union_Union/union/intersection/intersect_Intersection/intersect/compl.
             intros [[((Hplus&Hnot1)&Hnot2)|Hinf1]|Hinf2].
             * destruct (f1 a), (f2 a) => //=;
@@ -755,7 +756,7 @@ Section borel_R.
             destruct (f1 a), (f2 a); rewrite //=;
                                              try (left; right; firstorder; done);
             try (right; firstorder; done).
-            intros Hle. do 2 left. split_and!; auto; firstorder.
+            intros Hle. do 2 left. split_and!; auto; intros [Hin|Hin]; inversion Hin.
           - rewrite /base.union/union_Union/union/intersection/intersect_Intersection/intersect/compl.
             intros [[((Hplus&Hnot1)&Hnot2)|(Hn1&Hinf1)]|(Hn2&Hinf2)].
             * destruct (f1 a), (f2 a) => //=;
@@ -794,9 +795,9 @@ Section borel_R.
                        fun_inv f1 {[m_infty]})) as ->.
       { intros a; split; rewrite /fun_inv.
           - rewrite /base.union/union_Union/union/intersection/intersect_Intersection/intersect/compl.
-            destruct (f1 a), (f2 a); firstorder; done.
+            destruct (f1 a), (f2 a); firstorder set_unfold; done.
           - rewrite /base.union/union_Union/union/intersection/intersect_Intersection/intersect/compl.
-            destruct (f1 a), (f2 a); firstorder.
+            destruct (f1 a), (f2 a); firstorder set_unfold; done.
       }
       apply sigma_closed_pair_union; apply sigma_closed_pair_intersect.
       * eapply Hmeas1. apply sigma_closed_complements; eauto using Rbar_sigma_pt.

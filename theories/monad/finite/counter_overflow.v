@@ -250,7 +250,7 @@ Proof.
   - done.
 Qed.
 
-From Interval Require Import Interval_tactic.
+From Interval Require Import Tactic.
 Remark concrete_64_to_8bits:
   ∀ n, rsize n = 2^64 - 1 →
        pr_gt (rvar_comp (rvar_of_ldist (approx_incrn n O)) INR) (2^8 - 1)

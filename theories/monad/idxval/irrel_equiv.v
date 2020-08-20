@@ -3,8 +3,8 @@ Require Import Reals Psatz.
 From stdpp Require Import tactics.
 From mathcomp Require Import ssrfun ssreflect eqtype ssrbool seq fintype choice bigop.
 From discprob.basic Require Import base sval order monad bigop_ext nify.
-From discprob.monad.idxval Require Import pival_dist pival ival_dist ival ival_pair pidist_singleton idist_pidist_pair extrema.
 From discprob.prob Require Import prob countable finite stochastic_order.
+From discprob.monad.idxval Require Import pival_dist pival ival_dist ival ival_pair pidist_singleton idist_pidist_pair extrema.
 
 Import Lub.
 
@@ -282,7 +282,7 @@ Proof.
   intros i.
   destruct ClassicalEpsilon.excluded_middle_informative; eauto; last apply val_nonneg.
   apply Rle_ge, Rdiv_le_0_compat.
-  { destruct ClassicalEpsilon.excluded_middle_informative; eauto; try nra.
+  { destruct ClassicalEpsilon.excluded_middle_informative => //=; eauto; try nra.
     apply Rge_le, val_nonneg. }
   { apply In_isupport_pr_gt_0; eauto. }
 Qed.
@@ -387,7 +387,7 @@ Proof.
     unshelve (eexists).
     { exists i1.  exists i2. exact tt. }
     split_and!; eauto => //=.
-    repeat  destruct ClassicalEpsilon.excluded_middle_informative; try nra; try congruence.
+    repeat  destruct ClassicalEpsilon.excluded_middle_informative => //=; try nra; try congruence.
     ** intros Hgt. eapply Rge_gt_trans; last  eassumption.
        right. rewrite //=.
        cut (Pr (eq^~ (ind I2 i2)) I1 = Pr (eq^~ (ind I1 i1)) I2).
@@ -406,7 +406,7 @@ Proof.
        { by symmetry. }
        eexists; eauto.
   * intros (i1&i2&[]) => //=.
-    repeat  destruct ClassicalEpsilon.excluded_middle_informative; try nra; try congruence.
+    repeat  destruct ClassicalEpsilon.excluded_middle_informative => //=; try nra; try congruence.
     cut (val I1 i1 = 0).
     { intros ->.  nra. }
     destruct (val_nonneg I1 i1); last auto.

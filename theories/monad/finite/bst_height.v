@@ -472,7 +472,7 @@ Proof.
     rewrite /m/rsize/size/length. do 2 destruct Rlt_dec; try nra.
 Qed.
 
-From Interval Require Import Interval_tactic.
+From Interval Require Import Tactic.
 Remark concrete:
   ∀ l, uniq l → rsize l = 10 ^ 10 →
        pr_gt (T l) 300 ≤ 1/(10^15).

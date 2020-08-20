@@ -7,7 +7,7 @@ From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choi
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
 From Coquelicot Require Import Derive.
 From Coquelicot Require AutoDerive.
-From Interval Require Import Interval_tactic.
+From Interval Require Import Tactic.
 Require Import Reals Fourier FunctionalExtensionality.
 Require Import Psatz.
 Require Import Coq.omega.Omega.

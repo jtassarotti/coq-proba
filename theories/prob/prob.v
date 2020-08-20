@@ -1,7 +1,7 @@
 Require Import Reals Psatz.
+From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 From discprob.basic Require Export base Series_Ext order bigop_ext sval Reals_ext.
 From discprob.prob Require Import countable double rearrange.
-From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 From Coquelicot Require Export Rcomplements Rbar Series Lim_seq Hierarchy Markov.
 (* Basic definitions for discrete probability theory *)
 
@@ -584,7 +584,11 @@ Proof.
       }
       apply: ex_series_scal.
       eapply ex_series_ext; first (intros; symmetry; eapply Hext).
-      eexists; eapply is_series_bump.
+      eexists.
+      pose proof (is_series_bump (@pickle [countType of imgT X] (exist (λ y : B, y \in img X) (X v) (Himg v))))
+           as His.
+      eapply is_series_ext; last eapply His.
+      intros n. destruct Nat.eq_dec as [?|?] eqn:Heq => //=; rewrite Heq => //=.
   - rewrite ex_series_incr_1.
     destruct EX_pt. eapply ex_series_ext; last (eexists; eauto).
     intros k. rewrite /countable_sum/apt.
@@ -603,7 +607,10 @@ Proof.
       f_equal. symmetry; etransitivity.
       ** apply Series_ext.
          intros; eapply Hext.
-      ** apply Series_bump.
+      ** pose proof (Series_bump (@pickle [countType of imgT X] (exist (λ y : B, y \in img X) (X v) (Himg v))))
+           as His.
+         etransitivity; last eapply His. eapply Series_ext.
+         intros n. destruct Nat.eq_dec as [?|?] eqn:Heq => //=; rewrite Heq => //=.
     * intros j. destruct (pickle_inv) as [s|] => //=.
         ** case: ifP => _. rewrite Rabs_mult.
            *** rewrite (Rabs_right ((rvar_dist X) v)); last apply pmf_pos; rewrite //=; nra.

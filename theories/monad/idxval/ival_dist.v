@@ -11,9 +11,9 @@ Global Set Bullet Behavior "Strict Subproofs".
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype finset finfun bigop.
 
 Local Open Scope R_scope.
-From discprob.monad.idxval Require Import ival.
 From discprob.prob Require Import prob finite stochastic_order.
 From discprob.prob Require Export countable.
+From discprob.monad.idxval Require Import ival.
 
 Record ivdist X :=
   { ivd_ival :> ival X;

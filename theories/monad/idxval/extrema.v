@@ -8,8 +8,8 @@ From mathcomp Require Import ssreflect ssrbool ssrfun eqtype seq div choice fint
 Require Import stdpp.tactics.
 
 Local Open Scope R_scope.
-From discprob.monad.idxval Require Import ival pival ival_dist pival_dist pidist_singleton.
 From discprob.prob Require Import prob countable finite stochastic_order.
+From discprob.monad.idxval Require Import ival pival ival_dist pival_dist pidist_singleton.
 
 Import Lub.
 
@@ -1857,7 +1857,7 @@ Proof.
   split.
   - intros r (I&Hin&His).
     cut (c = r).
-    { intros; subst => //=. }
+    { intros; subst => //=. nra. }
     eapply is_Ex_ival_unique'; eauto.
     apply (is_Ex_ivd_const {| ivd_ival := I; val_sum1 := all_sum1 _ _ Hin |}).
   - intros b His.
@@ -1875,7 +1875,8 @@ Proof.
   apply is_glb_Rbar_unique.
   split.
   * intros r (I'&Hin&His).
-    rewrite Hin. rewrite (is_Ex_ival_unique _ _ _ His). done.
+    rewrite Hin. rewrite (is_Ex_ival_unique _ _ _ His).
+    simpl. nra.
   * intros b Hlb. apply Hlb.
     exists I; split; auto.
     ** done.
@@ -2247,7 +2248,7 @@ Proof.
   split.
   - intros r' (I&Hin&His).
     inversion Hin; subst. rewrite //= in His.
-    rewrite -(is_Ex_ival_unique _ _ _ His) => //=.
+    rewrite -(is_Ex_ival_unique _ _ _ His) => //=. right. eauto.
   - intros b Hlb.
     eapply Hlb. eexists; split; eauto.
     * rewrite //=.
@@ -2612,8 +2613,8 @@ Proof.
     * rewrite singleton_plus.
       setoid_rewrite pidist_plus_bind.
       apply pidist_plus_proper.
-      ** rewrite singleton_mret pidist_left_id //=.
-      ** rewrite singleton_mret pidist_left_id //=.
+      ** rewrite singleton_mret pidist_left_id //=. reflexivity.
+      ** rewrite singleton_mret pidist_left_id //=. reflexivity.
   }
   assert (Heq: Ex_min (λ x : bool, Ex_min f (if x then Is1 else Is2))
                  (singleton (ivdplus p Hpf (mret true) (mret false)))
@@ -3054,7 +3055,7 @@ Proof.
   apply is_lub_Rbar_unique.
   split.
   * intros r (I'&Hin&His).
-    rewrite Hin. rewrite (is_Ex_ival_unique _ _ _ His). done.
+    rewrite Hin. rewrite (is_Ex_ival_unique _ _ _ His). simpl; nra.
   * intros b Hlb. apply Hlb.
     exists I; split; auto.
     ** done.

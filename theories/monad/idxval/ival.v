@@ -1,4 +1,7 @@
 (* Indexed Valuations from Varacca-Winskel *)
+From discprob.prob Require Import double rearrange.
+From discprob.prob Require Import prob finite stochastic_order.
+From discprob.prob Require Export countable.
 From discprob.basic Require Import base sval order monad bigop_ext.
 From discprob.basic Require Export classic_proof_irrel.
 From discprob.prob Require Export countable.
@@ -1597,9 +1600,6 @@ Qed.
 Definition idx_eq_ind {X} (I1: ival X) (x: X) : idx I1 → R :=
   λ i, if ClassicalEpsilon.excluded_middle_informative (ind I1 i = x) then val I1 i else 0.
 
-From discprob.prob Require Import double rearrange.
-From discprob.prob Require Import prob finite stochastic_order.
-From discprob.prob Require Export countable.
 
 Definition eq_ival_prob {X} (I1 I2: ival X) : Prop :=
   ∀ x, (ex_series (countable_sum (idx_eq_ind I1 x)) →
