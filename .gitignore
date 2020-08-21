@@ -1,4 +1,6 @@
 *.v.d
+*.vok
+*.vos
 *.vo
 *.vio
 *.v~
