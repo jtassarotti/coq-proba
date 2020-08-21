@@ -1,7 +1,7 @@
 Require Import Reals Psatz Omega ClassicalEpsilon.
 From stdpp Require Import tactics.
 From discprob.basic Require Export base Series_Ext order bigop_ext sval Reals_ext.
-From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
+From mathcomp Require Import bigop.
 From Coquelicot Require Export Rcomplements Rbar Series Lim_seq Hierarchy Markov Continuity ElemFct.
 From discprob.measure Require Export measurable_space.
 From discprob.measure Require Import dynkin.

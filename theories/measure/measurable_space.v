@@ -1,6 +1,5 @@
 Require Import Reals Psatz Omega ClassicalEpsilon.
 From stdpp Require Import tactics.
-From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 From discprob.measure Require Export sets sigma_algebra.
 
 Class measurable_space (A: Type) := { measurable_space_sigma : sigma_algebra A }.
@@ -70,7 +69,7 @@ Lemma measurable_comp (f: A → B) (g: B → C) :
 Proof. apply sigma_measurable_comp. Qed.
 
 Lemma measurable_id:
-  measurable (@id A).
+  measurable (λ x : A, x).
 Proof. apply sigma_measurable_id. Qed.
 
 Lemma measurable_const (b: B):

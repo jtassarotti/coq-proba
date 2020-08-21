@@ -1,7 +1,7 @@
 From stdpp Require Import tactics sets.
 Require Import Reals Psatz Omega Fourier.
 From discprob.measure Require Export measurable_space.
-From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
+From mathcomp Require Import choice.
 Require ClassicalEpsilon.
 Export Hierarchy.
 Open Scope R_scope.
@@ -73,7 +73,7 @@ Section borel_R.
   Lemma Rbar_sigma_p_infty:
     Rbar_sigma {[p_infty]}.
   Proof.
-    assert (Hequiv: eq_prop ({[p_infty]}) (intersectF (λ n, compl (Rbar_le^~ (INR n))))).
+    assert (Hequiv: eq_prop ({[p_infty]}) (intersectF (λ n, compl (λ x, Rbar_le x (INR n : Rbar))))).
     { split.
       - inversion 1; subst.
         intros n. rewrite /compl//=.
@@ -96,7 +96,7 @@ Section borel_R.
   Lemma Rbar_sigma_m_infty:
     Rbar_sigma {[m_infty]}.
   Proof.
-    assert (Hequiv: eq_prop ({[m_infty]}) (intersectF (λ n, Rbar_le^~ -(INR n)))).
+    assert (Hequiv: eq_prop ({[m_infty]}) (intersectF (λ n, (λ x, Rbar_le x (-INR n))))).
     { split.
       - inversion 1; subst.
         intros n. rewrite /compl//=.
@@ -500,7 +500,7 @@ Section borel_R.
     eapply sigma_measurable_generating_sets.
     intros ? (t&->).
     destruct (Rlt_dec t 0).
-    - eapply (sigma_proper _ _ (Rbar_le^~ t ∩ compl ({[m_infty]}))).
+    - eapply (sigma_proper _ _ ((λ x, Rbar_le x t) ∩ compl ({[m_infty]}))).
       * intros x; split.
         ** intros (Hle&Hm); destruct x => //=.
            exfalso. apply Hm. done.
@@ -508,7 +508,7 @@ Section borel_R.
       * apply sigma_closed_pair_intersect.
         ** eapply minimal_sigma_ub. exists t => //=.
         ** apply sigma_closed_complements, Rbar_sigma_m_infty.
-    - eapply (sigma_proper _ _ (Rbar_le^~ t ∪ ({[m_infty]} ∪ {[p_infty]}))).
+    - eapply (sigma_proper _ _ ((λ x, Rbar_le x t) ∪ ({[m_infty]} ∪ {[p_infty]}))).
       * intros x; split.
         ** intros [Hle|[Hm|Hp]]; destruct x => //=; rewrite /fun_inv/real; nra.
         ** rewrite /fun_inv/real//=.
@@ -527,8 +527,8 @@ Section borel_R.
     eapply sigma_measurable_generating_sets.
     intros ? (t&->).
     destruct t as [r | | ].
-    - assert (eq_prop (fun_inv Finite (Rbar_le^~ r))
-                      (Rle^~ r)) as ->.
+    - assert (eq_prop (fun_inv Finite ((λ x, Rbar_le x r)))
+                      (λ x, Rle x r)) as ->.
       { intros x. split => //=. }
       apply closed_ray_borel_le.
     - eapply sigma_proper; last eapply sigma_full.
@@ -565,7 +565,7 @@ Section borel_R.
   Proof.
     apply minimal_sigma_lub.
     intros ? (x&->).
-    assert (eq_prop [eta Rbar_le x] (compl (λ z, Rbar_le z x) ∪ {[x]})) as ->.
+    assert (eq_prop (λ z, Rbar_le x z) (compl (λ z, Rbar_le z x) ∪ {[x]})) as Heq.
     { intros z; split.
       * intros [Hlt|Heq]%Rbar_le_lt_or_eq_dec.
         ** left. by apply Rbar_lt_not_le.
@@ -574,6 +574,7 @@ Section borel_R.
         ** apply Rbar_not_le_lt in Hnle. by apply Rbar_lt_le.
         ** inversion Heq; subst; apply Rbar_le_refl.
     }
+    rewrite Heq.
     apply sigma_closed_pair_union.
     - apply sigma_closed_complements.
       apply minimal_sigma_ub; eexists. reflexivity.
@@ -588,7 +589,7 @@ Section borel_R.
     intros Hmeas.
     apply sigma_measurable_generating_sets.
     intros ? (t&->).
-    assert (fun_inv (λ x, Rbar_opp (f x)) (Rbar_le^~t) ≡
+    assert (fun_inv (λ x, Rbar_opp (f x)) (λ x, Rbar_le x t) ≡
                     fun_inv f (Rbar_le (Rbar_opp t))) as ->.
     { rewrite /fun_inv//= => x. rewrite -{1}(Rbar_opp_involutive t).
       apply Rbar_opp_le. }
@@ -685,13 +686,13 @@ Section borel_R.
   Qed.
 
   Lemma measurable_Rbar_div_pos y:
-    measurable (Rbar_div_pos^~ y).
+    measurable (λ x, Rbar_div_pos x y).
   Proof.
     apply sigma_measurable_generating_sets.
     intros ? (t&->).
     destruct t as [r | | ].
-    - assert (fun_inv (Rbar_div_pos^~y) (Rbar_le^~r) ≡
-                      Rbar_le^~(r * y)) as ->.
+    - assert (fun_inv (λ x, Rbar_div_pos x y) (λ x, Rbar_le x r) ≡
+                      λ x, Rbar_le x (r * y)) as ->.
       { rewrite /fun_inv//=; intros [ r' | |] => //=; apply Rle_div_l; destruct y; done. }
       apply minimal_sigma_ub; eauto.
     - eapply sigma_proper; last apply sigma_full.
@@ -712,8 +713,8 @@ Section borel_R.
     -
       destruct (Rle_dec 0 r) as [Hle0|Hnle0].
       {
-        assert (fun_inv (λ x, Rbar_plus (f1 x) (f2 x)) (Rbar_le^~ r) ≡
-                        (fun_inv (λ x, Rplus (f1 x) (f2 x)) (Rle^~ r)
+        assert (fun_inv (λ x, Rbar_plus (f1 x) (f2 x)) (λ x, Rbar_le x r) ≡
+                        (fun_inv (λ x, Rplus (f1 x) (f2 x)) (λ x, Rle x r)
                                  ∩ compl (fun_inv f1 ({[p_infty]} ∪ {[m_infty]}))
                                  ∩ compl (fun_inv f2 ({[p_infty]} ∪ {[m_infty]}))) ∪
                         fun_inv f1 {[m_infty]} ∪ fun_inv f2 {[m_infty]}) as ->.
@@ -745,8 +746,8 @@ Section borel_R.
           apply sigma_closed_pair_union; eauto using Rbar_sigma_m_infty, Rbar_sigma_p_infty.
       }
       {
-        assert (fun_inv (λ x, Rbar_plus (f1 x) (f2 x)) (Rbar_le^~ r) ≡
-                        (fun_inv (λ x, Rplus (f1 x) (f2 x)) (Rle^~ r)
+        assert (fun_inv (λ x, Rbar_plus (f1 x) (f2 x)) (λ x, Rbar_le x r) ≡
+                        (fun_inv (λ x, Rplus (f1 x) (f2 x)) (λ x, Rle x r)
                                  ∩ compl (fun_inv f1 ({[p_infty]} ∪ {[m_infty]}))
                                  ∩ compl (fun_inv f2 ({[p_infty]} ∪ {[m_infty]}))) ∪
                         (compl (fun_inv f2 {[p_infty]}) ∩ fun_inv f1 {[m_infty]}) ∪
@@ -788,7 +789,7 @@ Section borel_R.
       }
     - eapply sigma_proper; last eapply sigma_full.
       intros x; split; auto. rewrite /fun_inv//=. by destruct (Rbar_plus).
-    - assert (fun_inv (λ x, Rbar_plus (f1 x) (f2 x)) (Rbar_le^~ m_infty) ≡
+    - assert (fun_inv (λ x, Rbar_plus (f1 x) (f2 x)) (λ x, Rbar_le x m_infty) ≡
                       (fun_inv f1 (compl {[p_infty]}) ∩
                        fun_inv f2 {[m_infty]}) ∪
                       (fun_inv f2 (compl {[p_infty]}) ∩
@@ -811,7 +812,7 @@ Section borel_R.
     measurable (λ x, Lim_seq (λ n, fn n x)).
   Proof.
     intros Hmeas. rewrite /Lim_seq//=.
-    eapply (measurable_comp _ (Rbar_div_pos^~{| pos := 2 ; cond_pos := Rlt_R0_R2|}));
+    eapply (measurable_comp _ (λ x, Rbar_div_pos x {| pos := 2 ; cond_pos := Rlt_R0_R2|}));
       eauto using measurable_Rbar_div_pos.
     apply measurable_Rbar_plus.
     * apply measurable_LimSup. done.

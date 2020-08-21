@@ -1,6 +1,5 @@
 Require Import Reals Psatz Omega ClassicalEpsilon.
 From stdpp Require Import tactics.
-From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 From discprob.measure Require Export sets.
 
 Record sigma_algebra (A: Type) :=
@@ -210,7 +209,7 @@ Lemma sigma_measurable_comp {A B C: Type} (f: A → B) (g: B → C) F1 F2 F3 :
 Proof. intros Hf Hg ? HU. by apply Hg, Hf in HU. Qed.
 
 Lemma sigma_measurable_id {A: Type}  F:
-  sigma_measurable (@id A) F F.
+  sigma_measurable (λ x : A, x) F F.
 Proof. intros U HF => //=. Qed.
 
 Lemma sigma_measurable_const {A B: Type} (b: B) F G:

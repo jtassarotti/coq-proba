@@ -1,14 +1,17 @@
-From mathcomp Require Export ssreflect eqtype ssrbool.
+From mathcomp Require Export ssreflect.
+From mathcomp Require eqtype.
 From discprob.basic Require Export classic_proof_irrel.
 
-Lemma sval_inj_pred {A: Type} (P: pred A) (a b: {x : A | P x}):
-  sval a = sval b -> a = b.
+Notation sval := eqtype.sval.
+
+Lemma sval_inj_pred {A: Type} (P: A -> bool) (a b: {x : A | is_true (P x)}):
+  proj1_sig a = proj1_sig b -> a = b.
 Proof.
-  destruct a, b. rewrite /sval. intros. subst; f_equal. apply bool_irrelevance.
+  destruct a, b. rewrite /proj1_sig. intros. subst; f_equal. eapply eqtype.bool_irrelevance.
 Qed.
 
 Lemma sval_inj_pi {A: Type} (P: A -> Prop) (a b: {x : A | P x}):
-  sval a = sval b -> a = b.
+  proj1_sig a = proj1_sig b -> a = b.
 Proof.
-  destruct a, b. rewrite /sval. intros. subst; f_equal. apply classical_proof_irrelevance.
+  destruct a, b. rewrite /proj1_sig. intros. subst; f_equal. apply classical_proof_irrelevance.
 Qed.
