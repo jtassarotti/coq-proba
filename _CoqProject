@@ -1,5 +1,7 @@
 -Q theories discprob
 -arg -w -arg -notation-overridden,-redundant-canonical-projection,-several-object-files,-deprecated
+# Coquelicot has an ambiguous path involving Rbar and R
+-arg -w -arg -ambiguous-paths
 theories/basic/base.v
 theories/basic/sval.v
 theories/basic/nify.v
