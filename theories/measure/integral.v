@@ -2000,6 +2000,20 @@ Section integral.
   Definition Integral (f : A → R) : R :=
     Pos_integral (λ x, Rmax (f x) 0) - Pos_integral (λ x, Rmax (- f x) 0).
 
+  Definition is_integral_over (U : A → Prop) (f: A → R) v :=
+    F U ∧ is_integral (λ x, f x *  match excluded_middle_informative (U x) with
+                                   | left _ => 1
+                                   | right _ => 0
+                                   end) v.
+
+  Definition ex_integral_over U f := ∃ v, is_integral_over U f v.
+
+  Definition Integral_over U f :=
+    Integral (λ x, f x * match excluded_middle_informative (U x) with
+                         | left _ => 1
+                         | right _ => 0
+                         end).
+
   Lemma is_integral_unique f v :
     is_integral f v → Integral f = v.
   Proof.
