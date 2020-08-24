@@ -28,6 +28,7 @@ theories/measure/lebesgue_measure.v
 theories/measure/convergence.v
 theories/measure/completion.v
 theories/measure/isomorphism.v
+theories/measure/integral_prelim.v
 theories/measure/integral.v
 theories/measure/dynkin.v
 theories/measure/product.v
