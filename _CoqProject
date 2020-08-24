@@ -2,6 +2,10 @@
 -arg -w -arg -notation-overridden,-redundant-canonical-projection,-several-object-files,-deprecated
 # Coquelicot has an ambiguous path involving Rbar and R
 -arg -w -arg -ambiguous-paths
+# Many libraries import things from both ssreflect and stdpp that have conflicting notation format level
+# Although going forward libraries in measure/ should avoid this, we silence the warning for every file
+# TODO: split _CoqProject up so that we can have warnings on for measure/ subdirectory
+-arg -w -arg -notation-incompatible-format
 theories/basic/base.v
 theories/basic/sval.v
 theories/basic/nify.v

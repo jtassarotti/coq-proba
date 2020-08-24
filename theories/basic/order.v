@@ -1,6 +1,6 @@
 Require Export RelationClasses Morphisms.
 From discprob.basic Require Import base.
-From mathcomp Require Import ssreflect ssrbool ssrfun eqtype seq.
+From mathcomp Require Import ssreflect ssrbool eqtype.
 From Coquelicot Require Import Hierarchy.
 
 Require Import Reals.
