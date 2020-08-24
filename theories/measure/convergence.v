@@ -1,7 +1,6 @@
 Require Import Reals Psatz Omega.
 From stdpp Require Import tactics list.
 From discprob.basic Require Import seq_ext.
-From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 From discprob.measure Require Export measures borel.
 Require Import ClassicalEpsilon SetoidList.
 
@@ -34,7 +33,7 @@ Section convergence.
     assert (∀ n, F (Bn n)).
     { intros n. rewrite /Bn. apply sigma_closed_unions; eauto. }
     rewrite //=.
-    assert (intersectF Bn ⊆ (λ x : A, ¬ is_lim_seq (fn^~ x) (f x))).
+    assert (intersectF Bn ⊆ (λ x : A, ¬ is_lim_seq (λ y, fn y x) (f x))).
     { intros x Hin Hlim.
       destruct (Hlim (ball (f x) eps)) as (n'&Hlim'); first by apply locally_ball.
       destruct (Hin n') as (n''&HinA).
@@ -72,7 +71,7 @@ Section convergence.
     converge_in_measure fn f.
   Proof.
     intros Hmeas_fn Hmeas Hlim.
-    assert (Hequiv: (λ x : A, ¬ is_lim_seq (fn^~ x) (f x)) ≡ ∅).
+    assert (Hequiv: (λ x : A, ¬ is_lim_seq (λ y, fn y x) (f x)) ≡ ∅).
     {
       intros x; split.
       - intros Hfalse. exfalso. apply Hfalse. eapply Hlim.

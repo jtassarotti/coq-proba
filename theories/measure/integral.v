@@ -1,7 +1,7 @@
 Require Import Reals Psatz Omega Fourier.
 From stdpp Require Import tactics list.
 From discprob.basic Require Import seq_ext.
-From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
+From mathcomp Require Import bigop.
 From discprob.measure Require Export measures borel convergence.
 Require Import ClassicalEpsilon SetoidList.
 
@@ -162,10 +162,10 @@ Section integral.
   Definition wpt_fun (wpt: weighted_partition) : A → R :=
     λ x,
     \big[Rplus/0]_(aU <- wpt)
-     (if excluded_middle_informative (aU.2 x) then
-        (aU.1)
-      else
-        0).
+     (match excluded_middle_informative (aU.2 x) with
+        | left _ => (aU.1)
+        | right _ => 0
+      end).
 
   Definition wpt_integral (wpt: weighted_partition) : R :=
     \big[Rplus/0]_(aU <- wpt) (aU.1 * μ (aU.2)).
@@ -486,10 +486,10 @@ Section integral.
 
   Lemma measurable_indicator U:
     F U →
-    measurable (λ x, if excluded_middle_informative (U x) then
-                           1
-                         else
-                           0).
+    measurable (λ x, match excluded_middle_informative (U x) with
+                     | left _ => 1
+                     | right _ => 0
+                     end).
   Proof.
     intros HU V HV.
     rewrite /fun_inv.
@@ -526,10 +526,11 @@ Section integral.
          intros a; split; auto; last by intros [].
          rewrite big_nil. auto.
     * eapply (measurable_proper
-              (λ x, r * (if excluded_middle_informative (U x) then 1 else 0)
-                    + \big[Rplus/0]_(aU <- l) (if excluded_middle_informative (aU.2 x) then
-                                                 aU.1
-                                               else 0))).
+              (λ x, r * (match excluded_middle_informative (U x) with | left _ => 1 | _ => 0 end)
+                    + \big[Rplus/0]_(aU <- l) (match excluded_middle_informative (aU.2 x) with
+                                               | left _ => aU.1
+                                               | _ => 0
+                                               end))).
       { intros x.
         rewrite big_cons. f_equal. destruct excluded_middle_informative; auto =>//=; nra.
       }
@@ -705,7 +706,7 @@ Section integral.
 
   Lemma wpt_indicator_spec U Hmeas :
     ∀ x, wpt_fun (wpt_indicator U Hmeas) x =
-         if (excluded_middle_informative (U x)) then 1 else 0.
+         match (excluded_middle_informative (U x)) with | left _ => 1 | _ => 0 end.
   Proof.
     rewrite /wpt_fun//= => x. rewrite ?big_cons big_nil //=.
     do 2 destruct excluded_middle_informative => //=; nra.
@@ -785,10 +786,10 @@ Section integral.
   Lemma wpt_indicator_scal_list_spec1 l Hmeas:
     ∀ x, wpt_fun (wpt_indicator_scal_list l Hmeas) x =
          \big[Rplus/0]_(aU <- l)
-          (if excluded_middle_informative (aU.2 x) then
-             (aU.1)
-           else
-             0).
+          (match excluded_middle_informative (aU.2 x) with
+           | left _ => (aU.1)
+           | _ => 0
+           end).
   Proof.
     induction l as [| (r, U) l].
     - intros x. rewrite /wpt_indicator_scal_list//= wpt_indicator_spec big_nil.
@@ -875,14 +876,6 @@ Section integral.
   Proof.
     rewrite wpt_integral_scal wpt_integral_indicator //.
   Qed.
-
-
-  (*
-  Lemma wpt_integral_mono_ae wpt1 wpt2:
-    almost_everywhere_meas μ (λ x, wpt_fun wpt1 x <= wpt_fun wpt2 x) →
-    wpt_integral wpt1 <= wpt_integral wpt2.
-  Proof.
-   *)
 
   Lemma wpt_integral_mono wpt1 wpt2:
     (∀ x, wpt_fun wpt1 x <= wpt_fun wpt2 x) →

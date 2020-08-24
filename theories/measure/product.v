@@ -1,7 +1,6 @@
 Require Import Reals Psatz Omega Fourier.
 From stdpp Require Import tactics list.
 From discprob.basic Require Import seq_ext.
-From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 From discprob.measure Require Export integral dynkin borel isomorphism.
 Require Import ClassicalEpsilon.
 

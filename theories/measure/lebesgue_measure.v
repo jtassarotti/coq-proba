@@ -2,7 +2,7 @@ Require Import Reals Psatz Omega Fourier.
 From stdpp Require Import tactics.
 From discprob.measure Require Export measures borel outer_measure.
 From discprob.prob Require Import countable rearrange double.
-From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
+From mathcomp Require Import choice.
 Require ClassicalEpsilon ClassicalEpsilon.
 
 Definition Interval a b : Type := { x : R | a <= x <= b }.
@@ -411,7 +411,7 @@ Section lebesgue_measure.
                    | Some (m, n) => (S m, S n)
                    | _ => (O, O)
                    end).
-    assert (∀ n, (aseq \o σ) n = len (Us' n)).
+    assert (∀ n, aseq (σ n) = len (Us' n)).
     { intros n.   rewrite /aseq/σ/Us'//=.
       destruct pickle_inv as [(?&?)|] => //=.
     }
@@ -460,7 +460,7 @@ Section lebesgue_measure.
       exists (pickle (m, n)).
       rewrite /σ pickleK_inv => //=. }
     etransitivity.
-    * apply (leb_outer_fun_lb _ (aseq0 \o σ)). split.
+    * apply (leb_outer_fun_lb _ (λ n, aseq0 (σ n))). split.
       ** intros x (n&Hin).
          destruct (leb_outer_eps_close' (Us n) _ (Hpos_scale n)) as (Vs&(Hcover&?)&?) eqn:Heq.
          generalize (Hcover x Hin). intros (i&Hin').
@@ -898,14 +898,14 @@ Section lebesgue_measure.
     { intros n.
       destruct (Rle_dec x (Us n).1).
       {
-        assert (eq_prop (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ Rle^~ x) x0)
+        assert (eq_prop (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ (λ y, Rle y x)) x0)
                         ∅) as Heq1.
         { intros (z&?&?) => //=. split.
           * intros ((Hr1&Hr2)&Hr3); try nra.
           * inversion 1.
         }
         assert (eq_prop
-                  (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ compl (Rle^~ x)) x0)
+                  (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ compl (λ y, Rle y x)) x0)
                   (open_interval (Us n).1 (Us n).2)) as Heq2.
         { intros (z&?&?) => //=. split.
           * rewrite /compl. intros ((Hr1&Hr2)&Hr3); split; try nra.
@@ -916,14 +916,14 @@ Section lebesgue_measure.
         apply Rle_ge. apply leb_outer_fun_interval_length_arbitrary3.
       }
       destruct (Rlt_dec x (Us n).2).
-      * assert (eq_prop (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ Rle^~ x) x0)
+      * assert (eq_prop (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ (λ y, Rle y x)) x0)
                       (λ x0, (Us n).1 < x0 <= x)) as Heq1.
         { intros (z&?&?) => //=. split.
           * intros ((Hr1&Hr2)&Hr3); split; nra.
           * rewrite /open_interval; intros; split_and!; try nra.
         }
         assert (eq_prop
-                  (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ compl (Rle^~ x)) x0)
+                  (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ compl (λ y, Rle y x)) x0)
                   (λ x0, x < x0 < (Us n).2)) as Heq2.
         { intros (z&?&?) => //=. split.
           * rewrite /compl. intros ((Hr1&Hr2)&Hr3); split; try nra.
@@ -934,14 +934,14 @@ Section lebesgue_measure.
         setoid_rewrite leb_outer_fun_interval_length_arbitrary2.
         setoid_rewrite leb_outer_fun_interval_length_arbitrary3.
         repeat apply Rabs_case; intros; try nra.
-      * assert (eq_prop (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ Rle^~ x) x0)
+      * assert (eq_prop (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ (λ y, Rle y x)) x0)
                         (open_interval (Us n).1 (Us n).2)) as Heq1.
         { intros (z&?&?) => //=. split.
           * intros ((Hr1&Hr2)&Hr3); split; nra.
           * rewrite /open_interval; intros; split_and!; try nra.
         }
         assert (eq_prop
-                  (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ compl (Rle^~ x)) x0)
+                  (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ compl (λ y, Rle y x)) x0)
                   ∅) as Heq2.
         { intros (z&?&?) => //=. split.
           * rewrite /compl. intros ((Hr1&Hr2)&Hr3); try nra.
@@ -952,14 +952,14 @@ Section lebesgue_measure.
         apply Rle_ge. apply leb_outer_fun_interval_length_arbitrary3.
     }
     assert (ex_series (λ n : nat,
-         leb_outer_measure (open_interval (Us n).1 (Us n).2 ∩ Rle^~ x))).
+         leb_outer_measure (open_interval (Us n).1 (Us n).2 ∩ (λ y, Rle y x)))).
     { apply: ex_series_le; eauto => n. rewrite norm_R_right; last apply outer_measure_nonneg.
       specialize (Hbound n). apply Rge_le in Hbound.
       etransitivity; eauto. rewrite -[a in a <= _]Rplus_0_r.
       apply Rplus_le_compat_l; auto using outer_measure_nonneg.
     }
     assert (ex_series (λ n : nat,
-         leb_outer_measure (open_interval (Us n).1 (Us n).2 ∩ compl (Rle^~ x)))).
+         leb_outer_measure (open_interval (Us n).1 (Us n).2 ∩ compl (λ y, Rle y x)))).
     { apply: ex_series_le; last (destruct HUs_spec as (?&Hex); eapply Hex).
       eauto => n. rewrite norm_R_right; last apply outer_measure_nonneg.
       specialize (Hbound n). apply Rge_le in Hbound.
@@ -969,9 +969,9 @@ Section lebesgue_measure.
     etransitivity; last (by left; eassumption).
     etransitivity; last first.
     { apply Series_le with (a := λ n,
-           leb_outer_measure (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ Rle^~ x) x0) +
+           leb_outer_measure (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ (λ y, Rle y x)) x0) +
            leb_outer_measure
-             (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ compl (Rle^~ x)) x0));
+             (λ x0 : Interval a b, (open_interval (Us n).1 (Us n).2 ∩ compl (λ y, Rle y x)) x0));
         last eauto.
       intros n. split; eauto.
       * replace 0 with (0 + 0) by field. apply Rplus_le_compat; apply outer_measure_nonneg.

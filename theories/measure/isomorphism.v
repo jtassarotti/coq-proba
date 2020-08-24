@@ -1,7 +1,6 @@
 Require Import Reals Psatz Omega Fourier.
 From stdpp Require Import tactics list.
 From discprob.basic Require Import seq_ext.
-From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 From discprob.measure Require Export dynkin borel integral.
 Require Import ClassicalEpsilon.
 
@@ -55,7 +54,7 @@ Proof.
 Qed.
 
 Lemma is_pt_hom_id {A} {F: measurable_space A} (μ : measure A) :
-  is_pt_hom id μ μ.
+  is_pt_hom (λ x, x) μ μ.
 Proof.
   split; rewrite //=.
 Qed.
@@ -287,7 +286,7 @@ Proof.
 Qed.
 
 Lemma is_pt_img_hom_id {A} {F: measurable_space A} (μ : @measure A F) :
-  is_pt_img_hom id μ μ.
+  is_pt_img_hom (λ x, x) μ μ.
 Proof.
   split; rewrite //=.
   * intros U HFU. eapply sigma_proper; eauto; clear; firstorder congruence.
@@ -458,7 +457,7 @@ Section iso_props.
 End iso_props.
 
 Lemma is_pt_iso_id {A} (F: measurable_space A) (μ: @measure A F):
-  is_pt_iso id μ μ.
+  is_pt_iso (λ x, x)μ μ.
 Proof.
   apply is_pt_iso_bij_hom.
   - apply is_pt_hom_id.
@@ -714,8 +713,8 @@ Section integral2.
 End integral2.
 
 Lemma sub_sigma_closed {A: Type} (F: sigma_algebra A) (U: A → Prop) :
-  ∀ Ps, (∀ i : nat, ∃ V' : A → Prop, F V' ∧ (∀ x : {x : A | U x}, Ps i x ↔ V' (projT1 x)))
-        → ∃ V' : A → Prop, F V' ∧ (∀ x : {x : A | U x}, unionF Ps x ↔ V' (projT1 x)).
+  ∀ Ps, (∀ i : nat, ∃ V' : A → Prop, F V' ∧ (∀ x : {x : A | U x}, Ps i x ↔ V' (sval x)))
+        → ∃ V' : A → Prop, F V' ∧ (∀ x : {x : A | U x}, unionF Ps x ↔ V' (sval x)).
 Proof.
   intros Ps HPs.
   unshelve eexists.
@@ -736,7 +735,7 @@ Qed.
 
 Definition sub_sigma {A: Type} (F: sigma_algebra A) (U : A → Prop) : sigma_algebra (sig U).
   refine ({| sigma_sets := λ V : (sig U → Prop), ∃ V' : A → Prop,
-                               F V' ∧ (∀ x : sig U, V x ↔ V' (projT1 x)) |}).
+                               F V' ∧ (∀ x : sig U, V x ↔ V' (sval x)) |}).
   - abstract firstorder.
   - abstract (exists (λ x, True); split; auto).
   - intros P (V'&HFV'&HV'). exists (compl V'); split; auto.
@@ -958,9 +957,9 @@ Proof.
 Qed.
 
 Lemma is_mod0_embedding_id {A} {F} (μ: @measure A F):
-  is_mod0_embedding id μ μ.
+  is_mod0_embedding (λ x, x) μ μ.
 Proof.
-  assert (Hequiv: ∀ U : (A → Prop), fun_img id U ≡ U).
+  assert (Hequiv: ∀ U : (A → Prop), fun_img (λ x, x) U ≡ U).
   { intros U. rewrite /fun_img. clear. split; firstorder congruence. }
   split.
   - rewrite Hequiv. apply almost_everywhere_meas_True.
@@ -1077,7 +1076,7 @@ Section mod0_props.
            | exist z Hex =>
              match constructive_indefinite_description (λ x : B, True ∧ f1 x = z) Hex with
              | exist b (conj H _) =>
-               f2 b ↾ ex_intro (λ x : B, True ∧ f2 x = f2 b) b (conj H (erefl (f2 b)))
+               f2 b ↾ ex_intro (λ x : B, True ∧ f2 x = f2 b) b (conj H (eq_refl (f2 b)))
              end
            end).
 
