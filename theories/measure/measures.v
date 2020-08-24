@@ -469,6 +469,14 @@ Proof.
   - rewrite compl_top measure_empty //.
 Qed.
 
+Lemma almost_everywhere_meas_True' μ U:
+  (∀ x, U x) →
+  almost_everywhere_meas μ U.
+Proof.
+  intros. eapply almost_everywhere_meas_ext; last eapply almost_everywhere_meas_True.
+  intros x; split; eauto.
+Qed.
+
 Lemma almost_everywhere_meas_conj_inv μ U1 U2:
   F U1 → almost_everywhere_meas μ (U1 ∩ U2) →
   almost_everywhere_meas μ U1.

@@ -1323,6 +1323,28 @@ Section integral.
     measurable.
   Qed.
 
+
+  Lemma ex_integral_ex_integral_over U f :
+    F U →
+    ex_integral f →
+    ex_integral_over U f.
+  Proof.
+    intros Hmeas Hex.
+    rewrite /ex_integral_over/is_integral_over.
+    efeed pose proof (ex_integral_ae_mono_ex
+                        (λ x : A, f x * (match excluded_middle_informative (U x) with | left _ => 1 | _ => 0 end))
+                        (λ x, Rabs (f x))) as Hex'.
+    - apply almost_everywhere_meas_True'.
+      intros x. destruct (excluded_middle_informative (U x));
+      rewrite ?Rmult_1_r ?Rmult_0_r; auto.
+      * nra.
+      * rewrite Rabs_R0. apply Rabs_pos.
+    - measurable. apply measurable_indicator; auto.
+    - rewrite -ex_integral_Rabs; eauto.
+    - destruct Hex' as (v&?). exists v.
+      split; auto.
+  Qed.
+
 End integral.
 
 Hint Resolve is_integral_measurable ex_integral_measurable ex_integral_wpt ex_integral_const.
