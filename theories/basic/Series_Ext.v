@@ -3,6 +3,7 @@ From discprob.basic Require Import base order bigop_ext.
 Require Import Reals Fourier Psatz.
 From Coquelicot Require Import Rcomplements Rbar Series Lim_seq Hierarchy Markov.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
+Require Import ClassicalEpsilon.
 
 Lemma Rbar_le_fin x y: 0 <= y → Rbar_le x (Finite y) → Rle (real x) y.
 Proof.
@@ -371,3 +372,30 @@ Qed.
 Lemma is_lim_seq_is_series (f: nat → R) (v: R):
   is_lim_seq (sum_n f) v → is_series f v.
 Proof. eauto. Qed.
+
+Lemma is_series_single_non_zero (f: nat → R) i:
+  (∀ j, f j ≠ 0 → i = j) →
+  is_series f (f i).
+Proof.
+  intros Hone Hneq0. eapply is_series_ext; last eapply (is_series_bump i).
+  intros n => //=. destruct (Nat.eq_dec n i) as [|Hneq] => //=.
+  * subst; eauto.
+  * destruct (Req_dec 0 (f n)); auto.
+    exfalso. eapply Hneq. symmetry. eapply Hone; eauto.
+Qed.
+
+Lemma Series_single_non_zero (f: nat → R) i:
+  (∀ j, f j ≠ 0 → i = j) →
+  Series f = (f i).
+Proof. intros. apply is_series_unique, is_series_single_non_zero; eauto. Qed.
+
+Lemma ex_series_single_non_zero (f: nat → R):
+  (∀ i j, f i ≠ 0 → f j ≠ 0 → i = j) →
+  ex_series f.
+Proof.
+  destruct (excluded_middle_informative (∃ i, f i ≠ 0)) as [(i&Heq)|?]; last first.
+  { intros. exists 0. eapply is_series_0. intros m.
+    destruct (Req_dec (f m) 0); try nra. exfalso; eauto.
+  }
+  intros. exists (f i). eapply is_series_single_non_zero; eauto.
+Qed.

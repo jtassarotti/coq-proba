@@ -33,6 +33,7 @@ theories/measure/integral.v
 theories/measure/dynkin.v
 theories/measure/product.v
 theories/measure/pushforward.v
+theories/measure/measure_of_density.v
 theories/prob/countable.v
 theories/prob/prob.v
 theories/prob/rearrange.v
