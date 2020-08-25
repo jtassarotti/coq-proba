@@ -367,3 +367,7 @@ Lemma ex_series_is_lim_seq (f: nat → R):
 Proof.
   intros Hex. by eapply Series_correct.
 Qed.
+
+Lemma is_lim_seq_is_series (f: nat → R) (v: R):
+  is_lim_seq (sum_n f) v → is_series f v.
+Proof. eauto. Qed.

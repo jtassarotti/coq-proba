@@ -1021,6 +1021,36 @@ Section integral.
     }
   Qed.
 
+  Lemma is_integral_levi_series_ae_ex fn:
+    almost_everywhere_meas μ (λ x, ex_series (λ n, fn n x)) →
+    (∀ n x, 0 <= fn n x) →
+    (∀ n, ex_integral (fn n)) →
+    bound (λ r, ∃ n, is_integral (λ x, sum_n (λ m, fn m x) n) r) →
+    ex_integral (λ x, Series (λ n, fn n x)) ∧
+    is_series (λ n, Integral (fn n)) (Integral (λ x, (Series (λ n, fn n x )))).
+  Proof.
+    intros ? Hnonneg ??.
+    destruct (is_integral_levi_ae_ex (λ n x, sum_n (λ m, fn m x) n)
+                                     (λ x, Series (λ n, fn n x))).
+    { apply measurable_Series; auto. }
+    { eapply almost_everywhere_meas_ext; last eassumption.
+      intros x.
+      split.
+      - intros ?%ex_series_is_lim_seq; eauto.
+      - intros. eexists; eauto.
+    }
+    { eapply almost_everywhere_meas_True'. intros x n.
+      rewrite sum_Sn. specialize (Hnonneg (S n) x).
+      rewrite /plus => //=. nra.
+    }
+    { intros. eapply ex_integral_sum_n; intros; eauto. }
+    { eauto. }
+    split; eauto.
+    eapply is_lim_seq_is_series; eauto.
+    eapply is_lim_seq_ext; last eassumption.
+    intros => //=. rewrite Integral_sum_n //=.
+  Qed.
+
   Lemma is_integral_mct_ex fn f g:
     measurable f →
     (∀ x, is_lim_seq (λ n, fn n x) (f x : R)) →

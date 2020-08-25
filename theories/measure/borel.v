@@ -827,6 +827,21 @@ Section borel_R.
     apply measurable_Lim. done.
   Qed.
 
+
+  Lemma measurable_sum_n {A: Type} {F: measurable_space A} (fn : nat → A → R) m:
+    (∀ n, measurable (fn n)) →
+    measurable (λ x : A, sum_n (λ n : nat, fn n x) m).
+  Proof.
+    intros Hmeas. induction m => //=.
+    - setoid_rewrite sum_O. eauto.
+    - setoid_rewrite sum_Sn. apply measurable_plus; eauto.
+  Qed.
+
+  Lemma measurable_Series {A: Type} {F: measurable_space A} (fn : nat → A → R):
+    (∀ n, measurable (fn n)) →
+    measurable (λ x, Series (λ n, fn n x)).
+  Proof. intros. apply measurable_Lim'; eauto. intros; eapply measurable_sum_n; eauto. Qed.
+
   Lemma measurable_fun_eq_0 {A: Type} {F: measurable_space A} f:
     measurable f →
     is_measurable (λ x, f x = 0).
