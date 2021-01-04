@@ -88,6 +88,7 @@ Hint Resolve Rabs_pos Rle_ge.
 Section Interval_UniformSpace.
   Variable a b : R.
   Implicit Types x y : Interval a b.
+  Context {HIN: Inhabited (Interval a b)}.
 
   Definition Interval_ball (x: Interval a b) eps y := ball (x : R) eps y.
   Definition Interval_ball_center x (e: posreal) : Interval_ball x e x := @ball_center _ _ _.
@@ -95,7 +96,7 @@ Section Interval_UniformSpace.
   Definition Interval_ball_triangle x y e := @ball_triangle _ (x : R) y e.
   Definition Interval_UniformSpace_mixin : UniformSpace.mixin_of (Interval a b).
   Proof.
-    apply (UniformSpace.Mixin _ Interval_ball
+    apply (UniformSpace.Mixin _ inhabitant Interval_ball
                               Interval_ball_center
                               Interval_ball_sym
                               Interval_ball_triangle).
@@ -108,6 +109,7 @@ End Interval_UniformSpace.
 
 Section lebesgue_measure.
   Context {a b : R}.
+  Context {HIN: Inhabited (Interval a b)}.
 
   (* TODO: deduce these from the versions on R in borel.v *)
   Lemma borel_gen_closed_ray1 :
@@ -876,7 +878,7 @@ Section lebesgue_measure.
   - apply leb_outer_fun_subadditivity.
   Defined.
 
-  Definition leb_measure := outer_measure_measure leb_outer_measure.
+  Definition leb_measure := @outer_measure_measure _ leb_outer_measure (borel _).
 
   Lemma norm_R_right (r: R):
     0 <= r → norm r = r.

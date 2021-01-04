@@ -1,0 +1,6 @@
+[submodule "ext/coquelicot-ext"]
+	path = ext/coquelicot-ext
+	url = https://github.com/jtassarotti/coquelicot-ext.git
+[submodule "ext/interval"]
+	path = ext/interval
+	url = https://gitlab.inria.fr/coqinterval/interval.git

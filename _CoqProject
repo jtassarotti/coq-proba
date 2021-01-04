@@ -1,4 +1,6 @@
 -Q theories discprob
+-R ext/coquelicot-ext/theories Coquelicot
+-R ext/interval/src Interval
 -arg -w -arg -notation-overridden,-redundant-canonical-projection,-several-object-files,-deprecated
 # Coquelicot has an ambiguous path involving Rbar and R
 -arg -w -arg -ambiguous-paths
@@ -6,85 +8,85 @@
 # Although going forward libraries in measure/ should avoid this, we silence the warning for every file
 # TODO: split _CoqProject up so that we can have warnings on for measure/ subdirectory
 -arg -w -arg -notation-incompatible-format
-theories/basic/base.v
-theories/basic/sval.v
-theories/basic/nify.v
-theories/basic/Series_Ext.v
-theories/basic/order.v
-theories/basic/bigop_ext.v
-theories/basic/seq_ext.v
-theories/basic/monad.v
-theories/basic/stdpp_ext.v
-theories/basic/exp_ext.v
-theories/basic/Reals_ext.v
-theories/basic/classic_proof_irrel.v
-theories/measure/sets.v
-theories/measure/sigma_algebra.v
-theories/measure/measurable_space.v
-theories/measure/measures.v
-theories/measure/borel.v
-theories/measure/outer_measure.v
-theories/measure/lebesgue_measure.v
-theories/measure/convergence.v
-theories/measure/completion.v
-theories/measure/isomorphism.v
-theories/measure/integral_prelim.v
-theories/measure/integral.v
-theories/measure/dynkin.v
-theories/measure/product.v
-theories/measure/pushforward.v
-theories/measure/measure_of_density.v
-theories/prob/countable.v
-theories/prob/prob.v
-theories/prob/rearrange.v
-theories/prob/bernoulli.v
-theories/prob/finite.v
-theories/prob/stochastic_order.v
-theories/prob/double.v
-theories/prob/uniform.v
-theories/prob/markov.v
-theories/prob/indep.v
-theories/prob/chernoff.v
-theories/rec/rec_convert.v
-theories/rec/karp.v
-theories/rec/span2.v
-theories/rec/work2.v
-theories/rec/decreasing_rec.v
-theories/rec/quickselect_rec.v
-theories/rec/quicksort_rec.v
-theories/rec/log_rec.v
-theories/rec/counter_rec.v
-theories/rec/leader_rec.v
-theories/monad/finite/monad.v
-theories/monad/finite/monad_cost.v
-theories/monad/finite/monad_par.v
-theories/monad/finite/monad_hoare.v
-theories/monad/finite/monad_cost_hoare.v
-theories/monad/finite/monad_par_hoare.v
-theories/monad/finite/quicksort.v
-theories/monad/finite/quicksort_correct.v
-theories/monad/finite/quicksort_cost.v
-theories/monad/finite/max_triangle.v
-theories/monad/finite/par_quicksort.v
-theories/monad/finite/par_quicksort_correct.v
-theories/monad/finite/par_quicksort_cost.v
-theories/monad/finite/permutation.v
-theories/monad/finite/bst.v
-theories/monad/finite/bst_correct.v
-theories/monad/finite/bst_height.v
-theories/monad/finite/counter.v
-theories/monad/finite/counter_overflow.v
-theories/monad/finite/leader.v
-theories/monad/finite/leader_cost.v
-theories/monad/idxval/ival.v
-theories/monad/idxval/pival.v
-theories/monad/idxval/ival_dist.v
-theories/monad/idxval/ival_pair.v
-theories/monad/idxval/pival_dist.v
-theories/monad/idxval/pidist_pair.v
-theories/monad/idxval/pidist_singleton.v
-theories/monad/idxval/idist_pidist_pair.v
-theories/monad/idxval/subset_coupling.v
-theories/monad/idxval/extrema.v
-theories/monad/idxval/irrel_equiv.v
-theories/monad/idxval/pidist_post_cond.v
+# theories/basic/base.v
+# theories/basic/sval.v
+# theories/basic/nify.v
+# theories/basic/Series_Ext.v
+# theories/basic/order.v
+# theories/basic/bigop_ext.v
+# theories/basic/seq_ext.v
+# theories/basic/monad.v
+# theories/basic/stdpp_ext.v
+# theories/basic/exp_ext.v
+# theories/basic/Reals_ext.v
+# theories/basic/classic_proof_irrel.v
+# theories/measure/sets.v
+# theories/measure/sigma_algebra.v
+# theories/measure/measurable_space.v
+# theories/measure/measures.v
+# theories/measure/borel.v
+# theories/measure/outer_measure.v
+# theories/measure/lebesgue_measure.v
+# theories/measure/convergence.v
+# theories/measure/completion.v
+# theories/measure/isomorphism.v
+# theories/measure/integral_prelim.v
+# theories/measure/integral.v
+# theories/measure/dynkin.v
+# theories/measure/product.v
+# theories/measure/pushforward.v
+# theories/measure/measure_of_density.v
+# theories/prob/countable.v
+# theories/prob/prob.v
+# theories/prob/rearrange.v
+# theories/prob/bernoulli.v
+# theories/prob/finite.v
+# theories/prob/stochastic_order.v
+# theories/prob/double.v
+# theories/prob/uniform.v
+# theories/prob/markov.v
+# theories/prob/indep.v
+# theories/prob/chernoff.v
+# theories/rec/rec_convert.v
+# theories/rec/karp.v
+# theories/rec/span2.v
+# theories/rec/work2.v
+# theories/rec/decreasing_rec.v
+# theories/rec/quickselect_rec.v
+# theories/rec/quicksort_rec.v
+# theories/rec/log_rec.v
+# theories/rec/counter_rec.v
+# theories/rec/leader_rec.v
+# theories/monad/finite/monad.v
+# theories/monad/finite/monad_cost.v
+# theories/monad/finite/monad_par.v
+# theories/monad/finite/monad_hoare.v
+# theories/monad/finite/monad_cost_hoare.v
+# theories/monad/finite/monad_par_hoare.v
+# theories/monad/finite/quicksort.v
+# theories/monad/finite/quicksort_correct.v
+# theories/monad/finite/quicksort_cost.v
+# theories/monad/finite/max_triangle.v
+# theories/monad/finite/par_quicksort.v
+# theories/monad/finite/par_quicksort_correct.v
+# theories/monad/finite/par_quicksort_cost.v
+# theories/monad/finite/permutation.v
+# theories/monad/finite/bst.v
+# theories/monad/finite/bst_correct.v
+# theories/monad/finite/bst_height.v
+# theories/monad/finite/counter.v
+# theories/monad/finite/counter_overflow.v
+# theories/monad/finite/leader.v
+# theories/monad/finite/leader_cost.v
+# theories/monad/idxval/ival.v
+# theories/monad/idxval/pival.v
+# theories/monad/idxval/ival_dist.v
+# theories/monad/idxval/ival_pair.v
+# theories/monad/idxval/pival_dist.v
+# theories/monad/idxval/pidist_pair.v
+# theories/monad/idxval/pidist_singleton.v
+# theories/monad/idxval/idist_pidist_pair.v
+# theories/monad/idxval/subset_coupling.v
+# theories/monad/idxval/extrema.v
+# theories/monad/idxval/irrel_equiv.v
+# theories/monad/idxval/pidist_post_cond.v

@@ -1,32 +1,53 @@
-# Forward most targets to Coq makefile (with some trick to make this phony)
-%: Makefile.coq phony
-	+@make -f Makefile.coq $@
+SRC_DIRS := 'theories' 'ext'
+ALL_VFILES := $(shell find $(SRC_DIRS) -name "*.v")
+VFILES := $(shell find 'theories' -name "*.v")
 
-all: Makefile.coq
-	+@make -f Makefile.coq all
-.PHONY: all
+# note this needs to be = since _CoqProject might not exist (if this is a clean
+# build)
+COQPROJECT_ARGS = $(shell sed -E -e '/^\#/d' -e 's/-arg ([^ ]*)/\1/g' _CoqProject)
+COQ_ARGS := -noglob
 
-clean: Makefile.coq
-	+@make -f Makefile.coq clean
-	find theories \( -name "*.v.d" -o -name "*.vo" -o -name "*.aux" -o -name "*.cache" -o -name "*.glob" -o -name "*.vio" \) -print -delete
-	rm -f Makefile.coq
-.PHONY: clean
+# user configurable
+Q:=@
+TIMED:=false
+TIMING_DB:=.timing.sqlite3
 
-# Create Coq Makefile. POSIX awk can't do in-place editing, but coq_makefile wants the real
-# filename, so we do some file gymnastics.
-Makefile.coq: _CoqProject Makefile awk.Makefile
-	coq_makefile -f _CoqProject -o Makefile.coq
-	mv Makefile.coq Makefile.coq.tmp && awk -f awk.Makefile Makefile.coq.tmp > Makefile.coq && rm Makefile.coq.tmp
+COQC := coqc
 
-build-dep: phony
-	opam install . --deps-only
+default: all
 
-# Some files that do *not* need to be forwarded to Makefile.coq
-Makefile: ;
-_CoqProject: ;
-awk.Makefile: ;
-opam: ;
+all: $(VFILES:.v=.vo)
+vos: $(VFILES:.v=.vos)
+vok: $(VFILES:.v=.vok)
 
-# Phony wildcard targets
-phony: ;
-.PHONY: phony
+.coqdeps.d: $(ALL_VFILES) _CoqProject
+	@echo "COQDEP $@"
+	$(Q)coqdep -vos -f _CoqProject $(ALL_VFILES) > $@
+
+# do not try to build dependencies if cleaning or just building _CoqProject
+ifeq ($(filter clean,$(MAKECMDGOALS)),)
+-include .coqdeps.d
+endif
+
+%.vo: %.v _CoqProject
+	@echo "COQC $<"
+	$(Q)$(COQC) $(COQPROJECT_ARGS) $(COQ_ARGS) -o $@ $<
+
+%.vos: %.v _CoqProject
+	@echo "COQC -vos $<"
+	$(Q)$(COQC) $(COQPROJECT_ARGS) -vos $(COQ_ARGS) $< -o $@
+
+%.vok: %.v _CoqProject
+	@echo "COQC -vok $<"
+	$(Q)$(COQC) $(COQPROJECT_ARGS) $(TIMING_ARGS) -vok $(COQ_ARGS) $< -o $@
+
+.PHONY: skip-qed ci
+
+clean:
+	@echo "CLEAN vo glob aux"
+	$(Q)find $(SRC_DIRS) \( -name "*.vo" -o -name "*.vo[sk]" \
+		-o -name ".*.aux" -o -name ".*.cache" -name "*.glob" \) -delete
+	rm -f .coqdeps.d
+
+.PHONY: default
+.DELETE_ON_ERROR:

@@ -57,6 +57,7 @@ Proof.
   * eapply ex_Ex_extrema_proper_supp; try eassumption.
     intros; rewrite Rabs_right; auto.
   * rewrite Heq //.
+    reflexivity.
 Qed.
 
 Lemma Rabs_gt_iff_square x k:
@@ -128,9 +129,9 @@ Proof.
   rewrite [a in _ <= a]Rabs_right; last first.
   { apply Rle_ge. setoid_rewrite <-Rmax_r. apply Rabs_pos. }
   destruct (Rge_dec (Rabs (f x)) 1).
-  - apply Rmax_le_compat; first done.
+  - apply Rmax_le_compat; first by reflexivity.
     rewrite -?RPow_abs. apply Rle_pow; auto. nra.
-  - rewrite ?Rmax_left; first done.
+  - rewrite ?Rmax_left; first by reflexivity.
     * rewrite -RPow_abs.
       destruct n; first by auto.
        left. apply pow_lt_1_compat; last by omega.
@@ -208,7 +209,9 @@ Proof.
   intros. destruct r1, r2 => //=; try destruct Rle_dec; try auto; try nra.
   * apply Rmult_le_compat_l; eauto.
   * destruct Rle_lt_or_eq_dec; eauto; subst => //=. nra.
+  * destruct Rle_lt_or_eq_dec; eauto; subst => //=.
   * destruct Rle_lt_or_eq_dec; eauto; subst => //=. nra.
+  * destruct Rle_lt_or_eq_dec; eauto; subst => //=.
   * destruct Rle_lt_or_eq_dec; eauto; subst => //=.
 Qed.
 
@@ -281,7 +284,7 @@ Proof.
   rewrite ?Finite_Rplus.
   apply Rbar_plus_le_compat.
   { apply Ex_max_spec1'; eauto. }
-  apply Rbar_plus_le_compat; last done.
+  apply Rbar_plus_le_compat; last by reflexivity.
   rewrite Finite_Ropp.
   rewrite -Ropp_mult_distr_l.
   rewrite Finite_Ropp.
