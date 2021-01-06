@@ -360,3 +360,6 @@ Lemma norm_Rabs r: norm r = Rabs r.
 Proof.
   rewrite /norm//=/abs.
 Qed.
+
+Lemma Rbar_le_p_infty : ∀ x, Rbar_le p_infty x → x = p_infty.
+Proof. intros []; simpl; tauto. Qed.

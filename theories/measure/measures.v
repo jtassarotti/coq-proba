@@ -2,19 +2,19 @@ Require Import Reals Psatz Omega ClassicalEpsilon.
 From stdpp Require Import tactics.
 From discprob.basic Require Export base Series_Ext order bigop_ext sval Reals_ext.
 From mathcomp Require Import bigop.
-From Coquelicot Require Export Rcomplements Rbar Series Lim_seq Hierarchy Markov Continuity ElemFct.
+From Coquelicot Require Export Rcomplements Rbar Series Series_Rbar Lim_seq Hierarchy Markov Continuity ElemFct.
 From discprob.measure Require Export measurable_space.
 From discprob.measure Require Import dynkin.
 
 Local Open Scope R_scope.
 
 Record measure A {F: measurable_space A} :=
-  { measure_fun :> (A → Prop) → R;
+  { measure_fun :> (A → Prop) → Rbar;
     measure_proper : Proper (@eq_prop A ==> eq) measure_fun;
-    measure_nonneg : ∀ X, measure_fun X >= 0;
+    measure_nonneg : ∀ X, Rbar_le 0 (measure_fun X);
     measure_empty : measure_fun (empty_set) = 0;
     measure_additivity : ∀ U: nat → (A → Prop),
-        (∀ i, F (U i)) → disjointF U → is_series (λ n, measure_fun (U n)) (measure_fun (unionF U))
+        (∀ i, F (U i)) → disjointF U → enn_is_series (λ n, measure_fun (U n)) (measure_fun (unionF U))
   }.
 
 
@@ -29,15 +29,15 @@ Section measure_props.
   Context `(μ : @measure A F).
 
   Lemma measure_additivity_Series U :
-        (∀ i, F (U i)) → disjointF U → μ (unionF U) = Series (λ x, μ (U x)).
+        (∀ i, F (U i)) → disjointF U → μ (unionF U) = enn_Series (λ x, μ (U x)).
   Proof.
-    intros. symmetry; apply is_series_unique, measure_additivity => //=.
+    intros. symmetry; apply enn_is_series_unique, measure_additivity => //=.
   Qed.
 
   Lemma measure_finite_additivity X Y:
     F X → F Y →
     X ## Y →
-    μ (X ∪ Y) = μ X + μ Y.
+    μ (X ∪ Y) = Rbar_plus (μ X) (μ Y).
   Proof.
     intros HFX HFY Hdisj.
     assert (HdisjF: disjointF (λ n : nat, match n with
@@ -57,16 +57,23 @@ Section measure_props.
 
     rewrite union_pair_unionF.
     rewrite measure_additivity_Series => //=.
-    rewrite (Series_incr_n _ 2); [ | omega | ]; last first.
-    { eexists. apply measure_additivity; auto. }
-
-    rewrite //=. rewrite measure_empty Series_0 //. nra.
+    rewrite (enn_Series_incr_1 _).
+    - f_equal.
+      rewrite enn_Series_incr_1.
+      { rewrite enn_Series_0; last first.
+        { intros. rewrite measure_empty //. }
+        rewrite Rbar_plus_0_r //.
+      }
+      * apply measure_nonneg.
+      * apply enn_ex_series_nonneg; intros; apply measure_nonneg.
+    - apply measure_nonneg.
+    - apply enn_ex_series_nonneg; intros; apply measure_nonneg.
   Qed.
 
   Lemma measure_list_additivity l:
     (∀ U, In U l → F U) →
     ## l →
-    μ (union_list l) = \big[Rplus/0]_(U <- l) μ U.
+    μ (union_list l) = \big[Rbar_plus/Finite 0]_(U <- l) μ U.
   Proof.
     induction l => //=.
     * intros. by rewrite big_nil measure_empty.
@@ -80,15 +87,16 @@ Section measure_props.
   Lemma measure_sum_n_additivity Us n:
     (∀ i, (i <= n)%nat → F (Us i)) →
     disjointF Us →
-    μ (λ x, ∃ j, (j <= n)%nat ∧ Us j x) = sum_n (λ j, μ (Us j)) n.
+    μ (λ x, ∃ j, (j <= n)%nat ∧ Us j x) = Rbar_sum_n (λ j, μ (Us j)) n.
   Proof.
     intros Hin.
     induction n => //=.
-    * intros. rewrite sum_O. apply measure_proper.
+    * intros. rewrite Rbar_sum_O. apply measure_proper.
       intros x; split.
       ** intros (?&Hle&?). inversion Hle. subst. done.
       ** intros. exists O. split; auto.
-    * intros Hdisj. rewrite sum_Sn /plus//= range_union_S.
+    * intros Hdisj. rewrite Rbar_sum_Sn /plus//= ?range_union_S; last first.
+      { apply ex_Rbar_sum_n_m_nonneg; eauto. }
       rewrite measure_finite_additivity.
       { f_equal; eauto. }
       ** apply sigma_closed_range_union. auto.
@@ -100,38 +108,54 @@ Section measure_props.
 
   Lemma measure_set_minus X Y:
     F X → F Y →
-    le_prop X Y → μ (Y ∖ X) = μ Y - μ X.
+    is_finite (μ X) →
+    le_prop X Y → μ (Y ∖ X) = Rbar_minus (μ Y) (μ X).
   Proof.
-    intros ?? Hle.
+    intros ?? Hfin Hle.
     symmetry. rewrite -{1}(le_minus_union _ _ Hle) measure_finite_additivity //=; auto.
-    nra.
+    rewrite /Rbar_minus. rewrite Rbar_plus_assoc_opp_finite //=.
   Qed.
 
   Lemma measure_mono X Y:
     F X → F Y →
-    le_prop X Y → μ X <= μ Y.
+    le_prop X Y → Rbar_le (μ X) (μ Y).
   Proof.
     intros ?? Hle.
-    cut (μ Y - μ X >= 0); first by nra.
-    rewrite -measure_set_minus //=.
+    cut (Rbar_le 0 (Rbar_minus (μ Y) (μ X))).
+    { destruct (μ Y), (μ X); simpl in *; try nra. }
+    rewrite -{1}(le_minus_union _ _ Hle) measure_finite_additivity; auto.
+    rewrite /Rbar_minus. apply Rbar_plus_assoc_opp_finite'; auto.
   Qed.
 
   Lemma measure_set_minus' X Y:
     F X → F Y →
-    μ (Y ∖ X) >= μ Y - μ X.
+    Rbar_le (Rbar_minus (μ Y) (μ X)) (μ (Y ∖ X)).
   Proof.
     intros ??.
-    transitivity (μ (set_minus Y (Y ∩ X))).
-    { apply Rle_ge, measure_mono; eauto.
+    transitivity (μ (set_minus Y (Y ∩ X))); last first.
+    { apply measure_mono; eauto.
       * apply sigma_closed_set_minus; eauto.
       * clear; firstorder.
     }
-    rewrite measure_set_minus //=.
-    * cut (μ (Y ∩ X) <= μ X); first by nra.
-      apply measure_mono; eauto.
-      clear; firstorder.
-    * eauto.
-    * clear; firstorder.
+    assert (is_finite (μ (Y ∩ X)) ∨ ¬ is_finite (μ (Y ∩ X))) as [Hfin|Hinf].
+    { simpl; tauto. }
+    - rewrite measure_set_minus //=.
+      * cut (Rbar_le (μ (Y ∩ X)) (μ X)).
+        { repeat destruct (μ _) => //=; try nra. }
+        apply measure_mono; eauto.
+        clear; firstorder.
+      * eauto.
+      * clear; firstorder.
+    - assert (μ (Y ∩ X) = p_infty) as Hp1.
+      { specialize (measure_nonneg μ (Y ∩ X)). destruct (μ _); rewrite /is_finite//= in Hinf; eauto; try nra.
+        simpl. tauto. }
+      assert (μ Y = p_infty) as Hp2.
+      { apply Rbar_le_p_infty. rewrite -Hp1. apply measure_mono; auto.
+        firstorder. }
+      assert (μ X = p_infty) as Hp3.
+      { apply Rbar_le_p_infty. rewrite -Hp1. apply measure_mono; auto.
+        firstorder. }
+      rewrite Hp2 Hp3. apply measure_nonneg.
   Qed.
 
   Lemma diff_below_measurable' (G: (A → Prop) → Prop) Us
@@ -171,6 +195,66 @@ Section measure_props.
     intros Hsub. induction Hle.
     - reflexivity.
     - etransitivity; eauto.
+  Qed.
+
+
+  (*
+  Lemma measure_incr_seq (Us: nat → (A → Prop)) :
+    (∀ i, F (Us i)) →
+    (∀ i, Us i ⊆ Us (S i)) →
+    filterlim (λ i, μ (Us i)) eventually (Rbar_locally (μ (unionF Us))).
+  Proof.
+    intros Hmeas Hincr.
+    eapply (filterlim_ext (λ n, Rbar_sum_n (λ i, μ (diff_below Us i)) n)).
+    { admit.  }
+    (*
+    { intros n. induction n => //=.
+      * rewrite sum_O. apply measure_proper. clear => ?. firstorder lia.
+      * rewrite sum_Sn /plus IHn //=.
+        rewrite /Hierarchy.plus//=.
+        rewrite -measure_finite_additivity; auto using diff_below_measurable.
+        ** apply measure_proper. intros x; split.
+           *** intros [Hle1|(?&?)]; eauto. eapply Hincr; done.
+           *** intros HU. rewrite /diff_below.
+               destruct (Classical_Prop.classic (Us n x)) as [Hn|Hnotn]; first by left.
+               right; split; auto. intros i' Hlt Hsat.
+               apply Hnotn. eapply (measure_incr_mono Us i'); eauto. omega.
+        ** clear. intros x (Hin1&Hin2). destruct Hin2 as (?&Hfalse).
+           eapply Hfalse; eauto.
+    }
+     *)
+    apply measure_additivity.
+    * apply diff_below_measurable; eauto.
+    * apply diff_below_disjoint.
+  Qed.
+   *)
+
+  (*
+  Lemma measure_incr_seq (Us: nat → (A → Prop)) :
+    (∀ i, F (Us i)) →
+    (∀ i, Us i ⊆ Us (S i)) →
+    is_lim_seq (λ i, μ (Us i)) (μ (unionF Us)).
+  Proof.
+    intros Hmeas Hincr.
+    rewrite diff_below_unionF.
+    eapply (is_lim_seq_ext (λ n, sum_n (λ i, μ (diff_below Us i)) n)).
+    { intros n. induction n => //=.
+      * rewrite sum_O. apply measure_proper. clear => ?. firstorder lia.
+      * rewrite sum_Sn /plus IHn //=.
+        rewrite /Hierarchy.plus//=.
+        rewrite -measure_finite_additivity; auto using diff_below_measurable.
+        ** apply measure_proper. intros x; split.
+           *** intros [Hle1|(?&?)]; eauto. eapply Hincr; done.
+           *** intros HU. rewrite /diff_below.
+               destruct (Classical_Prop.classic (Us n x)) as [Hn|Hnotn]; first by left.
+               right; split; auto. intros i' Hlt Hsat.
+               apply Hnotn. eapply (measure_incr_mono Us i'); eauto. omega.
+        ** clear. intros x (Hin1&Hin2). destruct Hin2 as (?&Hfalse).
+           eapply Hfalse; eauto.
+    }
+    apply measure_additivity.
+    * apply diff_below_measurable; eauto.
+    * apply diff_below_disjoint.
   Qed.
 
   Lemma measure_incr_seq (Us: nat → (A → Prop)) :
@@ -231,6 +315,7 @@ Section measure_props.
     - apply sigma_closed_intersections; auto.
     - intros x; clear; firstorder.
   Qed.
+  *)
 
   Lemma measure_finite_subadditivity U1 U2:
     F U1 → F U2 →
