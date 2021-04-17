@@ -70,6 +70,7 @@ Section measure_props.
     - apply enn_ex_series_nonneg; intros; apply measure_nonneg.
   Qed.
 
+  (*
   Lemma measure_list_additivity l:
     (∀ U, In U l → F U) →
     ## l →
@@ -83,6 +84,7 @@ Section measure_props.
       ** apply sigma_closed_list_union; eauto.
       ** inversion Hdisj; auto.
   Qed.
+  *)
 
   Lemma measure_sum_n_additivity Us n:
     (∀ i, (i <= n)%nat → F (Us i)) →
@@ -319,34 +321,45 @@ Section measure_props.
 
   Lemma measure_finite_subadditivity U1 U2:
     F U1 → F U2 →
-    μ (U1 ∪ U2) <= μ U1 + μ U2.
+    Rbar_le (μ (U1 ∪ U2)) (Rbar_plus (μ U1) (μ U2)).
   Proof.
     intros HF1 Hf2.
     assert (U1 ∪ U2 ≡ U1 ∪ (set_minus U2 U1)) as ->.
     { split; clear; destruct (Classical_Prop.classic (U1 x)); firstorder. }
     rewrite measure_finite_additivity; eauto using sigma_closed_set_minus.
-    * apply Rplus_le_compat; apply measure_mono; eauto using sigma_closed_set_minus.
+    * apply Rbar_plus_le_compat; apply measure_mono; eauto using sigma_closed_set_minus.
       ** reflexivity.
       ** clear; firstorder.
     * apply disjoint_comm, disjoint_set_minus.
   Qed.
 
+  Lemma Rbar_le_refl': ∀ x y, x = y → Rbar_le x y.
+  Proof. intros ?? ->; reflexivity. Qed.
+
+  Lemma measure_ex_Rbar_sum_n_m Us n:
+    (∀ i : nat, i ≤ n → F (Us i)) →
+    ex_Rbar_sum_n_m (λ j : nat, μ (Us j)) 0 n.
+  Proof. intros; eapply ex_Rbar_sum_n_m_nonneg. intros; eapply measure_nonneg. Qed.
+
   Lemma measure_sum_n_subadditivity Us n:
     (∀ i, (i <= n)%nat → F (Us i)) →
-    μ (λ x, ∃ j, (j <= n)%nat ∧ Us j x) <= sum_n (λ j, μ (Us j)) n.
+    Rbar_le (μ (λ x, ∃ j, (j <= n)%nat ∧ Us j x)) (Rbar_sum_n (λ j, μ (Us j)) n).
   Proof.
     intros Hin.
     induction n => //=.
-    * intros. rewrite sum_O. right. apply measure_proper.
+    * intros. rewrite Rbar_sum_O. apply Rbar_le_refl'.
+      apply measure_proper.
       intros x; split.
       ** intros (?&Hle&?). inversion Hle. subst. done.
       ** intros. exists O. split; auto.
-    * rewrite sum_Sn /plus//= range_union_S.
-      etransitivity; first eapply measure_finite_subadditivity.
-      ** apply sigma_closed_range_union. auto.
-      ** apply Hin. auto.
-      ** apply Rplus_le_compat; eauto.
-         reflexivity.
+    * rewrite Rbar_sum_Sn /Rbar_plus//= ?range_union_S.
+      { etransitivity; first eapply measure_finite_subadditivity.
+        ** apply sigma_closed_range_union. auto.
+        ** apply Hin. auto.
+        ** apply Rbar_plus_le_compat; eauto.
+           reflexivity.
+      }
+      { eapply measure_ex_Rbar_sum_n_m; eauto. }
   Qed.
 
   Lemma measure_countable_subadditivity (Us: nat → (A → Prop)):
