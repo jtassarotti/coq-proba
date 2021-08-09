@@ -537,7 +537,7 @@ Section wpt.
     rewrite /wpt_iso.
     feed pose proof (@wpt_indicator_scal_list_spec2 _ F2 _ (wpt_iso_aux1 wpt)) as Hindc.
     { rewrite map_map //=.
-      assert (Hdisj: ## map snd wpt).
+      assert (Hdisj: disjoint_list $ map snd wpt).
       { rewrite wpt_partition_spec1. apply partition_disjoint. }
       revert Hdisj. generalize (wpt_list wpt).
       clear -Hiso. induction l.

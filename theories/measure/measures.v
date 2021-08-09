@@ -18,6 +18,22 @@ Record measure A {F: measurable_space A} :=
   }.
 
 
+(* Adapted from an old version of stdpp *)
+Section disjoint_list.
+  Context `{Disjoint A, Union A, Empty A}.
+  Implicit Types X : A.
+
+  Inductive disjoint_list : list A → Prop :=
+    | disjoint_nil_2 : disjoint_list []
+    | disjoint_cons_2 (X : A) (Xs : list A) : X ## ⋃ Xs → disjoint_list Xs → disjoint_list (X :: Xs).
+
+  Lemma disjoint_list_nil  : disjoint_list [] ↔ True.
+  Proof. split; constructor. Qed.
+  Lemma disjoint_list_cons X Xs : disjoint_list (X :: Xs) ↔ X ## ⋃ Xs ∧ disjoint_list Xs.
+  Proof. split. inversion_clear 1; auto. intros [??]. constructor; auto. Qed.
+End disjoint_list.
+
+
 Arguments measure_nonneg {_ _} _.
 
 Hint Resolve measure_nonneg measure_empty measure_additivity.
@@ -65,7 +81,7 @@ Section measure_props.
 
   Lemma measure_list_additivity l:
     (∀ U, In U l → F U) →
-    ## l →
+    disjoint_list l →
     μ (union_list l) = \big[Rplus/0]_(U <- l) μ U.
   Proof.
     induction l => //=.

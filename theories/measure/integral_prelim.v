@@ -27,7 +27,7 @@ Section integral_prelim.
   Record partition :=
     { partition_list :> list (A → Prop);
       partition_union : le_prop (λ _, True) (unionL partition_list);
-      partition_disjoint : ## (partition_list);
+      partition_disjoint : disjoint_list (partition_list);
       partition_measurable: ∀ U, In U partition_list → F U
     }.
 
@@ -64,9 +64,9 @@ Section integral_prelim.
   Qed.
 
   Lemma disjoint_list_app (l1 l2: list (A → Prop)):
-    ## l1 → ## l2 →
+    disjoint_list l1 → disjoint_list l2 →
     (∀ U1 U2, In U1 l1 → In U2 l2 → U1 ## U2) →
-    ## (l1 ++ l2).
+    disjoint_list (l1 ++ l2).
   Proof.
     intros HNoDup1. revert l2. induction HNoDup1 as [| U0 l Hdisj1 Hdisj2].
     - rewrite //=.
@@ -76,25 +76,25 @@ Section integral_prelim.
         apply in_app_or in Hin as [Hin1'|Hin2'].
         ** eapply Hdisj1. split; eauto. eapply union_list_intro; eauto.
         ** eapply (Hinter U0 U'); eauto. by left.
-      * eapply IHHNoDup1; eauto. intros. eapply Hinter; auto.
+      * eapply IHHdisj2; eauto. intros. eapply Hinter; auto.
           by right.
   Qed.
 
   Lemma disjoint_list_inv (U: A → Prop) l:
-    ## (U :: l) → ∀ U', In U' l → U ## U'.
+    disjoint_list (U :: l) → ∀ U', In U' l → U ## U'.
   Proof.
     inversion 1 as [|? ? Hdisj HdisjL]; subst. intros U' Hin a (?&?).
     eapply Hdisj; split; eauto. eapply union_list_intro; eauto.
   Qed.
 
   Lemma disjoint_list_inv' a (U: A → Prop) l:
-    ## (U :: l) → ∀ U', In U' l → U a → U' a → False.
+    disjoint_list (U :: l) → ∀ U', In U' l → U a → U' a → False.
   Proof.
     intros. eapply disjoint_list_inv; eauto.
   Qed.
 
   Lemma disjoint_list_prod (P1 P2 : partition):
-    ## (map (λ UU : (A → Prop) * (A → Prop), UU.1 ∩ UU.2) (list_prod P1 P2)).
+    disjoint_list (map (λ UU : (A → Prop) * (A → Prop), UU.1 ∩ UU.2) (list_prod P1 P2)).
   Proof.
     - revert P2. destruct P1 as [l ? HNoDup Hmeas]. rewrite //=. clear -HNoDup.
       induction HNoDup as [| ? ? Hdisj ?].
@@ -207,7 +207,7 @@ Section integral_prelim.
   Proof.
     intros HU. destruct wpt as [l p Hspec] => //=.
     rewrite /wpt_fun => //= Hin.
-    assert (Hdisj: ## (map snd l)).
+    assert (Hdisj: disjoint_list (map snd l)).
     { rewrite Hspec. apply partition_disjoint. }
     rewrite -Hspec in Hin.
     clear p Hspec.
@@ -231,7 +231,7 @@ Section integral_prelim.
   Qed.
 
   Lemma NoDup_inhabited_disjoint (U: A → Prop) l x :
-    ## (U :: l) → U x → ¬ In U l.
+    disjoint_list (U :: l) → U x → ¬ In U l.
   Proof.
     revert U x. induction l => //=.
     * intros. done.
@@ -244,7 +244,7 @@ Section integral_prelim.
     In (r1, U1) wpt → U1 x → wpt_fun wpt x = r1.
   Proof.
     destruct wpt as [l p Heq] => //=.
-    assert (Hdisj: ## (map snd l)).
+    assert (Hdisj: disjoint_list (map snd l)).
     { rewrite Heq. apply partition_disjoint. }
     rewrite /wpt_fun //=.
     clear p Heq.
@@ -549,7 +549,7 @@ Section integral_prelim.
   Qed.
 
   Lemma wpt_map_snd_disjoint (wpt: weighted_partition):
-    ## (map snd wpt).
+    disjoint_list (map snd wpt).
   Proof.
     destruct wpt as [l ? Hspec]. rewrite //= Hspec. apply partition_disjoint.
   Qed.
@@ -895,7 +895,7 @@ Section integral_prelim.
   Qed.
 
   Lemma wpt_indicator_scal_list_spec2 l Hmeas:
-    ## (map snd l) →
+    disjoint_list (map snd l) →
     ∀ x, ((∀ r U, In (r, U) l → ¬ U x) ∧ wpt_fun (wpt_indicator_scal_list l Hmeas) x = 0) ∨
          (∃ r U, In (r, U) l ∧ U x ∧ wpt_fun (wpt_indicator_scal_list l Hmeas) x = r).
   Proof.
@@ -1010,7 +1010,7 @@ Section integral_prelim.
       apply sigma_closed_pair_intersect; auto.
       apply wpt_fun_measurable, closed_ray_borel_ge.
     }
-    assert (HdisjAn: ∀ n l, ## (map snd l) → ## (map (λ x, An n (fst x) (snd x))) l).
+    assert (HdisjAn: ∀ n l, disjoint_list (map snd l) → disjoint_list (map (λ x, An n (fst x) (snd x)) l)).
     {
       clear. intros m l Hdisj. induction l as [| (r, U) l] => //=.
       econstructor.
@@ -1649,7 +1649,7 @@ Section integral_prelim.
       - rewrite //=. by left.
       - rewrite //=.  by right.
     }
-    assert (Hln_disj: ∀ n n', ## map snd (ln n n')).
+    assert (Hln_disj: ∀ n n', disjoint_list (map snd (ln n n'))).
     { intros n n'. revert n. induction n' => n //=.
       * econstructor => //=.
       * econstructor; eauto. intros x (Hin1&Hin2).
