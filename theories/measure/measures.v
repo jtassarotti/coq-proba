@@ -200,31 +200,29 @@ Section measure_props.
   Qed.
 
 
-  (*
   Lemma measure_incr_seq (Us: nat → (A → Prop)) :
     (∀ i, F (Us i)) →
     (∀ i, Us i ⊆ Us (S i)) →
-    filterlim (λ i, μ (Us i)) eventually (Rbar_locally (μ (unionF Us))).
+    filterlim (λ i, μ (Us i)) eventually (locally (μ (unionF Us))).
   Proof.
     intros Hmeas Hincr.
     eapply (filterlim_ext (λ n, Rbar_sum_n (λ i, μ (diff_below Us i)) n)).
-    { admit.  }
-    (*
     { intros n. induction n => //=.
-      * rewrite sum_O. apply measure_proper. clear => ?. firstorder lia.
-      * rewrite sum_Sn /plus IHn //=.
-        rewrite /Hierarchy.plus//=.
+      * rewrite Rbar_sum_O. apply measure_proper. clear => ?. firstorder lia.
+      * rewrite Rbar_sum_Sn /plus ?IHn //=; last first.
+        { eapply ex_Rbar_sum_n_m_nonneg. intros; eapply measure_nonneg. }
         rewrite -measure_finite_additivity; auto using diff_below_measurable.
         ** apply measure_proper. intros x; split.
            *** intros [Hle1|(?&?)]; eauto. eapply Hincr; done.
            *** intros HU. rewrite /diff_below.
                destruct (Classical_Prop.classic (Us n x)) as [Hn|Hnotn]; first by left.
                right; split; auto. intros i' Hlt Hsat.
-               apply Hnotn. eapply (measure_incr_mono Us i'); eauto. omega.
+               apply Hnotn. eapply (measure_incr_mono Us i'); eauto. lia.
         ** clear. intros x (Hin1&Hin2). destruct Hin2 as (?&Hfalse).
            eapply Hfalse; eauto.
     }
-     *)
+  Abort.
+  (*
     apply measure_additivity.
     * apply diff_below_measurable; eauto.
     * apply diff_below_disjoint.
@@ -364,8 +362,8 @@ Section measure_props.
 
   Lemma measure_countable_subadditivity (Us: nat → (A → Prop)):
     (∀ i, F (Us i)) →
-    ex_series (λ n, μ (Us n)) →
-    μ (unionF Us) <= Series (λ n, μ (Us n)).
+    enn_ex_series (λ n, μ (Us n)) →
+    Rbar_le (μ (unionF Us)) (enn_Series (λ n, μ (Us n))).
   Proof.
     intros.
     set (Us' := λ n, (λ x, ∃ j, (j <= n)%nat ∧ Us j x)).
@@ -374,9 +372,13 @@ Section measure_props.
       * intros (j&?). exists j. exists j. auto.
       * intros (j&(j'&?)). exists j'. intuition.
     }
-    eapply (is_lim_seq_le (λ n, μ (Us' n)) (sum_n (λ i, μ (Us i)))
+    edestruct (enn_ex_series_inv) as [Hfin|Hinf]; eauto; last first.
+    { rewrite Hinf //=. destruct (μ _) => //=. }
+    destruct Hfin as (Hex&?Hfin&HSeries). rewrite HSeries.
+
+    eapply (is_lim_seq_le (λ n, μ (Us' n)) (Rbar_sum_n (λ i, μ (Us i)))
                           (μ (unionF Us')) (Series (λ n, μ (Us n)))).
-    { intros. eapply measure_sum_n_subadditivity; eauto. }
+    { intros. admit.  }
     { apply (measure_incr_seq Us').
       { rewrite /Us'. intros i. apply sigma_closed_range_union. auto. }
       { intros i x (j&?&?). exists j; split; auto. }
