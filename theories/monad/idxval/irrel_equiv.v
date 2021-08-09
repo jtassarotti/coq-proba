@@ -95,9 +95,9 @@ Proof.
   eexists; split; eauto.
 Qed.
 
-Global Instance irrel_ivd_proper_instance : Proper (@eq_ivd X ==> @eq_ivd X ==> iff) (@irrel_ivd X).
+Global Instance irrel_ivd_proper_instance {X} : Proper (@eq_ivd X ==> @eq_ivd X ==> iff) (@irrel_ivd X).
 Proof.
-  intros ? I1 I1' Heq1 I2 I2' Heq2.
+  intros I1 I1' Heq1 I2 I2' Heq2.
   split; intros; eapply irrel_ivd_proper; eauto; try by symmetry.
 Qed.
 
@@ -583,15 +583,15 @@ Proof.
   }
 Qed.
 
-Global Instance irrel_pidist_mono_instance : Proper (@le_pidist X --> @le_pidist X ==> Coq.Program.Basics.impl) (@irrel_pidist X).
+Global Instance irrel_pidist_mono_instance {X} : Proper (@le_pidist X --> @le_pidist X ==> Coq.Program.Basics.impl) (@irrel_pidist X).
 Proof.
-  intros X I1 I1' Heq1 I2 I2' Heq2.
+  intros I1 I1' Heq1 I2 I2' Heq2.
   intros Hirrel. eapply irrel_pidist_proper; eauto.
 Qed.
 
-Global Instance irrel_pidist_proper_instance : Proper (@eq_pidist X ==> @eq_pidist X ==> iff) (@irrel_pidist X).
+Global Instance irrel_pidist_proper_instance {X} : Proper (@eq_pidist X ==> @eq_pidist X ==> iff) (@irrel_pidist X).
 Proof.
-  intros X I1 I1' Heq1 I2 I2' Heq2.
+  intros I1 I1' Heq1 I2 I2' Heq2.
   split; intros Hirrel; eapply irrel_pidist_proper; eauto;
     try (setoid_rewrite Heq1; reflexivity);
     try (setoid_rewrite Heq2; reflexivity).

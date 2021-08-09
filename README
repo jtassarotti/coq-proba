@@ -1,18 +1,20 @@
 Building
 -------------------------
-Dependencies (listed by opam package name and version)
+For dependencies see the coq-proba.opam file. The following configuration is
+known to work (listed by opam package name and version)
 
-- coq                       8.9.1
-- coq-bignums               8.9.0
-- coq-coquelicot            3.0.2
-- coq-flocq                 3.2.0
-- coq-interval              3.4.0
-- coq-mathcomp-ssreflect    1.9.0
-- coq-stdpp                 1.2.0
+- coq                       8.13.2
+- coq-bignums               8.13.0
+- coq-coquelicot            3.1.0
+- coq-flocq                 3.3.1
+- coq-interval              4.3.0
+- coq-mathcomp-ssreflect    1.12.0
+- coq-stdpp                 1.5.0
 
 We have not tested compilation under other configurations.
 
-Proof scripts should build by simply typing "make".
+You can install dependencies by running `make build-dep`. Proof scripts should
+then build by simply typing `make`.
 
 
 HTML Outline of Files
@@ -22,12 +24,10 @@ links to important lemmas and definitions that are mentioned in the
 paper. The CoqDoc html that it links to should be distributed as part
 of the supplementary material distribution, but it may have been deleted
 if you issued a command line "make clean". To rebuild it, please run
-"make html".
+`make html`.
 
 Plaintext Guide to Files
 -------------------------
-In case the readme.html does not work, we give a plain text
-overview of important files.
 
 All source files are in the subdirectory theories/, so all the
 paths we will quote are with respect to that.
@@ -39,6 +39,6 @@ paths we will quote are with respect to that.
 
 - prob/ -- Basic library of results for discrete probability theory.
 
-- measure/ -- Basic measure theory (lebesgue integral and measure, fubini's theorem, etc.)
+- measure/ -- Basic measure theory (lebesgue integral and measure, Fubini's theorem, etc.)
 
 - monad/ -- Definitions of probabilistic choice monads.

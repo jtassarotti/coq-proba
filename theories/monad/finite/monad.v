@@ -212,7 +212,6 @@ Lemma nth_lt_size {A: eqType} (d: A) m l (Hsize: (m < size l)%N):
   nth d l m \in l.
 Proof.
   apply /all_nthP => //.
-  apply /allP => x Hin //=.
 Qed.
 
 (* Every ldist can be regarded as a random variable *)
