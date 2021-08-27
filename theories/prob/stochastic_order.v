@@ -67,7 +67,8 @@ Lemma pr_gt_to_indicator {A} {Ω: distrib A} (T: rrvar Ω) r:
   pr (rvar_dist T) (λ n, Rgt_dec (T n) r) = pr_eq (pr_gt_indicator T r) 1.
 Proof.
   rewrite /pr_eq/pr. apply Series_ext => n. rewrite /countable_sum; destruct pickle_inv => //=.
-  destruct Rgt_dec; rewrite /rvar_dist//=; eauto; case: ifP => //=; move /eqP; nra.
+  destruct Rgt_dec; rewrite /rvar_dist//=; eauto; case: ifP => //=;
+  destruct ClassicalEpsilon.excluded_middle_informative => //=; nra.
 Qed.
 
 Variable A: finType.
@@ -122,7 +123,8 @@ Lemma pr_ge_to_indicator {A} {Ω: distrib A} (T: rrvar Ω) r:
   pr (rvar_dist T) (λ n, Rge_dec (T n) r) = pr_eq (pr_ge_indicator T r) 1.
 Proof.
   rewrite /pr_eq/pr. apply Series_ext => n. rewrite /countable_sum; destruct pickle_inv => //=.
-  destruct Rge_dec; rewrite /rvar_dist//=; eauto; case: ifP => //=; move /eqP; nra.
+  destruct Rge_dec; rewrite /rvar_dist//=; eauto; case: ifP => //=;
+  destruct ClassicalEpsilon.excluded_middle_informative => //=; nra.
 Qed.
 
 
@@ -178,11 +180,12 @@ Lemma pr_eq_to_indicator {A} {B} {Ω: distrib A} (T: rvar Ω B) r:
   pr (rvar_dist T) (λ n, (T n) == r) = pr_eq (pr_eq_indicator T r) 1.
 Proof.
   rewrite /pr_eq/pr. apply Series_ext => n. rewrite /countable_sum; destruct pickle_inv => //=.
-  case: ifP => ?; rewrite /rvar_dist//=; eauto; case: ifP => //=; move /eqP; nra.
+  case: ifP => ?; rewrite /rvar_dist//=; eauto; case: ifP => //=;
+  destruct ClassicalEpsilon.excluded_middle_informative => //=; nra.
 Qed.
 
 Variable A: finType.
-Variable B: eqType.
+Variable B: Type.
 Variable Ω: distrib A.
 Variable T: rvar Ω B.
 
@@ -196,7 +199,7 @@ Qed.
 
 End pr_eq.
 
-Lemma pr_eq_alt_comp {A: finType} {B C: eqType} {Ω: distrib A} (T: rvar Ω B) (f: B → C) r:
+Lemma pr_eq_alt_comp {A: finType} {B C: Type} {Ω: distrib A} (T: rvar Ω B) (f: B → C) r:
   pr (rvar_dist (rvar_comp T f)) (λ n, (rvar_comp T f) n == r)
   = \big[Rplus/0]_(v : imgT T) if (f (sval v) == r) then pr_eq T (sval v) else 0.
 Proof.

@@ -2,6 +2,7 @@ From discprob.basic Require Import base Series_Ext.
 Require Import Reals Fourier Omega Psatz.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 From Coquelicot Require Import Rcomplements Rbar Series Lim_seq Hierarchy Markov.
+Import ClassicalEpsilon.
 
 (*
 
@@ -91,52 +92,67 @@ Qed.
 
 (* The image of a countable type is also a countable type *)
 
-Definition img {A: countType} {B: eqType} (f: A → B ) : pred B := λ y, exC (λ x, f x == y).
-Definition imgT {A: countType} {B: eqType} (f: A → B) := {y | y \in img f}.
+Definition img {A: countType} {B} (f: A → B ) : pred B :=
+  λ y, exC (λ x, ClassicalEpsilon.excluded_middle_informative (f x = y)).
+Definition imgT {A: countType} {B} (f: A → B) := {y | y \in img f}.
 
-Definition img_pickle {A: countType} {B: eqType} (f: A → B) : { y | exC (λ x, f x == y) } → nat.
+Definition img_pickle {A: countType} {B} (f: A → B) : { y | exC (λ x, excluded_middle_informative (f x = y)) } → nat.
 Proof.
   intros (y&Hex).
-  destruct (LPO (λ n, omap f (unpickle n) == Some y)) as [(n&HP)|Hfalse].
+  destruct (LPO (λ n, omap f (unpickle n) = Some y)) as [(n&HP)|Hfalse].
   { abstract (intros n => //=; rewrite /omap/obind/oapp//=;
-              destruct (unpickle n); destruct (_ == _) => //; auto). }
+                     destruct (unpickle n); [ destruct (excluded_middle_informative (Some (f s) = Some y)); eauto
+                                            | right; congruence]). }
   - exact n.
-  - exfalso. move /exCP in Hex.
-    abstract (edestruct Hex as (a&Heq);
+  - exfalso; move /exCP in Hex.
+    abstract(edestruct Hex as (a&Heq);
               apply (Hfalse (pickle a)) => //=;
-              rewrite pickleK //=; subst; done).
+              rewrite pickleK //=; subst; try done;
+    destruct (excluded_middle_informative _); try congruence; inversion Heq).
 Defined.
 
-Definition img_unpickle {A: countType} {B: eqType} (f: A → B) (n: nat)
-  : option { y | exC (λ x, f x == y) } :=
+
+Definition img_unpickle {A: countType} {B} (f: A → B) (n: nat)
+  : option { y | exC (λ x, excluded_middle_informative (f x = y)) }.
+  refine
  (match unpickle n with
  | Some a =>
-     Some (exist (λ y : B, exC (λ x : A, f x == y)) (f a)
-          (introT (exCP (λ x : A, f x == f a)) (ex_intro (λ x : A, f x == f a) a (eqxx (T:=B) (f a)))))
+   Some (exist (λ y : B, exC (λ x : A, excluded_middle_informative (f x = y)))
+               (f a)
+               _) (* (introT (exCP _)) (ex_intro (λ x : A, _)) a _) *)
  | None => None
  end).
+  { abstract (eapply (introT (exCP _)); exists a; destruct (excluded_middle_informative _) => //=). }
+Defined.
 
-Lemma pickle_imgK {A: countType} {B: eqType} (f: A → B):
+Lemma pickle_imgK {A: countType} {B} (f: A → B):
   pcancel (img_pickle f) (img_unpickle f).
 Proof.
   rewrite /img_pickle/img_unpickle//=.
   intros (b&HexC) => //=.
-  destruct LPO as [(n&Heq')|];
-    last by (exfalso; eapply img_pickle_subproof0; eauto; apply (elimT (exCP _))).
+  destruct LPO as [(n&Heq')|]; last first.
+  { exfalso; eapply img_pickle_subproof0; eauto; apply (elimT (exCP _)); eauto. }
   destruct (unpickle n); rewrite //= in Heq'.
-  move /eqP in Heq'. inversion Heq'; subst.
+  inversion Heq'; subst.
   do 2!f_equal.
   apply bool_irrelevance.
 Qed.
 
-Definition img_choiceMixin {A: countType} {B: eqType} (f: A → B) :=
-  PcanChoiceMixin (pickle_imgK f).
-Canonical img_choiceType {A: countType} {B: eqType} {f: A → B} :=
-  Eval hnf in ChoiceType (imgT f) (@img_choiceMixin A B f).
+Definition imgT_eqP {A : countType} {B: Type} (f: A → B) :
+  Equality.axiom (fun x y: imgT f => excluded_middle_informative (x = y) ).
+Proof. move => x y. apply sumboolP. Qed.
 
-Definition img_countMixin {A: countType} {B: eqType} (f: A → B) :=
+Canonical imgT_eqMixin {A : countType} {B} (f: A → B) := EqMixin (imgT_eqP f).
+Canonical imgT_eqType {A : countType} {B} (f : A → B) := Eval hnf in EqType _ (imgT_eqMixin f).
+
+Definition img_choiceMixin {A: countType} {B} (f: A → B) :=
+  PcanChoiceMixin (pickle_imgK f).
+Canonical img_choiceType {A: countType} {B} {f: A → B} : choiceType :=
+  Eval hnf in @ChoiceType (imgT f) (@img_choiceMixin A B f).
+
+Definition img_countMixin {A: countType} {B} (f: A → B) :=
   PcanCountMixin (pickle_imgK f).
-Canonical img_countType {A: countType} {B: eqType} (f: A → B) :=
+Canonical img_countType {A: countType} {B} (f: A → B) :=
   Eval hnf in CountType (imgT f) (@img_countMixin A B f).
 
 (* Some facts about series over countable types *)

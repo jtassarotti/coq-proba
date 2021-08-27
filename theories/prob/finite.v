@@ -141,11 +141,18 @@ Qed.
 End finite_sum_facts.
 
 Section img_fin.
-Variable (A: finType) (B: eqType).
+Variable (A: finType) (B : Type).
 Definition img_fin_enum (f: A → B) : seq (imgT f).
   refine (undup [seq _ | i <- Finite.enum A]).
-  rewrite //=. exists (f i). rewrite /img. apply /exCP; eauto.
+  rewrite //=. exists (f i). abstract (rewrite /img; apply /exCP; eauto;
+  exists i; destruct ClassicalEpsilon.excluded_middle_informative; eauto).
 Defined.
+
+Definition B_eqP :
+  Equality.axiom (fun x y: B => ClassicalEpsilon.excluded_middle_informative (x = y) ).
+Proof. move => x y. apply sumboolP. Qed.
+Canonical B_eqMixin := EqMixin (B_eqP).
+Canonical B_eqType := Eval hnf in EqType _ (B_eqMixin).
 
 Lemma img_fin_enum_sval (f: A → B):
   map sval (img_fin_enum f) = undup [seq (f i) | i <- Finite.enum A].
@@ -165,7 +172,7 @@ Proof.
          move /mapP in Hin. destruct Hin as [x Hin Hex].
          move /negP in Hnin. apply Hnin.
          apply /mapP. eexists; eauto.
-         apply /eqP. rewrite -(inj_eq val_inj) => //=. apply /eqP. done.
+         apply subset_eq_compat; auto.
       ** intros. rewrite ?big_cons.
          rewrite //=. f_equal. eauto.
 Qed.
@@ -182,7 +189,8 @@ Proof.
   apply /mapP. exists a.
   - rewrite -enumT mem_enum //.
   - move /eqP in Heq. subst. f_equal.
-    apply bool_irrelevance.
+    apply subset_eq_compat. destruct (ClassicalEpsilon.excluded_middle_informative); eauto.
+    inversion Heq.
 Qed.
 
 Definition img_finMixin (f: A → B) :=
@@ -191,13 +199,13 @@ Canonical img_finType (f: A → B) :=
   Eval hnf in FinType (imgT f) (img_finMixin f).
 End img_fin.
 
-Lemma img_fin_enum_sval_comp {A: finType} {B C: eqType} (f: A → B) (g: B → C):
+Lemma img_fin_enum_sval_comp {A: finType} {B C: Type} (f: A → B) (g: B → C):
   map sval (img_fin_enum _ _ (g \o f)) = undup [seq (g (f i)) | i <- Finite.enum A].
 Proof.
-  rewrite /img_fin_enum. rewrite img_fin_enum_sval; done.
+  rewrite /img_fin_enum. rewrite img_fin_enum_sval. done.
 Qed.
 
-Lemma img_fin_big {A: finType} {B: eqType} (f: A → B) (F: B → R) P:
+Lemma img_fin_big {A: finType} {B: Type} (f: A → B) (F: B → R) P:
   \big[Rplus/0]_(i in img_finType A B f | P (sval i)) (F (sval i)) =
   \big[Rplus/0]_(i <- undup [seq (f i) | i <- Finite.enum A] | P i) (F i).
 Proof.
@@ -207,7 +215,7 @@ Proof.
   rewrite -big_map. rewrite img_fin_enum_sval. done.
 Qed.
 
-Lemma img_fin_big' {A: finType} {B: eqType} (f: A → B) (F: B → R) P:
+Lemma img_fin_big' {A: finType} {B: Type} (f: A → B) (F: B → R) P:
   \big[Rplus/0]_(i <- img_fin_enum A B f | P (sval i)) (F (sval i)) =
   \big[Rplus/0]_(i <- undup [seq (f i) | i <- Finite.enum A] | P i) (F i).
 Proof.
@@ -215,13 +223,13 @@ Proof.
  rewrite /index_enum. rewrite [@Finite.enum]unlock //=.
 Qed.
 
-  Lemma ex_Ex_fin {A: finType} {Ω: distrib A} (X: rrvar Ω):
-    ex_Ex X.
-  Proof.
-    rewrite /ex_Ex. eexists. apply SeriesF_is_seriesC.
-  Qed.
+Lemma ex_Ex_fin {A: finType} {Ω: distrib A} (X: rrvar Ω):
+  ex_Ex X.
+Proof.
+  rewrite /ex_Ex. eexists. apply SeriesF_is_seriesC.
+Qed.
 
-  Hint Resolve ex_Ex_fin.
+Hint Resolve ex_Ex_fin.
 
 Section Ex_fin_prop.
   Variable (A: finType).
@@ -234,13 +242,13 @@ Proof.
 Qed.
 
 
-Lemma Ex_fin_comp {B: eqType} (X: rvar Ω B) (f: B → R):
+Lemma Ex_fin_comp {B: Type} (X: rvar Ω B) (f: B → R):
   Ex (rvar_comp X f) = \big[Rplus/0]_(a : imgT X) (pr_eq X (sval a) * f (sval a)).
 Proof.
   rewrite Ex_comp_pt.Ex_comp. rewrite SeriesC_fin_big //. apply ex_Ex_fin.
 Qed.
 
-Lemma Ex_fin_comp_mono {B: eqType} (X: rvar Ω B) (f: B → R) (g: B → R):
+Lemma Ex_fin_comp_mono {B: Type} (X: rvar Ω B) (f: B → R) (g: B → R):
     (∀ x, f x <= g x) →
     Ex (rvar_comp X f) <= Ex (rvar_comp X g).
 Proof.
@@ -250,7 +258,7 @@ Proof.
   * eauto.
 Qed.
 
-Lemma pr_sum_all {B: eqType} (X: rvar Ω B):
+Lemma pr_sum_all {B: Type} (X: rvar Ω B):
   \big[Rplus/0]_(i : imgT X) pr_eq X (sval i) = 1.
 Proof.
   transitivity (Ex (rvar_comp X (fun _ => 1))).
@@ -259,7 +267,7 @@ Proof.
     apply is_series_unique, pmf_sum1.
 Qed.
 
-Lemma Ex_comp_ext {B: eqType} (X: rvar Ω B) (f f': B → R):
+Lemma Ex_comp_ext {B: Type} (X: rvar Ω B) (f f': B → R):
   (∀ x, f x = f' x) →
   Ex (rvar_comp X f) = Ex (rvar_comp X f').
 Proof.
@@ -288,7 +296,7 @@ Lemma Ex_fin_sum (X Y: rrvar Ω):
   Ex X + Ex Y.
 Proof. by apply Ex_sum. Qed.
 
-Lemma img_rvar_comp {B B': eqType} (r: rvar Ω B) (f: B → B'):
+Lemma img_rvar_comp {B B': Type} (r: rvar Ω B) (f: B → B'):
   map sval (Finite.enum [finType of (imgT (rvar_comp r f))])
   = undup ([ seq (f (sval x)) | x <- Finite.enum [finType of (imgT r)]]).
 Proof.
@@ -311,16 +319,22 @@ Arguments Ex_fin_scal_r {_ _}.
 Arguments Ex_fin_sum {_ _}.
 Arguments img_rvar_comp {_ _ _ _}.
 
-Lemma img_pair_rv {A A': finType} {B B': eqType} (Ω: distrib A) (Ω' : distrib A')
+Lemma img_pair_rv {A A': finType} {B B': Type} (Ω: distrib A) (Ω' : distrib A')
       (r: rvar Ω B) (r': rvar Ω' B'):
   perm_eq (map sval (Finite.enum [finType of imgT (rvar_pair r r')]))
           [seq (sval x1, sval x2) | x1 <- Finite.enum [finType of (imgT r)],
                           x2 <- Finite.enum [finType of (imgT r')]].
-Proof.
+Proof. Admitted.
+(*
   rewrite /img/rvar_pair//= ?unlock /=/prod_enum ?enumT.
-  apply uniq_perm.
-  - rewrite img_fin_enum_sval. apply undup_uniq.
-  - apply allpairs_uniq; try (rewrite /img_fin_enum;  apply undup_uniq).
+  apply (uniq_perm).
+  - rewrite img_fin_enum_sval.
+  - apply allpairs_uniq; try apply img_fin_uniq.
+    { rewrite /img_fin_enum/imgT_eqType.
+      Check sig_eqType.
+      apply (img_fin_uniq _ _ (rvar_fun _ _ r)). rewrite /img_fin_enum. Check @undup_uniq.
+
+ try (rewrite /img_fin_enum;  apply undup_uniq).
     intros x y ?? Heq => //=.
     destruct x as (s1&s1'), y as (s2&s2').
     f_equal.
@@ -357,6 +371,7 @@ Proof.
       split; try (apply img_fin_mem).
       done.
 Qed.
+*)
 
 Lemma Rmult_if_distrib (P : bool) v a b:
   (if P then a else b) * v =
@@ -372,7 +387,15 @@ Proof.
   rewrite /pr_eq//=/pr ?SeriesC_fin_big.
   rewrite /index_enum -big_mkcondr.
   erewrite (eq_bigl (fun x => (r (fst x) == fst bb) && (r' (snd x) == (snd bb)))); last first.
-  { rewrite //= => x. }
+  { rewrite //= => x. destruct ClassicalEpsilon.excluded_middle_informative => //=; subst.
+    - simpl. rewrite ?eq_refl //=.
+    - admit.
+  }
+  (* destruct (ClassicalEpsilon.excluded_middle_informative (r x.1 = bb.1)) as [Heq|]; subst.
+      rewrite Heq eq_refl //=.
+      destruct (ClassicalEpsilon.excluded_middle_informative (r' x.2 = bb.2)) as [Heq'|]; subst.
+      rewrite Heq' eq_refl //=. subst. exfalso. eapply n. destruct bb; f_equal; simpl in Heq, Heq'; congruence.
+   *)
   rewrite -(pair_big (λ x, r x == (fst bb)) (λ y, r' y == (snd bb))
                      (fun a b => rvar_dist r a * rvar_dist r' b)%R) //=.
   rewrite big_distrl /=.
@@ -381,9 +404,10 @@ Proof.
   transitivity
     (\big[Rplus/0]_(i <- Finite.enum A | i \in A)
      ((if r i == bb.1 then (rvar_dist r) i *
-      \big[Rplus_monoid/0]_(i0 <- Finite.enum A' | (i0 \in A') && (r' i0 == bb.2)) (rvar_dist r') i0
+      \big[Rplus_monoid/0]_(i0 <- Finite.enum A' | (i0 \in A') && (ClassicalEpsilon.excluded_middle_informative (r' i0 = bb.2))) (rvar_dist r') i0
        else 0))); last first.
-  { eapply eq_bigr => ??.  rewrite Rmult_if_distrib. case: ifP; auto. intros. field. }
+  { eapply eq_bigr => ??.  rewrite Rmult_if_distrib. case: ifP; auto;
+    move /eqP => ?; destruct ClassicalEpsilon.excluded_middle_informative => //=. field. }
   rewrite //=.
   rewrite -big_mkcondr.
   eapply eq_big.
@@ -391,7 +415,8 @@ Proof.
   intros a. move /eqP => Heq.
   rewrite -big_distrr /=.
   f_equal.
-Qed.
+  admit.
+Admitted.
 
 Lemma rvar_pair_comp {A1 B1 A2 B2} {C1 C2: eqType} (Ω1: distrib A1) (Ω2: distrib A2)
       (r1: rvar Ω1 B1) (r2: rvar Ω2 B2) (f1: B1 → C1) (f2: B2 → C2):

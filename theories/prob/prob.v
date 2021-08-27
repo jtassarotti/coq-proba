@@ -3,6 +3,7 @@ From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigo
 From discprob.basic Require Export base Series_Ext order bigop_ext sval Reals_ext.
 From discprob.prob Require Import countable double rearrange.
 From Coquelicot Require Export Rcomplements Rbar Series Lim_seq Hierarchy Markov.
+Import ClassicalEpsilon.
 (* Basic definitions for discrete probability theory *)
 
 Ltac to_lim_seq :=
@@ -162,12 +163,12 @@ Proof.
     * rewrite //= in Hgt; nra.
 Qed.
 
-Record rvar {A} (Ω: distrib A) (B: eqType) := mkRvar { rvar_fun :> A → B; }.
+Record rvar {A} (Ω: distrib A) (B: Type) := mkRvar { rvar_fun :> A → B; }.
 
 
 Arguments mkRvar {_} _ {_} _.
 
-Definition rvar_const {A} {B : eqType} (Ω: distrib A) (b: B) :=
+Definition rvar_const {A} {B} (Ω: distrib A) (b: B) :=
   mkRvar Ω (λ x, b).
 
 (* Given two distributions, we can form a joint ``independent'' distribution *)
@@ -366,10 +367,10 @@ End product.
 Arguments distrib_prod {_ _}.
 Arguments prod_pmf {_ _}.
 
-Definition rrvar {A} (Ω : distrib A) := @rvar A Ω [eqType of R].
+Definition rrvar {A} (Ω : distrib A) := @rvar A Ω R.
 
-Definition pr_eq {A} {B: eqType} {Ω : distrib A} (X: rvar Ω B) (b: B) :=
-  pr Ω (λ a, X a == b).
+Definition pr_eq {A B} {Ω : distrib A} (X: rvar Ω B) (b: B) :=
+  pr Ω (λ a, ClassicalEpsilon.excluded_middle_informative (X a = b)).
 Definition pr_gt {A} {Ω: distrib A} (X: rrvar Ω) (b: R) :=
   pr Ω (λ a, Rgt_dec (X a) b).
 Definition pr_ge {A} {Ω: distrib A} (X: rrvar Ω) (b: R) :=
@@ -388,18 +389,18 @@ Proof.
   rewrite //= in Hngt2 Hgt1. nra.
 Qed.
 
-Lemma pr_eq_rvar_ext {A} {B: eqType} {Ω: distrib A} (X X': rvar Ω B) (b: B):
+Lemma pr_eq_rvar_ext {A} {B: Type} {Ω: distrib A} (X X': rvar Ω B) (b: B):
   X =1 X' →
   pr_eq X b = pr_eq X' b.
 Proof.
   intros Hext; rewrite /pr_eq. apply pr_eq_pred' => i; by rewrite (Hext i).
 Qed.
 
-Lemma pr_eq_ge_0 {A} {B: eqType} {Ω: distrib A} (X: rvar Ω B) (b: B) :
+Lemma pr_eq_ge_0 {A} {B} {Ω: distrib A} (X: rvar Ω B) (b: B) :
   pr_eq X b >= 0.
 Proof. apply ge_pr_0. Qed.
 
-Lemma pr_eq_le_1 {A} {B: eqType} {Ω: distrib A} (X: rvar Ω B) (b: B) :
+Lemma pr_eq_le_1 {A} {B} {Ω: distrib A} (X: rvar Ω B) (b: B) :
   pr_eq X b <= 1.
 Proof. apply pr_le_1.  Qed.
 
@@ -452,16 +453,17 @@ Proof. intros. by apply ex_series_Rabs, ex_Ex'. Qed.
 
 Hint Resolve  ex_Ex' ex_Ex_nonabs.
 
-Definition rvar_comp {A: countType} {B C: eqType} {Ω : distrib A} (X: rvar Ω B) (f: B → C)
+Definition rvar_comp {A: countType} {B C: Type} {Ω : distrib A} (X: rvar Ω B) (f: B → C)
   : rvar Ω C :=
   mkRvar (rvar_dist X) (f \o X).
 
 Section Ex_pt_gen.
 Variable (A: countType).
-Variable (B: eqType).
+Variable (B: Type).
 Variable (Ω: distrib A).
 Variable (X: rvar Ω B).
 Variable (f: B → R).
+Locate imgT.
 
 Definition σpt : nat → nat * nat.
   refine (λ n, match @pickle_inv [countType of A] n with
@@ -469,14 +471,14 @@ Definition σpt : nat → nat * nat.
                             S (pickle a))
                | None => (O, O)
                end).
-  { rewrite /img//=. apply /exCP. exists a. by rewrite eq_refl. }
+  { rewrite /img//=. apply /exCP. exists a. destruct (ClassicalEpsilon.excluded_middle_informative _); eauto. }
 Defined.
 
 Definition apt :=
   λ mn, match mn with
         | (S m, S n) =>
           match (@pickle_inv [countType of imgT X] m), (@pickle_inv A n) with
-            | Some v, Some a => (if (X a) == (sval v) then rvar_dist X a else 0) * f (sval v)
+            | Some v, Some a => (if ClassicalEpsilon.excluded_middle_informative (X a = sval v) then rvar_dist X a else 0) * f (sval v)
             | _, _ => 0
           end
         | _ => 0
@@ -503,7 +505,8 @@ Proof.
       rewrite /apt. destruct (@pickle_inv _ j) as [v|]; last first.
       { exists 0. apply is_series_0 => ?. rewrite Rabs_R0. done. }
       apply (ex_series_ext (λ k, Rabs (f (sval v)) * (match @pickle_inv A k with
-                                                 | Some a => (if X a == sval v then (rvar_dist X) a
+                                                 | Some a => (if excluded_middle_informative (X a = sval v) then
+                                                                (rvar_dist X) a
                                                              else 0)
                                                  | None => 0
                                                  end))).
@@ -521,7 +524,8 @@ Proof.
     { symmetry; apply Series_0; intros [|]; by rewrite Rabs_R0. }
     rewrite Series_incr_1_aux; last by apply Rabs_R0.
     rewrite -(Series_ext (λ k, Rabs (f (sval v)) * (match @pickle_inv A k with
-                                                 | Some a => (if X a == sval v then (rvar_dist X) a
+                                                 | Some a => (if excluded_middle_informative (X a = sval v) then
+                                                                (rvar_dist X) a
                                                              else 0)
                                                  | None => 0
                                                  end))).
@@ -540,10 +544,10 @@ Lemma apt_double_summable_by_column
  double_summable apt.
 Proof.
   assert (Himg: ∀ v, X v \in img X).
-  { intros v. rewrite /img //=. apply /exCP. eexists. eauto. }
+  { intros v. rewrite /img //=. apply /exCP. exists v. destruct excluded_middle_informative; auto. }
   assert (Hext: ∀ v x, (λ n : nat,
                       match @pickle_inv [countType of imgT X] n with
-                      | Some v0 => if X v == sval v0 then Rabs (f (sval v0)) else 0
+                      | Some v0 => if excluded_middle_informative (X v = sval v0) then Rabs (f (sval v0)) else 0
                       | None => 0
                       end) x =
                (λ n : nat, match eq_nat_dec n (@pickle [countType of imgT X]
@@ -554,15 +558,13 @@ Proof.
                            end) x).
   { intros v x. generalize (Himg v); clear Himg => Himg. destruct Nat.eq_dec as [e|n].
     * rewrite //= e. rewrite pickleK_inv.
-      rewrite //= eq_refl. done.
+      destruct excluded_middle_informative; eauto => //=.
     * specialize (@pickle_invK [countType of imgT X] x) => //=.
       intros. destruct pickle_inv => //.
-      case: ifP.
-      ** move /eqP => Heq.
-         rewrite Heq in Himg n. rewrite //= in H.
-         rewrite -H in n.
-         exfalso. apply n. f_equal. apply sval.sval_inj_pred => //=.
-      ** done.
+      destruct excluded_middle_informative as [Heq|] => //=.
+      rewrite Heq in Himg n. rewrite //= in H.
+      rewrite -H in n.
+      exfalso. apply n. f_equal. apply sval.sval_inj_pred => //=.
   }
   apply ex_series_columns_ds.
   - intros j. destruct j.
@@ -571,7 +573,7 @@ Proof.
       rewrite /apt. destruct (pickle_inv j) as [v|]; last first.
       { exists 0. apply is_series_0 => n. destruct (pickle_inv _); rewrite Rabs_R0; done. }
       apply (ex_series_ext (λ k, rvar_dist X v * (match @pickle_inv [countType of imgT X] k with
-                                                  | Some v0 => (if X v == sval v0 then
+                                                  | Some v0 => (if excluded_middle_informative (X v = sval v0) then
                                                                   Rabs (f (sval v0))
                                                                 else 0)
                                                  | None => 0
@@ -598,7 +600,7 @@ Proof.
     }
     rewrite Series_incr_1_aux; last by apply Rabs_R0.
     rewrite -(Series_ext (λ k, rvar_dist X v * (match @pickle_inv [countType of imgT X] k with
-                                                | Some v0 => (if X v == sval v0 then
+                                                | Some v0 => (if excluded_middle_informative (X v = sval v0) then
                                                                 Rabs (f (sval v0))
                                                              else 0)
                                                  | None => 0
@@ -653,7 +655,8 @@ Proof.
   - apply (f_equal (oapp (@pickle _) n1)) in Heq1. rewrite pickle_invK //= in Heq1.
     rewrite Heq1. f_equal => //=. move: Hneq0. case: ifP; last by nra.
     move /eqP => Heq ?. destruct v as (v&Hpf). rewrite //= in Heq. subst.
-    rewrite //=. f_equal. apply bool_irrelevance.
+    rewrite //=. f_equal.
+    apply subset_eq_compat. destruct (excluded_middle_informative); eauto. rewrite //= in Heq.
   - apply (f_equal (oapp (@pickle _) n2)) in Heq2. rewrite pickle_invK //= in Heq2.
 Qed.
 
@@ -663,7 +666,7 @@ Proof.
  rewrite /apt/countable_sum.
  destruct (@pickle_inv _ j) as [v|] => //=; last apply Series_0 => //=.
  rewrite -(Series_ext (λ k, f (sval v) * (match @pickle_inv A k with
-                                             | Some a => (if X a == sval v then (rvar_dist X) a
+                                             | Some a => (if excluded_middle_informative (X a = sval v) then (rvar_dist X) a
                                                           else 0)
                                              | None => 0
                                              end))).
@@ -678,7 +681,7 @@ Proof.
  rewrite /apt/countable_sum.
  destruct (@pickle_inv _ j) as [v|] => //=; last apply Series_0 => //=.
  rewrite -(Series_ext (λ k, Rabs (f (sval v)) * (match @pickle_inv A k with
-                                             | Some a => (if X a == sval v then (rvar_dist X) a
+                                             | Some a => (if excluded_middle_informative (X a = sval v) then (rvar_dist X) a
                                                           else 0)
                                              | None => 0
                                              end))).
@@ -701,7 +704,7 @@ Proof.
   {
     intros n. rewrite /apt/σpt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=.
-    rewrite ?pickleK_inv //= eq_refl. nra.
+    rewrite ?pickleK_inv //=; destruct (excluded_middle_informative); eauto => //=. nra.
   }
   apply Series_correct, ex_series_Rabs, ex_series_ordering;
     auto using σpt_inj, σpt_cov, apt_double_summable_by_row.
@@ -717,9 +720,8 @@ Proof.
   {
     intros n. rewrite /apt/σpt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=.
-    rewrite ?pickleK_inv //= eq_refl.
-    rewrite Rabs_mult //=.
-    * rewrite Rabs_right; auto using pmf_pos.
+    rewrite ?pickleK_inv //=; destruct (excluded_middle_informative) => //=; try eauto.
+    * rewrite Rabs_mult //=. rewrite Rabs_right; auto using pmf_pos.
       nra.
     * by rewrite Rabs_R0.
   }
@@ -739,7 +741,7 @@ Proof.
   {
     intros n. rewrite /apt/σpt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=.
-    rewrite ?pickleK_inv //= eq_refl. nra.
+    rewrite ?pickleK_inv //=; destruct (excluded_middle_informative) => //=; nra.
   }
   apply (is_series_incr_1 (λ j, Series (λ k, apt (j, k)))).
   rewrite {3}/apt. rewrite [a in is_series _ (plus _ a)]Series_0 // plus_zero_r.
@@ -758,7 +760,7 @@ Proof.
   {
     intros n. rewrite /apt/σpt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=.
-    rewrite ?pickleK_inv //= eq_refl //=. nra.
+    rewrite ?pickleK_inv //=; destruct (excluded_middle_informative) => //=; nra.
   }
   apply (is_series_incr_1 (λ j, Series (λ k, apt (j, k)))).
   rewrite {3}/apt. rewrite [a in is_series _ (plus _ a)]Series_0 // plus_zero_r.
@@ -779,9 +781,8 @@ Proof.
   {
     intros n. rewrite /apt/σpt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=.
-    rewrite ?pickleK_inv //= eq_refl //=.
-    rewrite Rabs_mult //=.
-    * rewrite Rabs_right; auto using pmf_pos.
+    rewrite ?pickleK_inv //=; destruct (excluded_middle_informative) => //=; try eauto.
+    * rewrite Rabs_mult //=. rewrite Rabs_right; auto using pmf_pos.
       nra.
     * by rewrite Rabs_R0.
   }
@@ -941,7 +942,7 @@ End Ex.
 
 Hint Resolve ex_Ex_pt.
 
-Definition rvar_pair {A1 A2: countType} {B1 B2: eqType} {Ω1 : distrib A1} {Ω2 : distrib A2}
+Definition rvar_pair {A1 A2: countType} {B1 B2: Type} {Ω1 : distrib A1} {Ω2 : distrib A2}
            (X: rvar Ω1 B1) (Y: rvar Ω2 B2) :=
   mkRvar (distrib_prod Ω1 Ω2) (λ a, (X (fst a), Y (snd a))).
 
@@ -991,24 +992,24 @@ Proof.
   - by rewrite (pair_joint_pred _ _ xpredT _) pr_xpredT Rmult_1_l.
 Qed.
 
-Lemma rvar_pair_marginal1 {A1 A2: countType} {B1 B2: eqType} {Ω1 : distrib A1} {Ω2 : distrib A2}
+Lemma rvar_pair_marginal1 {A1 A2: countType} {B1 B2: Type} {Ω1 : distrib A1} {Ω2 : distrib A2}
            (X: rvar Ω1 B1) (Y: rvar Ω2 B2) P :
   pr (rvar_dist (rvar_pair X Y)) (λ x, P (fst x)) =
   pr (rvar_dist X) P.
 Proof. by apply pair_marginal1. Qed.
 
-Lemma rvar_pair_marginal2 {A1 A2: countType} {B1 B2: eqType} {Ω1 : distrib A1} {Ω2 : distrib A2}
+Lemma rvar_pair_marginal2 {A1 A2: countType} {B1 B2: Type} {Ω1 : distrib A1} {Ω2 : distrib A2}
            (X: rvar Ω1 B1) (Y: rvar Ω2 B2) P :
   pr (rvar_dist (rvar_pair X Y)) (λ x, P (snd x)) =
   pr (rvar_dist Y) P.
 Proof. by apply pair_marginal2. Qed.
 
-Lemma rvar_comp_assoc {A: countType} {Ω: distrib A} {B C D: eqType}
+Lemma rvar_comp_assoc {A: countType} {Ω: distrib A} {B C D: Type}
       (T: rvar Ω B) (f: B → C) (g: C → D):
   rvar_comp (rvar_comp T f) g = rvar_comp T (g \o f).
 Proof. rewrite //=. Qed.
 
-Lemma rvar_comp_comp {A: countType} {Ω: distrib A} {B C D: eqType}
+Lemma rvar_comp_comp {A: countType} {Ω: distrib A} {B C D: Type}
       (T: rvar Ω B) (f: B → C) (g: C → D):
   rvar_comp (rvar_comp T f) g = rvar_comp T (g \o f).
 Proof. rewrite //=. Qed.
@@ -1017,7 +1018,7 @@ Module Ex_comp_pt.
 Section Ex_comp_pt.
 
 Variable (A: countType).
-Variable (B: eqType).
+Variable (B : Type).
 Variable (Ω: distrib A).
 Variable (X: rvar Ω B).
 Variable (f: B → R).
@@ -1029,14 +1030,14 @@ Definition σcomppt : nat → nat * nat.
                             S (pickle a))
                | None => (O, O)
                end).
-  { rewrite /img//=. apply /exCP. exists a. by rewrite eq_refl. }
+  { rewrite /img//=. apply /exCP. exists a. destruct (excluded_middle_informative); eauto. }
 Defined.
 
 Definition acomppt :=
   λ mn, match mn with
         | (S m, S n) =>
           match (@pickle_inv [countType of imgT X] m), (@pickle_inv A n) with
-            | Some v, Some a => (if (X a) == (sval v) then rvar_dist X a else 0) * f (sval v)
+            | Some v, Some a => (if (excluded_middle_informative (X a = sval v)) then rvar_dist X a else 0) * f (sval v)
             | _, _ => 0
           end
         | _ => 0
@@ -1077,7 +1078,7 @@ Proof.
   - apply (f_equal (oapp (@pickle _) n1)) in Heq1. rewrite pickle_invK //= in Heq1.
     rewrite Heq1. f_equal => //=. move: Hneq0. case: ifP; last by nra.
     move /eqP => Heq ?. destruct v as (v&Hpf). rewrite //= in Heq. subst.
-    rewrite //=. f_equal. apply bool_irrelevance.
+    apply subset_eq_compat. destruct (excluded_middle_informative); eauto. rewrite //= in Heq.
   - apply (f_equal (oapp (@pickle _) n2)) in Heq2. rewrite pickle_invK //= in Heq2.
 Qed.
 
@@ -1087,7 +1088,7 @@ Proof.
  rewrite /acomppt/countable_sum.
  destruct (@pickle_inv _ j) as [v|] => //=; last apply Series_0 => //=.
  rewrite -(Series_ext (λ k, f (sval v) * (match @pickle_inv A k with
-                                             | Some a => (if X a == sval v then (rvar_dist X) a
+                                             | Some a => (if (excluded_middle_informative (X a = sval v)) then (rvar_dist X) a
                                                           else 0)
                                              | None => 0
                                              end))).
@@ -1102,7 +1103,7 @@ Proof.
  rewrite /acomppt/countable_sum.
  destruct (@pickle_inv _ j) as [v|] => //=; last apply Series_0 => //=.
  rewrite -(Series_ext (λ k, Rabs (f (sval v)) * (match @pickle_inv A k with
-                                             | Some a => (if X a == sval v then (rvar_dist X) a
+                                             | Some a => (if (excluded_middle_informative (X a = sval v)) then (rvar_dist X) a
                                                           else 0)
                                              | None => 0
                                              end))).
@@ -1125,7 +1126,7 @@ Proof.
   {
     intros n. rewrite /acomppt/σcomppt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=.
-    rewrite ?pickleK_inv //= eq_refl. nra.
+    rewrite ?pickleK_inv //=; destruct (excluded_middle_informative); eauto => //=. nra.
   }
   apply (is_series_incr_1 (λ j, Series (λ k, acomppt (j, k)))).
   rewrite {3}/acomppt. rewrite [a in is_series _ (plus _ a)]Series_0 // plus_zero_r.
@@ -1146,7 +1147,8 @@ Proof.
   {
     intros n. rewrite /acomppt/σcomppt/countable_sum//=.
     destruct (@pickle_inv _ n) as [a|] => //=; last by rewrite Rabs_R0.
-    rewrite ?pickleK_inv //= eq_refl ?Rabs_mult.
+    rewrite ?pickleK_inv //=; destruct (excluded_middle_informative); eauto => //=.
+    rewrite ?Rabs_mult.
     rewrite (Rabs_right); last by apply pmf_pos.
     nra.
   }
@@ -1395,10 +1397,10 @@ Arguments Ex_sum {_ _}.
 
 Definition id_rvar {A: countType} (Ω: distrib A) : rvar Ω A :=
   mkRvar Ω (λ a, a).
-Definition indicator {A: countType} {B: eqType} {Ω : distrib A} (X: rvar Ω B) (P: B → bool) :=
+Definition indicator {A: countType} {B} {Ω : distrib A} (X: rvar Ω B) (P: B → bool) :=
   rvar_comp X (λ a, if P a then 1 else 0).
 
-Lemma ex_Ex_indicator {A} {B: eqType} {Ω : distrib A} (X: rvar Ω B) P:
+Lemma ex_Ex_indicator {A} {B: Type} {Ω : distrib A} (X: rvar Ω B) P:
   ex_Ex (indicator X P).
 Proof.
   apply ex_Ex_by_pt.
@@ -1415,16 +1417,16 @@ Proof.
 Qed.
 
 
-Lemma Ex_indicator {A} {B: eqType} {Ω : distrib A} (X: rvar Ω B) P:
+Lemma Ex_indicator {A} {B} {Ω : distrib A} (X: rvar Ω B) P:
   Ex (indicator X P) = pr_eq (indicator X P) 1.
 Proof.
   rewrite Ex_pt; last apply ex_Ex_indicator.
   rewrite /pr_eq/pr. apply Series_ext.
   intros n. rewrite /countable_sum/oapp/rvar_dist; destruct pickle_inv => //=.
-  destruct (P (X s)); case: ifP; move /eqP; intros; try congruence; try nra.
+  destruct (excluded_middle_informative); destruct (P (X s)) => //=; try nra.
 Qed.
 
-Lemma Ex_indicator_le_1 {A} {B : eqType} {Ω: distrib A} (X : rvar Ω B) P:
+Lemma Ex_indicator_le_1 {A} {B} {Ω: distrib A} (X : rvar Ω B) P:
   Ex (indicator X P) <= 1.
 Proof. rewrite Ex_indicator. apply pr_le_1. Qed.
 
@@ -1566,7 +1568,7 @@ Proof.
 
 *)
 
-Lemma distrib_of_rvar_pmf_sum1 {A: countType} {Ω: distrib A} {B: eqType} (X: rvar Ω B):
+Lemma distrib_of_rvar_pmf_sum1 {A: countType} {Ω: distrib A} {B} (X: rvar Ω B):
   is_series (countable_sum (λ x : [countType of imgT X], pr_eq X (sval x))) 1.
 Proof.
   eapply (is_series_ext (countable_sum (λ x : [countType of imgT X], pr_eq X (sval x) * 1))).
@@ -1578,18 +1580,18 @@ Proof.
     rewrite /rvar_dist; field.
 Qed.
 
-Definition distrib_of_rvar {A: countType} {Ω: distrib A} {B: eqType} (X: rvar Ω B) :=
+Definition distrib_of_rvar {A: countType} {Ω: distrib A} {B} (X: rvar Ω B) :=
   mkDistrib [countType of imgT X] (λ x, pr_eq X (sval x)) (λ x, pr_eq_ge_0 X (sval x))
             (distrib_of_rvar_pmf_sum1 X).
 
-Lemma pr_pred_rvar {A} {B: eqType} {Ω: distrib A} (X: rvar Ω B) P :
+Lemma pr_pred_rvar {A} {B} {Ω: distrib A} (X: rvar Ω B) P :
   pr Ω (λ a, P (X a)) =
   Series (countable_sum (λ a : imgT X, if P (sval a) then pr_eq X (sval a) else 0)).
 Proof.
   transitivity (pr_eq (indicator X (λ x, P x)) 1).
   {
     rewrite /pr_eq/pr. apply Series_ext => n. rewrite /countable_sum; destruct pickle_inv => //=.
-    destruct (P _ ) => //=; case: ifP => //=; move /eqP; nra.
+    destruct (P _ ) => //=; case: ifP => //=; destruct (excluded_middle_informative) => //=; nra.
   }
   rewrite -Ex_indicator Ex_comp_pt.Ex_comp.
   - apply Series_ext => n. rewrite /countable_sum; destruct pickle_inv; rewrite //=.
@@ -1657,8 +1659,8 @@ Definition prod_list_rrvar {A} {Ω: distrib A} (l: list (rrvar Ω)) : rrvar Ω :
 
 From mathcomp Require Import seq.
 
-Definition rvar_list {A} {B: eqType} {Ω: distrib A} (lX: list (rvar Ω B))
-  : (rvar Ω [eqType of seq B]) :=
+Definition rvar_list {A} {B} {Ω: distrib A} (lX: list (rvar Ω B))
+  : (rvar Ω (seq B)) :=
   mkRvar Ω (λ a, map (λ f, (rvar_fun _ _ f) a) lX).
 
 Lemma sum_list_rrvar_alt {A} {Ω: distrib A} (l: list (rrvar Ω)):
@@ -1694,7 +1696,7 @@ Proof.
     * by apply ex_Ex_sum_list.
 Qed.
 
-Lemma rvar_exists_support {A: countType} {B: eqType} {Ω: distrib A} (X: rvar Ω B):
+Lemma rvar_exists_support {A: countType} {B} {Ω: distrib A} (X: rvar Ω B):
   ∃ a, pr_eq X a > 0.
 Proof.
   edestruct (distrib_exists_support Ω) as (a&Hgt0).
@@ -1706,12 +1708,12 @@ Proof.
     * intros. apply pmf_pos.
     * nra.
     * nra.
-  - by rewrite /countable_sum pickleK_inv //= eq_refl.
-  - destruct (pr_ex_series Ω (λ a', X a' == X a)) as (v&?).
+  - rewrite /countable_sum pickleK_inv //=; destruct (excluded_middle_informative) => //=.
+  - destruct (pr_ex_series Ω (λ a', (excluded_middle_informative (X a' = X a)))) as (v&?).
     by exists v.
 Qed.
 
-Lemma is_series_pr_eq_over_range {A : countType} {B: eqType} {Ω: distrib A} (X: rvar Ω B):
+Lemma is_series_pr_eq_over_range {A : countType} {B} {Ω: distrib A} (X: rvar Ω B):
   is_series (countable_sum (λ v : imgT X, pr_eq X (sval v))) 1.
 Proof.
   rewrite -(Ex_const _ Ω 1).
@@ -1725,7 +1727,7 @@ Proof.
   rewrite Ex_pt //=.
 Qed.
 
-Lemma Series_pr_eq_over_range {A : countType} {B: eqType} {Ω: distrib A} (X: rvar Ω B):
+Lemma Series_pr_eq_over_range {A : countType} {B: Type} {Ω: distrib A} (X: rvar Ω B):
   Series (countable_sum (λ v : imgT X, pr_eq X (sval v))) = 1.
 Proof.
   apply is_series_unique, is_series_pr_eq_over_range.
@@ -1735,7 +1737,7 @@ Module total_prob.
 Section total_prob.
 
 Variable (A: countType).
-Variable (B: eqType).
+Variable (B: Type).
 Variable (Ω: distrib A).
 Variable (X: rvar Ω B).
 Variable (P: pred A).
@@ -1744,7 +1746,7 @@ Definition atotal :=
   λ mn, match mn with
         | (m, n) =>
           match (@pickle_inv [countType of imgT X] m), (@pickle_inv A n) with
-            | Some v, Some a => (if (X a == sval v) && P a then Ω a else 0)
+            | Some v, Some a => (if (excluded_middle_informative (X a = sval v)) && P a then Ω a else 0)
             | _, _ => 0
           end
         end.
@@ -1754,7 +1756,7 @@ Lemma ex_total_column_abs v:
     (λ k : nat,
      Rabs
        match @pickle_inv A k with
-       | Some a => if (X a == v) && P a then Ω a else 0
+       | Some a => if (excluded_middle_informative (X a = v)) && P a then Ω a else 0
        | None => 0
        end).
 Proof.
@@ -1778,7 +1780,7 @@ Lemma atotal_double_summable_by_column:
  double_summable atotal.
 Proof.
   assert (Himg: ∀ v, X v \in img X).
-  { intros v. rewrite /img //=. apply /exCP. eexists. eauto. }
+  { intros v. rewrite /img //=. apply /exCP. exists v. destruct excluded_middle_informative; eauto. }
   apply ex_series_rows_ds.
   - intros j.
     * rewrite /atotal. destruct (@pickle_inv _ j) as [v|]; last first.
@@ -1792,7 +1794,7 @@ Proof.
       assert (Hge0: ∀ k (s : imgT X),
           (λ k0 : nat,
                   match @pickle_inv A k0 with
-                  | Some a => if (X a == sval s) && P a then Ω a else 0
+                  | Some a => if (excluded_middle_informative (X a = sval s)) && P a then Ω a else 0
                   | None => 0
                   end) k >= 0).
       { intros k s.  destruct pickle_inv; try case: ifP; auto using pmf_pos; nra. }
@@ -1815,7 +1817,7 @@ Qed.
 
 Lemma atotal_row_rewrite j:
   Series (λ k : nat, atotal (j, k))
-  = countable_sum (λ b : imgT X, pr Ω (λ a, (X a == sval b) && P a)) j.
+  = countable_sum (λ b : imgT X, pr Ω (λ a, (excluded_middle_informative (X a = sval b)) && P a)) j.
 Proof.
  rewrite /atotal/countable_sum.
  destruct (@pickle_inv _ j) as [v|] => //=; last apply Series_0 => //=.
@@ -1826,25 +1828,26 @@ Lemma atotal_column_rewrite k:
   = countable_sum (λ a, if P a then Ω a else 0) k.
 Proof.
   assert (Himg: ∀ v, X v \in img X).
-  { intros v. rewrite /img //=. apply /exCP. eexists. eauto. }
+  { intros v. rewrite /img //=. apply /exCP. eexists. destruct excluded_middle_informative; eauto. }
  rewrite /atotal/countable_sum.
  destruct (@pickle_inv A k) as [s|].
  - rewrite //=. destruct (P s).
    * rewrite -{2}(Series_bump (@pickle [countType of imgT X] (exist _ (X s) (Himg s))) (Ω s)).
      apply Series_ext => n.
      destruct (Nat.eq_dec ) as [Heqn|Hneq].
-     ** subst. rewrite pickleK_inv //= eq_refl //=.
+     ** subst. rewrite pickleK_inv //=; destruct excluded_middle_informative => //=.
      ** specialize (@pickle_invK [countType of imgT X] n).
         destruct (pickle_inv) as [s'|] => //=. intros Heq'.
         case: ifP => //=.
         rewrite andbT. move /eqP => Heq. subst.
         exfalso; apply Hneq. f_equal. apply sval_inj_pred => //=.
+        destruct excluded_middle_informative; simpl in Heq; try inversion Heq; eauto.
    * apply Series_0 => n //=. destruct (pickle_inv) => //=. by rewrite andbF.
  - rewrite //=. apply Series_0 => n //=. destruct (pickle_inv) => //=.
 Qed.
 
 Lemma pr_total_prob:
-  pr Ω P = Series (countable_sum (λ r: imgT X, pr Ω (λ a, (X a == sval r) && P a))).
+  pr Ω P = Series (countable_sum (λ r: imgT X, pr Ω (λ a, (excluded_middle_informative (X a = sval r)) && P a))).
 Proof.
   rewrite /pr.
   symmetry. etransitivity.
@@ -1859,18 +1862,18 @@ End total_prob.
 End total_prob.
 
 
-Lemma pr_total_prob {A : countType} {B: eqType} {Ω: distrib A} (X: rvar Ω B) P:
-  pr Ω P = Series (countable_sum (λ r: imgT X, pr Ω (λ a, (X a == sval r) && P a))).
+Lemma pr_total_prob {A : countType} {B: Type} {Ω: distrib A} (X: rvar Ω B) P:
+  pr Ω P = Series (countable_sum (λ r: imgT X, pr Ω (λ a, (excluded_middle_informative (X a = sval r)) && P a))).
 Proof.
   apply total_prob.pr_total_prob.
 Qed.
 
 
-Lemma img_alt {A: countType} {B: eqType} (f: A → B) i: (i \in img f) ↔ ∃ x, f x = i.
+Lemma img_alt {A: countType} {B: Type} (f: A → B) i: (i \in img f) ↔ ∃ x, f x = i.
 Proof.
   split; rewrite /img/in_mem//=.
-  - move /exCP => [x Heq]. move /eqP in Heq. exists x. done.
-  - intros [x Heq]. apply /exCP. exists x. subst. done.
+  - move /exCP => [x Heq]. destruct (excluded_middle_informative); eauto. exists x. done.
+  - intros [x Heq]. apply /exCP. exists x. subst. destruct excluded_middle_informative; done.
 Qed.
 
 Lemma img_alt' {A: finType} {B: eqType} (f: A → B) i:
@@ -1885,11 +1888,11 @@ Lemma pr_img {A} {B} {Ω : distrib A} (X: rvar Ω B) i: pr_eq X i > 0 → i \in 
 Proof.
   rewrite /pr_eq/pr img_alt.
   move/Rgt_not_eq => Hsum0.
-  destruct (elimNf (exCP (λ x, X x == i))) as (x&?).
+  destruct (elimNf (exCP (λ x, excluded_middle_informative (X x = i)))) as (x&Heq).
   - rewrite /exC. destruct (LPO_countb) as [|Hnone] => //=.
     exfalso. apply Hsum0. apply is_series_unique, is_seriesC_0.
     intros a. case: ifP; auto. intros. exfalso. eapply Hnone; eauto.
-  - exists x. by apply /eqP.
+  - exists x. destruct excluded_middle_informative; eauto. inversion Heq.
 Qed.
 
 Lemma pr_img0 {A} {B} {Ω : distrib A} (X: rvar Ω B) i : pr_eq X i <> 0 → i \in img X.
