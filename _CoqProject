@@ -45,6 +45,7 @@ theories/prob/uniform.v
 theories/prob/markov.v
 theories/prob/indep.v
 theories/prob/chernoff.v
+theories/prob/dep_prod.v
 theories/rec/rec_convert.v
 theories/rec/karp.v
 theories/rec/span2.v
@@ -88,3 +89,4 @@ theories/monad/idxval/subset_coupling.v
 theories/monad/idxval/extrema.v
 theories/monad/idxval/irrel_equiv.v
 theories/monad/idxval/pidist_post_cond.v
+theories/monad/disc/monad.v
