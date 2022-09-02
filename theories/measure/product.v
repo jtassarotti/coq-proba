@@ -1,4 +1,4 @@
-Require Import Reals Psatz Omega Fourier.
+Require Import Reals Psatz Lia Fourier.
 From stdpp Require Import tactics list.
 From discprob.basic Require Import seq_ext.
 From discprob.measure Require Export integral dynkin borel isomorphism.
@@ -853,7 +853,7 @@ Section fubini_tonelli_lr.
           (n&Hr1&Hr2).
       { apply Rdiv_lt_0_compat; auto.
         nra. }
-      destruct n as [| n]; first by omega.
+      destruct n as [| n]; first by lia.
       destruct (Hsmall n) as (Hmeas'&Hsize).
       cut (μ (compl (λ x : A, ex_integral ν (λ y : B, f (x, y)))) <=
            μ (unionF (λ n0 (x : A), INR (S n) <= Integral ν (λ y : B, Rmin (f (x, y)) (INR n0))))).
@@ -909,7 +909,7 @@ Section fubini_tonelli_lr.
     - intros n. apply measurable_fun_ge; eauto.
     - intros i x Hle. etransitivity; eauto.
       apply Integral_mono; eauto.
-      * intros. apply Rle_min_compat_l, le_INR. omega.
+      * intros. apply Rle_min_compat_l, le_INR. lia.
       * apply ex_integral_Rmin; eauto.
         eapply fun_left_measurable; eauto.
       * apply ex_integral_Rmin; eauto.

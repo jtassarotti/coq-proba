@@ -8,7 +8,7 @@
 
 From discprob.basic Require Import base order bigop_ext nify sval.
 From discprob.prob Require Import countable.
-Require Import Reals Fourier Omega Psatz ClassicalEpsilon.
+Require Import Reals Fourier Lia Psatz ClassicalEpsilon.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype seq bigop fintype ssrnat choice.
 From Coquelicot Require Import Rcomplements Rbar Series Lim_seq Hierarchy Markov.
 
@@ -166,7 +166,7 @@ Proof.
     * intros (n'&?) _. move /exCP => [m0]. move /andP => [Hle Heq].
       intros Hfalse. contradiction Hfalse.
       assert (m0 < S m')%nat as Hlt.
-      { nify.  omega. }
+      { nify.  lia. }
       exists (Ordinal Hlt). repeat split; eauto.
       apply ord_inj => //=. nify. done.
     * rewrite -enumT. apply enum_uniq.
@@ -235,14 +235,14 @@ Proof.
       eapply Rle_lt_trans; first apply Rle_abs.
       assert (N0 <= N)%coq_nat.
       { rewrite /N. apply Max.le_max_l. }
-      eapply IHN; auto. omega.
+      eapply IHN; auto. lia.
     - rewrite Rabs_minus_sym. edestruct (IHM2 m) as (n&?&Hle); auto.
       eapply Rle_lt_trans; first eapply Hle.
       rewrite /norm//=/abs//= in IHN.
       eapply Rle_lt_trans; first apply Rle_abs.
       assert (N0 <= N)%coq_nat.
       { rewrite /N. apply Max.le_max_l. }
-      eapply IHN; auto. omega.
+      eapply IHN; auto. lia.
     - eapply HN1.
       rewrite /N. etransitivity; first apply Max.le_max_r. apply Max.le_max_l.
     - eapply HN2.
@@ -307,7 +307,7 @@ Proof.
     destruct (Req_dec (a (S n)) 0) as [|Hneq].
     * exists m => m' Hge.
       edestruct Hm as (N&?&?&?); eauto.
-      exists (S N); repeat split; auto; last omega.
+      exists (S N); repeat split; auto; last lia.
       intros n'. inversion 1; subst; auto.
     * edestruct (COV (S n) Hneq) as (minv&Heq).
     exists (Init.Nat.max m minv) => m' Hgem.
@@ -360,7 +360,7 @@ Proof.
       destruct (HexC) as (m0&HexC'). move /andP in HexC'.  destruct (HexC') as (?&Heq).
       intros Hfalse. contradiction Hfalse.
       assert (m0 < S m')%nat as Hlt.
-      { nify.  omega. }
+      { nify.  lia. }
       exists (Ordinal Hlt). repeat split; auto.
       ** apply /andP; split; auto. rewrite //=. move /eqP in Heq. rewrite Heq. done.
       ** apply ord_inj => //=. nify. done.
@@ -378,8 +378,8 @@ Proof.
     * intros (x&Hlex) ? => //=.
     * intros (n'&Hle) ? Hneq0; split; auto. apply /andP; split; auto. apply (introT (exCP _)).
       edestruct (Hhit n') as [(m''&?&?)|].
-      { clear -Hle. nify. omega. }
-      ** exists m''. apply /andP; split; nify; try omega => //=. subst. done.
+      { clear -Hle. nify. lia. }
+      ** exists m''. apply /andP; split; nify; try lia=> //=. subst. done.
       ** exfalso. rewrite //= in Hneq0. move /eqP in Hneq0. auto.
     * intros (n'&Hle) _. move /andP => [HexC ?]. move /exCP in HexC.
       destruct (HexC) as (m0&HexC'). move /andP in HexC'.  destruct (HexC') as (?&Heq).
@@ -446,7 +446,7 @@ Proof.
       eapply Rle_lt_trans; first apply Rle_abs.
       assert (N0 <= N)%coq_nat.
       { rewrite /N. apply Max.le_max_l. }
-      eapply Rle_lt_trans; last apply (IHN (S N) n); auto; try omega.
+      eapply Rle_lt_trans; last apply (IHN (S N) n); auto; try lia.
       right. f_equal. apply sum_n_m_ext_loc; auto.
       intros => //=. rewrite //= Rabs_Rabsolu. done.
     - rewrite Rabs_minus_sym. edestruct (IHM2 m) as (n&?&Hle); auto.
@@ -455,7 +455,7 @@ Proof.
       eapply Rle_lt_trans; first apply Rle_abs.
       assert (N0 <= N)%coq_nat.
       { rewrite /N. apply Max.le_max_l. }
-      eapply IHN; auto. omega.
+      eapply IHN; auto. lia.
     - eapply HN1.
       rewrite /N. etransitivity; first apply Max.le_max_r. apply Max.le_max_l.
     - eapply HN2.

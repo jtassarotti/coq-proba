@@ -1,4 +1,4 @@
-Require Import Reals Psatz Omega ClassicalEpsilon.
+Require Import Reals Psatz Lia ClassicalEpsilon.
 From discprob.basic Require Export base Series_Ext order bigop_ext sval Reals_ext.
 From Coquelicot Require Export Rcomplements Rbar Series Lim_seq Hierarchy Markov Continuity.
 From stdpp Require Export base.
@@ -258,10 +258,10 @@ Lemma diff_below_disjoint Us:
   disjointF (diff_below Us).
 Proof.
   cut (∀ j k: nat, (j < k)%nat → (diff_below Us j ## diff_below Us k)).
-  { intros Hlt j k Hneq. assert (j < k ∨ k < j)%nat as [|] by omega; eauto.
+  { intros Hlt j k Hneq. assert (j < k ∨ k < j)%nat as [|] by lia. eauto.
       rewrite disjoint_comm. eauto. }
-  intros j k Hlt. destruct k. omega.
-  rewrite //=. intros z. assert (Hle: (j <= k)%nat) by omega.
+  intros j k Hlt. destruct k. lia.
+  rewrite //=. intros z. assert (Hle: (j <= k)%nat) by lia.
   rewrite /diff_below.
   intros [Hdb1 Hdb2].
   exfalso. destruct Hdb2 as [Hsat Hfalse]. eapply Hfalse; eauto.
@@ -276,7 +276,7 @@ Proof.
   - intros Hin. clear -Hin.
     induction i as [i Hih] using lt_wf_ind.
     * destruct (Classical_Prop.classic  (∃ i', (i' < i)%nat ∧ Us i' x)) as [(i'&(?&?))|Hne].
-      ** edestruct (Hih i') as (j&?&?); eauto. exists j. split; auto. omega.
+      ** edestruct (Hih i') as (j&?&?); eauto. exists j. split; auto. lia.
       ** exists i; split; auto. rewrite /diff_below; split; auto.
          intros ?? HU. eapply Hne. eauto.
   - intros (j&?&?). eapply diff_below_incr_sub; eauto.

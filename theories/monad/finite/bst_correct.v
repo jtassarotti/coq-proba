@@ -3,7 +3,7 @@ From discprob.prob Require Import prob countable finite stochastic_order.
 From discprob.monad.finite Require Import monad monad_hoare bst.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
-From Coq Require Import Omega Program.Wf MSets.MSetInterface MSets.MSetGenTree Structures.OrdersEx.
+From Coq Require Import Lia Arith.Wf_nat MSets.MSetInterface MSets.MSetGenTree Structures.OrdersEx.
 Local Open Scope nat_scope.
 
 (* This shows that the result of "add list random" is equivalent to adding the elements

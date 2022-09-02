@@ -1,5 +1,5 @@
 From discprob.basic Require Import base sval order monad bigop_ext nify seq_ext.
-Require Import Reals Psatz Omega.
+Require Import Reals Psatz Lia.
 
 Require ClassicalEpsilon.
 From mathcomp Require Import ssrfun ssreflect eqtype ssrbool seq fintype choice.
@@ -133,12 +133,12 @@ Proof.
   - rewrite ?Rmax_left; first done.
     * rewrite -RPow_abs.
       destruct n; first by auto.
-       left. apply pow_lt_1_compat; last by omega.
+       left. apply pow_lt_1_compat; last by lia.
        split; try nra.
        apply Rabs_pos.
     * rewrite -RPow_abs.
       destruct m; first by auto.
-       left. apply pow_lt_1_compat; last by omega.
+       left. apply pow_lt_1_compat; last by lia.
        split; try nra.
        apply Rabs_pos.
 Qed.
@@ -187,7 +187,7 @@ Proof.
   - apply Ex_ival_correct; auto.
   - apply: is_Ex_ival_negate.
     apply: is_Ex_ival_scal_l.
-    apply Ex_ival_correct. apply: ex_Ex_ivd_moments_1; try eassumption. omega.
+    apply Ex_ival_correct. apply: ex_Ex_ivd_moments_1; try eassumption. lia.
 Qed.
 
 Lemma Finite_Rplus x y:

@@ -6,7 +6,7 @@ From discprob.rec Require Import rec_convert quicksort_rec.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
 From mathcomp Require Import path.
-Require Import Reals Fourier Psatz Omega.
+Require Import Reals Fourier Psatz Lia.
 
 Definition h (l: seq nat) :=
   match l with
@@ -71,8 +71,8 @@ Proof.
       rewrite Rmax_left //; last (fourier).
       replace (INR 0) with 0 by auto. ring_simplify.
       apply Rle_big0 => i _ //=.
-      destruct i as (i&Hlt) => //=. assert (i = O) as -> by (nify; omega).
-      replace (1 - 0 - 1)%nat with O by (nify; omega).
+      destruct i as (i&Hlt) => //=. assert (i = O) as -> by (nify; lia).
+      replace (1 - 0 - 1)%nat with O by (nify; lia).
       replace (INR 0) with 0 by auto. rewrite Rmax_left; last fourier.
       replace (INR 1) with 1 by auto. fourier.
     }
@@ -94,7 +94,7 @@ Proof.
                 (Ordinal (n:=(size l).+1) (m:=f x) (Hfsize x i)))).
     * intros (x, Hle) Hin.
       rewrite unif_pr. rewrite /Rdiv Rmult_1_l. apply Rmult_le_compat_l.
-      ** left. apply Rinv_0_lt_compat. apply lt_0_INR. rewrite //=. omega.
+      ** left. apply Rinv_0_lt_compat. apply lt_0_INR. rewrite //=. lia.
       ** rewrite -ldist_assoc. rewrite Ex_mbind_mret.
          apply Ex_bound.
          rewrite ?ldist_left_id.
@@ -184,9 +184,9 @@ Proof.
   move /ltP. intros Hlt3.
   move /ltP. intros Hlt4.
   assert (a = x).
-  { omega. }
+  { lia. }
   assert (b = x).
-  { omega. }
+  { lia. }
   subst. rewrite //= in Huniq. exfalso. move /andP in Huniq.
   destruct Huniq as (Hfalse&?). move /negP in Hfalse. apply Hfalse.
   by rewrite in_cons eq_refl.
@@ -419,7 +419,7 @@ Proof.
     rewrite -plus_INR. apply le_INR. move /ltP in Hlt.
     rewrite -?size_legacy.
     specialize (partition_perm_eq' l0 pv). move /perm_size. rewrite ?size_cat.
-    intros Hsize. nify. rewrite //= in Hsize. rewrite //=. omega.
+    intros Hsize. nify. rewrite //= in Hsize. rewrite //=. lia.
   - rewrite /quicksort_rec.recurrence_span2.size //=.
     intros l ? Hgt. rewrite //=.
     cut (∀ n, INR (length (fst ((rvar_of_ldist (h l) n)))) +
@@ -450,7 +450,7 @@ Proof.
     specialize (pos_INR (size [seq i <- l0 | (pv < i)%nat])).
     rewrite //=. intros.
     assert (Hge1: 1 <= INR (size [seq i <- l0 | i == pv])).
-    { replace 1 with (INR 1) by auto. apply le_INR. omega. }
+    { replace 1 with (INR 1) by auto. apply le_INR. lia. }
     rewrite //= in Hge1. nra.
   - rewrite /quicksort_rec.recurrence_span2.size/quicksort_rec.recurrence_span2.rec_solution.d //=.
     intros x n Hle.
@@ -462,7 +462,7 @@ Proof.
       apply mspec_mret => //=.
     * rewrite alr_unfold.
       apply mspec_mret => //=.
-    * rewrite //= in Hle. omega.
+    * rewrite //= in Hle. lia.
   - intros. eapply (rec_pr_rec_gt _ rsize _ _ _ _ T h' uniq (λ xy, Rmax (fst xy) (snd xy))); auto.
     intros. apply Trec; auto.
   - rewrite /quicksort_rec.recurrence_span2.size/quicksort_rec.recurrence_span2.rec_solution.d

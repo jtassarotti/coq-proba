@@ -6,7 +6,7 @@ From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choi
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
 Require Import Reals Fourier FunctionalExtensionality.
 Require Import Psatz.
-Require Import Coq.omega.Omega.
+Require Import Lia.
 Require Import Ranalysis5.
 
 Lemma Rabs_le_compat_pos x y:

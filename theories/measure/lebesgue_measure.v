@@ -1,4 +1,4 @@
-Require Import Reals Psatz Omega Fourier.
+Require Import Reals Psatz Lia Fourier.
 From stdpp Require Import tactics.
 From discprob.measure Require Export measures borel outer_measure.
 From discprob.prob Require Import countable rearrange double.
@@ -75,8 +75,8 @@ Proof.
      apply Rplus_le_compat_l.
      transitivity (/ (INR N)); last (rewrite //= in HleN; nra).
      left; apply Rinv_lt_contravar.
-     * assert (0 < INR N) by (apply pos_INR'; omega).
-       assert (0 < INR (N' + 1)) by (apply pos_INR'; omega).
+     * assert (0 < INR N) by (apply pos_INR'; lia).
+       assert (0 < INR (N' + 1)) by (apply pos_INR'; lia).
        nra.
      * apply lt_INR. lia.
   }
@@ -87,6 +87,7 @@ Hint Resolve Rabs_pos Rle_ge.
 
 Section Interval_UniformSpace.
   Variable a b : R.
+  Hypothesis (Hab : a <= b).
   Implicit Types x y : Interval a b.
 
   Definition Interval_ball (x: Interval a b) eps y := ball (x : R) eps y.
@@ -95,10 +96,13 @@ Section Interval_UniformSpace.
   Definition Interval_ball_triangle x y e := @ball_triangle _ (x : R) y e.
   Definition Interval_UniformSpace_mixin : UniformSpace.mixin_of (Interval a b).
   Proof.
-    apply (UniformSpace.Mixin _ Interval_ball
-                              Interval_ball_center
-                              Interval_ball_sym
-                              Interval_ball_triangle).
+    eapply (UniformSpace.Mixin _ _
+                               Interval_ball
+                               Interval_ball_center
+                               Interval_ball_sym
+                               Interval_ball_triangle).
+    (* UniformSpace in Coquelicot now requires a point? *)
+    Unshelve. eapply (exist _ a); nra.
   Defined.
 
   Canonical Interval_UniformSpace := UniformSpace.Pack _ Interval_UniformSpace_mixin (Interval a b).
@@ -108,6 +112,7 @@ End Interval_UniformSpace.
 
 Section lebesgue_measure.
   Context {a b : R}.
+  Hypothesis (Hab : a <= b).
 
   (* TODO: deduce these from the versions on R in borel.v *)
   Lemma borel_gen_closed_ray1 :
@@ -129,7 +134,7 @@ Section lebesgue_measure.
   Qed.
 
   Lemma borel_gen_closed_ray2 :
-    le_prop (borel (Interval_UniformSpace a b))
+    le_prop (borel (Interval_UniformSpace a b Hab))
     (minimal_sigma (λ (U : Interval a b → Prop), ∃ x, U = (λ z, z <= x))).
   Proof.
     etransitivity; last eapply borel_gen_closed_ray1.
@@ -876,14 +881,14 @@ Section lebesgue_measure.
   - apply leb_outer_fun_subadditivity.
   Defined.
 
-  Definition leb_measure := outer_measure_measure leb_outer_measure.
+  Definition leb_measure := @outer_measure_measure _ (leb_outer_measure).
 
   Lemma norm_R_right (r: R):
     0 <= r → norm r = r.
   Proof. intros; rewrite /norm//=/abs//= Rabs_right; nra. Qed.
 
   Lemma leb_borel_measurable :
-    le_prop (borel _) (outer_measure_sigma leb_outer_measure).
+    le_prop (borel (Interval_UniformSpace a b Hab)) (outer_measure_sigma leb_outer_measure).
   Proof.
     etransitivity; first apply borel_gen_closed_ray2.
     apply minimal_sigma_lub. intros ? (x&->).

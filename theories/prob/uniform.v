@@ -1,6 +1,6 @@
 From discprob.basic Require Import base Series_Ext seq_ext nify.
 From discprob.prob Require Import countable rearrange prob finite stochastic_order.
-Require Import Reals Fourier Omega Psatz.
+Require Import Reals Fourier Lia Psatz.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop seq.
 From Coquelicot Require Import Rcomplements Rbar Series Lim_seq Hierarchy Markov.
 

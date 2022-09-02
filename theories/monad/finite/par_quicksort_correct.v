@@ -4,7 +4,7 @@ From discprob.monad.finite Require Import monad monad_par par_quicksort monad_pa
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
 From mathcomp Require Import path.
-Require Import Coq.omega.Omega Coq.Program.Wf.
+Require Import Lia Coq.Program.Wf Coq.Arith.Wf_nat.
 
 Lemma perm_eq_cat {A: eqType} (l1a l1b l2a l2b: seq A) :
   perm_eq l1a l2a →
@@ -67,7 +67,7 @@ Proof.
         rewrite -(perm_size pf1) //= ?size_cat -?plusE //;
           assert (Hlt: (lt O (size (middle spl)))) by
             ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=).
-        rewrite //= in Hlt. omega.
+        rewrite //= in Hlt. lia.
       - eapply (IH (size (upper spl))); auto.
         rewrite Heq.
         move /andP in Hin'.
@@ -75,7 +75,7 @@ Proof.
         rewrite -(perm_size pf1) //= ?size_cat -?plusE //;
           assert (Hlt: (lt O (size (middle spl)))) by
             ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=).
-        rewrite //= in Hlt. omega.
+        rewrite //= in Hlt. lia.
     }
     intros (ll&lu) (Hll&Hlu).
     move /andP in Hll. destruct Hll as (Hllsorted&Hllperm).
@@ -93,16 +93,16 @@ Proof.
          move: Hin2.
          rewrite -(perm_mem Hluperm) Hu mem_filter.
          move /andP => [Hgtpv ?]. move /ltP in Hgtpv.
-         rewrite Heqpv. apply /leP. omega.
+         rewrite Heqpv. apply /leP. lia.
       ** intros a' b'. rewrite -(perm_mem Hllperm) Hl mem_filter.
          move /andP => [Hgtpv ?]. move /ltP in Hgtpv.
          rewrite mem_cat. move /orP => [].
          *** rewrite Hm; rewrite mem_filter.
              move /andP => [Heqpv ?]. move /eqP in Heqpv.
-             rewrite Heqpv. apply /leP. omega.
+             rewrite Heqpv. apply /leP. lia.
          *** rewrite -(perm_mem Hluperm) Hu mem_filter.
              move /andP => [Hltpv ?]. move /ltP in Hltpv.
-             apply /leP. omega.
+             apply /leP. lia.
     * move /andP in Hin'. destruct Hin' as (Hperm&_).
       rewrite perm_sym in Hperm.
       rewrite (perm_trans Hperm) //.

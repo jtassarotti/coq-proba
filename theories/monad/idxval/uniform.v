@@ -1,6 +1,6 @@
 (* Discrete uniform distribution as an ival *)
 From discprob.basic Require Import base sval order monad nify.
-Require Import Reals Psatz Omega.
+Require Import Reals Psatz Lia.
 
 Require ClassicalEpsilon.
 From discprob.prob Require Import double rearrange.
@@ -42,7 +42,7 @@ Proof.
   intros Hle. rewrite /Pr/Ex_ival.
   f_equal.
   apply is_series_unique.
-  assert (k < S n)%nat as Hlt by (nify; omega).
+  assert (k < S n)%nat as Hlt by (nify; lia).
   eapply is_seriesC_ext; last apply (is_seriesC_bump [finType of ordinal (S n)] (Ordinal Hlt)).
   intros [n' Hlt']. rewrite //=.
   destruct ClassicalEpsilon.excluded_middle_informative.

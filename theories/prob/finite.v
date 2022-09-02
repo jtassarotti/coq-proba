@@ -1,6 +1,6 @@
 From discprob.basic Require Import base Series_Ext seq_ext nify.
 From discprob.prob Require Import countable rearrange prob.
-Require Import Reals Fourier Omega Psatz.
+Require Import Reals Fourier Lia Psatz.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop seq.
 From Coquelicot Require Import Rcomplements Rbar Series Lim_seq Hierarchy Markov.
 
@@ -32,7 +32,7 @@ Lemma ex_series_list_Rabs {B: eqType} (l: list B) (f: B → R):
 Proof.
   apply ex_series_eventually0.
   exists (length l) => n Hge.
-  rewrite /finite_sum (proj2 (nth_error_None _ _)); last omega.
+  rewrite /finite_sum (proj2 (nth_error_None _ _)); last lia.
   rewrite Rabs_right => //=; nra.
 Qed.
 
@@ -71,12 +71,12 @@ Proof.
                                              end)) as (?&Hconv); eauto.
   - intros n n'. rewrite /finite_sum => //=.
     case_eq (@pickle_inv A n) => //=; last first.
-    { rewrite (proj2 (nth_error_None _ _)); last by omega. rewrite //=. }
+    { rewrite (proj2 (nth_error_None _ _)); last by lia. rewrite //=. }
     intros s Hpickle1.
     case_eq (@pickle_inv A n') => //=; last first.
     { intros ? ? Heq. exfalso.
       cut (length (Finite.enum A) < length (Finite.enum A))%nat;
-                         first by (intros; nify; omega).
+                         first by (intros; nify; lia).
       rewrite -{1}Heq. rewrite -size_legacy. apply SSR_leq. rewrite seq.index_mem.
       by rewrite -enumT mem_enum.
     }
@@ -119,7 +119,7 @@ Proof.
       }
       rewrite seq.nth_index; last by rewrite -enumT mem_enum.
       rewrite //=.
-    * rewrite (proj2 (nth_error_None _ _)); last by omega. done.
+    * rewrite (proj2 (nth_error_None _ _)); last by lia. done.
 Qed.
 
 Lemma SeriesC_SeriesF a:

@@ -1,4 +1,4 @@
-Require Import Reals Psatz Omega ClassicalEpsilon.
+Require Import Reals Psatz Lia ClassicalEpsilon.
 From stdpp Require Import tactics.
 From discprob.measure Require Export sets sigma_algebra.
 

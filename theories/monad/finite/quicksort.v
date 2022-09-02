@@ -3,7 +3,7 @@ From discprob.prob Require Import prob countable finite stochastic_order.
 From discprob.monad.finite Require Import monad monad_cost.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
-Require Import Coq.omega.Omega Coq.Program.Wf.
+Require Import Lia Coq.Program.Wf.
 Local Open Scope nat_scope.
 
 Definition compare (x y: nat) := (* cost (compare_nat x y (x < y) (y < x) (x == y)) := *)
@@ -106,7 +106,7 @@ Next Obligation.
     destruct n; first fourier.
     replace 0 with (INR O) by auto.
     cut (INR 0 < INR (S n)); intros; first by fourier.
-    apply lt_INR. omega.
+    apply lt_INR. lia.
   - rewrite in_cons. move /orP => [Heq|Hin]; eauto.
     move /eqP in Heq. rewrite Heq.
     destruct (Rle_dec 0 (1 / _)) as [|Hn]; [ by auto | exfalso; apply Hn].
@@ -114,7 +114,7 @@ Next Obligation.
     destruct n; first by fourier.
     replace 0 with (INR O) by auto.
     cut (INR 0 < INR (S n)); intros; first by fourier.
-    apply lt_INR; omega.
+    apply lt_INR; lia.
 Qed.
 Next Obligation.
   rewrite -map_comp //= (@eq_map _ _ _ (λ x, 1 / INR (S n))); last by done.
@@ -128,7 +128,7 @@ Next Obligation.
     destruct n; first fourier.
     replace 0 with (INR O) by auto.
     cut (INR 0 < INR (S n)); first by intros; fourier.
-    apply lt_INR; omega.
+    apply lt_INR; lia.
   }
   induction o => k.
   - rewrite big_nil. replace (INR 0) with 0 by auto. rewrite /Rdiv Rmult_0_l //.
@@ -158,12 +158,12 @@ Definition qs : list nat → ldist_cost (list nat).
     destruct pf as (pf1&pf2); move /implyP in pf2;
     rewrite -(perm_size pf1) //= ?size_cat -?plusE;
     assert (0 < size (middle spl))%coq_nat by
-    ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=); omega).
+    ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=); lia).
   - abstract (destruct spl as (spl&pf) => //=; move /andP in pf;
     destruct pf as (pf1&pf2); move /implyP in pf2;
     rewrite -(perm_size pf1) //= ?size_cat -?plusE;
     assert (0 < size (middle spl))%coq_nat by
-    ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=); omega).
+    ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=); lia).
 Defined.
 
 Lemma easy_fix_eq:

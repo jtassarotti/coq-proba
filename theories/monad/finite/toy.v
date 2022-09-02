@@ -3,7 +3,7 @@ From discprob.prob Require Import prob countable finite stochastic_order uniform
 From discprob.monad.finite Require quicksort quicksort_cost.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
-From Coq Require Import Omega Psatz Program.Wf MSets.MSetInterface MSets.MSetGenTree Structures.OrdersEx Reals.
+From Coq Require Import Lia Psatz Program.Wf MSets.MSetInterface MSets.MSetGenTree Structures.OrdersEx Reals.
 
 
 From discprob.monad.finite Require Import monad permutation.

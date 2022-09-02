@@ -1,6 +1,6 @@
 From discprob.basic Require Import base nify.
 From mathcomp Require Import ssreflect seq ssrbool eqtype.
-Import Omega.
+Import Lia Zify.
 
 Lemma undup_map {A B: eqType} (l: seq A) (f: A → B):
   undup [seq f x | x <- l] = undup [seq f x | x <- undup l].
@@ -39,10 +39,10 @@ Lemma nth_error_nth1 {A: Type} (d: A) l x:
 Proof.
   revert l.
   induction x.
-  - rewrite //=. destruct l; auto. rewrite //=. omega.
+  - rewrite //=. destruct l; auto. rewrite //=. lia.
   - intros l Hlt0; destruct l.
-      ** rewrite //= in Hlt0. omega.
-      ** rewrite //=. eapply IHx. rewrite //= in Hlt0. omega.
+      ** rewrite //= in Hlt0. lia.
+      ** rewrite //=. eapply IHx. rewrite //= in Hlt0. lia.
 Qed.
 
 Lemma nth_error_nth2 {A: Type} (d: A) l x v:
@@ -340,16 +340,16 @@ Proof.
     * destruct (Z_gt_dec x a).
       ** right; split.
          *** intros ? [|]; eauto.
-             **** subst. omega.
+             **** subst. lia.
              **** eapply Z.lt_le_trans; first eapply Hlt; eauto.
-                  rewrite Z.max_l; omega.
-         *** destruct Hlt as (?&->). rewrite Z.max_l; omega.
-      ** left. move: Hlt. rewrite Z.max_r; last by omega => Hlt.
+                  rewrite Z.max_l; lia.
+         *** destruct Hlt as (?&->). rewrite Z.max_l; lia.
+      ** left. move: Hlt. rewrite Z.max_r; last by lia=> Hlt.
          intros. exists a; split; first by left.
          apply Zle_antisym.
          *** apply fold_left_Zmax_init.
-         *** apply fold_left_Zle_max_lub; try omega. intros.
-             destruct Hlt as (Hlt&?). cut (r' < a); first omega.
+         *** apply fold_left_Zle_max_lub; try lia. intros.
+             destruct Hlt as (Hlt&?). cut (r' < a); first lia.
              apply Hlt; eauto.
 Qed.
 
@@ -407,21 +407,20 @@ Proof.
     * left. exists r. split; auto.
     *
       assert (x > a ∨ ¬ (x > a)) as [Hgt|Hngt].
-      { zify. omega. }
+      { zify. lia. }
       ** right; split.
          *** intros ? [|]; eauto.
-             **** subst. zify; omega.
+             **** subst. zify; lia.
              **** eapply Pos.lt_le_trans; first eapply Hlt; eauto.
-                  rewrite Pos.max_l; zify; omega.
-         *** destruct Hlt as (?&->). rewrite Pos.max_l; zify; omega.
-      ** left. move: Hlt. rewrite Pos.max_r; last by (zify; omega) => Hlt.
+                  rewrite Pos.max_l; zify; lia.
+         *** destruct Hlt as (?&->). rewrite Pos.max_l; zify; lia.
+      ** left. move: Hlt. rewrite Pos.max_r; last by (zify; lia) => Hlt.
          intros. exists a; split; first by left.
          apply Pos.le_antisym.
          *** apply fold_left_Pmax_init.
-         *** apply fold_left_Ple_max_lub; try omega. intros.
-             destruct Hlt as (Hlt&?). cut (r' < a); first (zify; omega).
+         *** apply fold_left_Ple_max_lub; try lia. intros.
+             destruct Hlt as (Hlt&?). cut (r' < a); first (zify; lia).
              apply Hlt; eauto.
-             zify; omega.
 Qed.
 
 

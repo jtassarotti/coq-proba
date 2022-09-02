@@ -3,7 +3,7 @@ From discprob.prob Require Import prob countable finite.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
 Require Import Reals Fourier FunctionalExtensionality Psatz.
-Require Import Coq.omega.Omega.
+Require Import Lia.
 From Coquelicot Require Import Rcomplements Rbar Series Lim_seq Hierarchy Markov.
 Global Set Bullet Behavior "Strict Subproofs".
 

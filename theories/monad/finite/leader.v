@@ -4,7 +4,7 @@ From discprob.monad.finite Require Import monad permutation.
 From discprob.monad.finite Require quicksort quicksort_cost counter.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
-From Coq Require Import Reals Fourier Psatz Program.Wf Omega.
+From Coq Require Import Reals Fourier Psatz Program.Wf Lia.
 
 Definition binomial := counter.binomial.
 Fixpoint leader_elect (rounds: nat) (players: nat) : ldist (nat * nat) :=

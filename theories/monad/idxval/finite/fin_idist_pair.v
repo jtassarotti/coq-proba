@@ -8,7 +8,7 @@ Record ivdist_couplingP {A1 A2} (Is1: ivdist A1) (Is2: ivdist A2) (P: A1 → A2 
      pc_proj1: eq_ivd Is1 (x ← pc_witness; mret (fst (sval x)));
      pc_proj2: eq_ivd Is2 (x ← pc_witness; mret (snd (sval x)));
      }.
-Require Import Reals Psatz Omega.
+Require Import Reals Psatz Lia.
 
 Lemma ivdist_coupling_sym {A1 A2} (Is1: ivdist A1) (Is2: ivdist A2) P
       (Ic: ivdist_couplingP Is1 Is2 P): ivdist_couplingP Is2 Is1 (λ x y, P y x).

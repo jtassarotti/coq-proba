@@ -1,4 +1,4 @@
-Require Import Reals Psatz Omega Fourier.
+Require Import Reals Psatz Lia Fourier.
 From stdpp Require Import tactics list.
 From discprob.basic Require Import seq_ext.
 From discprob.measure Require Export borel integral.
@@ -97,7 +97,7 @@ Proof.
     [ intros z Hfalse HP; apply Hfalse; eauto |
       intros z Hfalse HP; apply Hfalse; eauto |
       rewrite (set_minus_union_complement');
-      rewrite (set_minus_union_complement') in Hz * => Hz;
+      rewrite (set_minus_union_complement') in Hz;
       rewrite compl_involutive -Hz; apply measure_proper; by rewrite comm ]).
   - apply completion_closed_union.
 Defined.

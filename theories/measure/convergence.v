@@ -1,4 +1,4 @@
-Require Import Reals Psatz Omega.
+Require Import Reals Psatz Lia.
 From stdpp Require Import tactics list.
 From discprob.basic Require Import seq_ext.
 From discprob.measure Require Export measures borel.
@@ -39,7 +39,7 @@ Section convergence.
       destruct (Hin n') as (n''&HinA).
       rewrite /An/fun_inv/h//= in HinA.
       feed pose proof (Hlim' (n' + n'')%nat) as Hball.
-      { omega. }
+      { lia. }
       rewrite /ball//=/AbsRing_ball//=/abs/minus/plus/opp//= in Hball.
       clear -HinA Hball. apply Rgt_not_le in HinA. apply HinA. left. done.
     }
@@ -51,7 +51,7 @@ Section convergence.
     {
       rewrite -Hinter. apply measure_decr_seq; eauto.
       clear. rewrite /Bn. intros i x (n&Hin). exists (S n).
-      replace (i + S n)%nat with (S i + n)%nat by omega.
+      replace (i + S n)%nat with (S i + n)%nat by lia.
       auto.
     }
     eapply (is_lim_seq_le_le (λ n, 0) _ (λ n, μ (Bn n))).

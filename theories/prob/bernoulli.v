@@ -1,4 +1,4 @@
-Require Import Reals Fourier Omega Psatz.
+Require Import Reals Fourier Lia Psatz.
 From discprob.basic Require Import base.
 From discprob.prob Require Import prob countable finite stochastic_order.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
@@ -7,8 +7,8 @@ From Coquelicot Require Import Rcomplements Rbar Series Lim_seq Hierarchy Markov
 Lemma bool_pickle_inv: ∀ x, (x >= 2)%nat → @pickle_inv ([countType of bool]) x = None.
 Proof.
   intros x Hgt.
-  destruct x; first omega.
-  destruct x; first omega.
+  destruct x; first lia.
+  destruct x; first lia.
   rewrite /pickle_inv//=.
   case: ifP => //.
   destruct (ssrnat.odd x) => //=.

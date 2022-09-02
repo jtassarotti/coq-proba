@@ -4,7 +4,7 @@ From discprob.monad.finite Require Import monad permutation.
 From discprob.monad.finite Require quicksort quicksort_cost.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
-From Coq Require Import Reals Fourier Psatz Program.Wf Omega.
+From Coq Require Import Reals Fourier Psatz Program.Wf Lia.
 
 Lemma range_half: 0 <= 1/2 <= 1.
 Proof. nra. Qed.
@@ -156,8 +156,8 @@ Fixpoint binomial (n: nat) : ldist { x: nat | (x <= n)%nat}.
       else
         mret (exist _ (sval rest) _)
   end); auto.
-  - abstract (destruct rest => //=; nify; omega).
-  - abstract (destruct rest => //=; nify; omega).
+  - abstract (destruct rest => //=; nify; lia).
+  - abstract (destruct rest => //=; nify; lia).
 Defined.
 
 Lemma binomial_unfold n:
@@ -185,7 +185,7 @@ Definition approx_incr'_bulk : nat → ldist (nat).
       mret (S result)
   end (Init.Logic.eq_refl))); auto.
 Proof.
-  abstract (destruct surv as (x&i) => //=; subst => //=; nify; rewrite //= in i; omega).
+  abstract (destruct surv as (x&i) => //=; subst => //=; nify; rewrite //= in i; lia).
 Defined.
 
 Lemma approx_incr'_bulk_unfold_aux n:
@@ -257,7 +257,7 @@ Proof.
    assert (Hinj: injective (succn)).
    { intros ??. congruence. }
    assert (Hbound: ((k' < (S (S k))))%coq_nat).
-   { rewrite //=.  rewrite //= in Hsize.  nify. omega. }
+   { rewrite //=.  rewrite //= in Hsize.  nify. lia. }
    specialize (IH Hbound).
    etransitivity.
    {

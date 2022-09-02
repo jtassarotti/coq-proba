@@ -1,4 +1,4 @@
-Require Import Reals Psatz Omega ClassicalEpsilon.
+Require Import Reals Psatz Lia ClassicalEpsilon.
 From stdpp Require Import tactics.
 From discprob.basic Require Export base Series_Ext order bigop_ext sval Reals_ext.
 From mathcomp Require Import bigop.
@@ -73,7 +73,7 @@ Section measure_props.
 
     rewrite union_pair_unionF.
     rewrite measure_additivity_Series => //=.
-    rewrite (Series_incr_n _ 2); [ | omega | ]; last first.
+    rewrite (Series_incr_n _ 2); [ | lia| ]; last first.
     { eexists. apply measure_additivity; auto. }
 
     rewrite //=. rewrite measure_empty Series_0 //. nra.
@@ -111,7 +111,7 @@ Section measure_props.
       ** apply Hin. auto.
       ** intros z (Hin1&Hin2). destruct Hin1 as (j&?&?).
          eapply (Hdisj j (S n)); eauto.
-         omega.
+         lia.
   Qed.
 
   Lemma measure_set_minus X Y:
@@ -166,7 +166,7 @@ Section measure_props.
                 ≡ compl (Us i) ∩ ((λ x : A, ∀ i' : nat, (i' < i)%nat → ¬ Us i' x))) as Heq.
       { intros x; split.
         ** intros Hin; split; auto.
-           apply (Hin i). omega.
+           apply (Hin i). lia.
         ** intros (Hin1&Hin2); intros i'. inversion 1; subst; auto.
       }
       eapply Hproper; first eapply Heq.
@@ -207,7 +207,7 @@ Section measure_props.
            *** intros HU. rewrite /diff_below.
                destruct (Classical_Prop.classic (Us n x)) as [Hn|Hnotn]; first by left.
                right; split; auto. intros i' Hlt Hsat.
-               apply Hnotn. eapply (measure_incr_mono Us i'); eauto. omega.
+               apply Hnotn. eapply (measure_incr_mono Us i'); eauto. lia.
         ** clear. intros x (Hin1&Hin2). destruct Hin2 as (?&Hfalse).
            eapply Hfalse; eauto.
     }
@@ -235,8 +235,8 @@ Section measure_props.
         apply Classical_Pred_Type.not_all_ex_not in Hninter as (n&Hnot).
         exists n. split; auto.
     }
-    rewrite Hequiv in Hlim *.
-    rewrite measure_set_minus /Rminus; eauto.
+    move: Hlim.
+    rewrite Hequiv measure_set_minus /Rminus; eauto.
     { rewrite Rplus_comm. intros. eapply is_lim_seq_opp_inv.
       eapply (is_lim_seq_plus_inv _ (λ _, μ (Us O)) _ (μ (Us O))).
       * eapply is_lim_seq_ext; last eassumption.

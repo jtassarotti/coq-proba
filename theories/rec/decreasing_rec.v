@@ -5,7 +5,7 @@ From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choi
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
 Require Import Reals Fourier FunctionalExtensionality.
 Require Import Psatz.
-Require Import Coq.omega.Omega.
+Require Import Lia.
 Require Import Ranalysis5.
 Global Set Bullet Behavior "Strict Subproofs".
 
@@ -126,11 +126,11 @@ Proof.
       assert ( Rceil 0 = (Rceil (msr z)))%Z as Hz.
       {
         rewrite Rceil_0. replace 0%nat with (Z.to_nat 0) in Hk by auto.
-        apply Z2Nat.inj; omega.
+        apply Z2Nat.inj; lia.
       }
       apply Rnot_lt_le => Hlt'. apply Rceil_mono_strict in Hlt';
           last apply frac_part_0.
-      omega.
+      lia.
     }
     rewrite //=.
     rewrite /pr_gt /pr //= ?SeriesC_fin_big.
@@ -150,7 +150,7 @@ Proof.
     destruct (Rle_dec 0 (msr i)) as [Hlei|Hlt0%Rnot_le_gt]; last first.
     {
       assert (msr i ≤ msr_cutoff) as Hbelow by nra.
-      assert (1 <= (S k))%coq_nat as Hto1 by omega.
+      assert (1 <= (S k))%coq_nat as Hto1 by lia.
       apply (hinf_decreasing0 _ _ _ _ Hto1).
       rewrite //=.
       rewrite /pr_gt /pr //= ?SeriesC_fin_big.
@@ -164,18 +164,18 @@ Proof.
     apply Rceil_mono in Hle_size.
     rewrite Rceil_minus_1 in Hle_size.
     apply Z2Nat.inj_le in Hle_size.
-    - rewrite Z2Nat.inj_sub in Hle_size; last omega.
+    - rewrite Z2Nat.inj_sub in Hle_size; last lia.
       replace (Z.to_nat 1) with 1%nat in Hle_size by auto with *.
-      omega.
+      lia.
     - rewrite -Rceil_0. apply Rceil_mono. done.
     - transitivity (Rceil (msr i)); auto.
       rewrite -Rceil_0. apply Rceil_mono. done.
     - done.
     }
     assert (le (S (Z.to_nat (Rceil (msr i)))) (S k)) as HleSk.
-    { omega. }
+    { lia. }
     apply (hinf_decreasing0 _ _ _ _ HleSk).
-    apply IH; auto; try omega.
+    apply IH; auto; try lia.
 Qed.
 
 Lemma hinf_0:
@@ -318,11 +318,11 @@ Proof.
       assert ( Rceil 0 = (Rceil (size z)))%Z as Hz.
       {
         rewrite Rceil_0. replace 0%nat with (Z.to_nat 0) in Hk by auto.
-        apply Z2Nat.inj; omega.
+        apply Z2Nat.inj; lia.
       }
       apply Rnot_lt_le => Hlt'. apply Rceil_mono_strict in Hlt';
           last apply frac_part_0.
-      omega.
+      lia.
     }
     rewrite //=.
     rewrite /pr_gt /pr //= SeriesC_fin_big.
@@ -352,23 +352,23 @@ Proof.
     rewrite //= in Hin. destruct (φ sidx).
     - inversion Hin. subst. rewrite Rceil_minus_1 in Hle_size1.
       apply Z2Nat.inj_le in Hle_size1.
-      * rewrite Z2Nat.inj_sub in Hle_size1; last omega.
+      * rewrite Z2Nat.inj_sub in Hle_size1; last lia.
         replace (Z.to_nat 1) with 1%nat in Hle_size1 by auto with *.
-        rewrite -Hk //= in Hle_size1. omega.
+        rewrite -Hk //= in Hle_size1. lia.
       * rewrite -Rceil_0. apply Rceil_mono. done.
       * transitivity (Rceil (size (fst ((h z) x)))); auto.
         rewrite -Rceil_0. apply Rceil_mono. done.
     - inversion Hin. subst. rewrite Rceil_minus_1 in Hle_size2.
       apply Z2Nat.inj_le in Hle_size2.
-      * rewrite Z2Nat.inj_sub in Hle_size2; last omega.
+      * rewrite Z2Nat.inj_sub in Hle_size2; last lia.
         replace (Z.to_nat 1) with 1%nat in Hle_size1 by auto with *.
-        rewrite -Hk //= in Hle_size2. omega.
+        rewrite -Hk //= in Hle_size2. lia.
       * rewrite -Rceil_0. apply Rceil_mono. done.
       * transitivity (Rceil (size (snd ((h z) x)))); auto.
         rewrite -Rceil_0. apply Rceil_mono. done.
     }
     apply (hinf_decreasing0 _ _ _ _ _ _ Hlek).
-    apply IH; auto; try omega.
+    apply IH; auto; try lia.
 Qed.
 
 Lemma hinf_0: ∀ a, ∃ n, ∀ φ, pr_gt (rvar_comp (recN_rvar (hpath _ _ _ h φ) (O, a) n)
