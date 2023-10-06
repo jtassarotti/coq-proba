@@ -1,4 +1,4 @@
-Require Export Reals Psatz Omega.
+Require Export Reals Psatz Lia.
 From discprob.prob Require Export prob countable stochastic_order markov double.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop seq.
 
@@ -711,12 +711,12 @@ Proof.
     intros lb. destruct lb => //=. destruct lb; first by done.
     intros Hlen.
     rewrite -independent_rvar_list //; last first.
-    { rewrite //=. rewrite  //= in Hlen. omega. }
+    { rewrite //=. rewrite  //= in Hlen. lia. }
     rewrite -Hindep2.
     apply pr_eq_pred' => i.
     rewrite //= in Hlen.
     split; move /andP => [? ?]; apply /andP; split; auto;
-                           apply rvar_list_eq_foldr => //=; omega.
+                           apply rvar_list_eq_foldr => //=; lia.
 Qed.
 
 Lemma rvar_list_comp_ext {A} {B C: eqType} {Ω: distrib A} (lX: list (rvar Ω B)) (f: B → C) :

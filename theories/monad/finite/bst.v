@@ -4,7 +4,8 @@ From discprob.monad.finite Require Import monad permutation.
 From discprob.monad.finite Require quicksort quicksort_cost.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
-From Coq Require Import Omega Psatz Program.Wf MSets.MSetInterface MSets.MSetGenTree Structures.OrdersEx.
+From Coq Require Import Lia Psatz Program.Wf MSets.MSetInterface MSets.MSetGenTree Structures.OrdersEx
+     Arith.PeanoNat Arith.Wf_nat Arith.Lt.
 Local Open Scope nat_scope.
 
 (* The Coq standard library includes a generic implementation of
@@ -180,10 +181,10 @@ Proof.
   - rewrite //=.
     specialize (Nat.compare_spec a x) => Hspec.
     destruct (a ?= x); inversion Hspec; subst.
-    * case: ifP; first (intros; nify; exfalso; omega); auto.
-    * do 2 (case: ifP; move /ltP); try (intros; omega); [].
+    * case: ifP; first (intros; nify; exfalso; lia); auto.
+    * do 2 (case: ifP; move /ltP); try (intros; lia); [].
       intros _ _. rewrite IHl; f_equal.
-    * do 2 (case: ifP; move /ltP); try (intros; omega); [].
+    * do 2 (case: ifP; move /ltP); try (intros; lia); [].
       intros _ _. rewrite IHl; f_equal.
 Qed.
 
@@ -244,7 +245,7 @@ Proof.
       { apply IHl. edestruct Hin as (i&Hin'&?).  exists i. split; auto. rewrite in_cons in Hin'.
         move /orP in Hin'. destruct Hin' as [Heq|?]; auto. move /eqP in Heq; subst; auto.
       }
-      nify. omega.
+      nify. lia.
     * intros. rewrite size_filter. specialize (count_size P l). rewrite //=.
 Qed.
 
@@ -293,9 +294,9 @@ Definition rand_tree_rec : list nat → ldist tree.
                          mret (Node tt tl (sval p) tr)
      end (Init.Logic.eq_refl))); rewrite /MR; auto.
   - abstract (apply /ltP; subst; apply size_filter_lt;
-              exists (sval p); split; destruct p as (?&Hin); auto => //= ?; nify; omega).
+              exists (sval p); split; destruct p as (?&Hin); auto => //= ?; nify; lia).
   - abstract (apply /ltP; subst; apply size_filter_lt;
-              exists (sval p); split; destruct p as (?&Hin); auto => //= ?; nify; omega).
+              exists (sval p); split; destruct p as (?&Hin); auto => //= ?; nify; lia).
 Defined.
 
 Lemma rt_unfold_aux l:
@@ -382,8 +383,8 @@ Proof.
     }
     eapply eq_dist_trans; last apply ldist_bind_swap.
     rewrite ?filter_rem ?rem_id; first apply eq_dist_refl.
-    * rewrite mem_filter. apply /andP. intros (?&?). nify. omega.
-    * rewrite mem_filter. apply /andP. intros (?&?). nify. omega.
+    * rewrite mem_filter. apply /andP. intros (?&?). nify. lia.
+    * rewrite mem_filter. apply /andP. intros (?&?). nify. lia.
 Qed.
 
 Lemma alr_rt_perm l:

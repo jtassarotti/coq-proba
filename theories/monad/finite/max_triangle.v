@@ -1,6 +1,6 @@
 From discprob.basic Require Import base order nify seq_ext.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat bigop fintype binomial.
-Require Import Coq.omega.Omega Coq.Program.Wf.
+Require Import Lia Coq.Program.Wf Coq.Arith.Lt.
 
 Lemma uphalf_le n m:
   n <= m →
@@ -9,15 +9,15 @@ Proof.
   move /leP => Hle. induction Hle.
   - done.
   - nify; etransitivity; first apply IHHle. clear.
-    induction m => //=; first omega.
-    rewrite ?uphalf_half; destruct (odd m); nify; omega.
+    induction m => //=; first lia.
+    rewrite ?uphalf_half; destruct (odd m); nify; lia.
 Qed.
 
 Lemma half_double_lt m n: m < n./2 → (m.*2 < n).
 Proof.
   assert (Hlt: 0 < 2) by auto.
   rewrite -(ltn_pmul2r Hlt) -{2}(odd_double_half n). rewrite -?muln2.
-  destruct (odd n) => //= ?; nify; omega.
+  destruct (odd n) => //= ?; nify; lia.
 Qed.
 
 Lemma uphalf_sum_edge_odd n:
@@ -25,19 +25,19 @@ Lemma uphalf_sum_edge_odd n:
   \sum_(0 <= i < n) (if i + i < n.+1 then 1 else 0) =
   uphalf n.
 Proof.
-  assert (0 = n ∨ 0 < n)%coq_nat as [Heq|Hgt0] by omega.
+  assert (0 = n ∨ 0 < n)%coq_nat as [Heq|Hgt0] by lia.
   { subst. rewrite ?big_geq => //=. }
 
   transitivity (\sum_(0 <= i < uphalf n) 1); last first.
-  { rewrite sum_nat_const_nat. nify. omega. }
+  { rewrite sum_nat_const_nat. nify. lia. }
 
   symmetry; rewrite (big_nat_widen 0 _ n); last first.
-  { rewrite -{2}(uphalf_double n). apply uphalf_le; nify; omega. }
+  { rewrite -{2}(uphalf_double n). apply uphalf_le; nify; lia. }
 
   rewrite -big_mkcondr //=. eapply eq_bigl.
              intros k. rewrite addnn. apply /ltP; case: ifP.
   - intros Hlt.
-    assert (Hle': k.*2 <= n) by (nify; omega).
+    assert (Hle': k.*2 <= n) by (nify; lia).
     apply half_leq in Hle'. nify.
     eapply le_lt_trans; eauto.
     rewrite //= uphalf_half. destruct (odd n) => //=.
@@ -51,35 +51,35 @@ Lemma uphalf_sum_edge_even n:
   uphalf n.
 Proof.
   intros Heven.
-  assert (0 = n ∨ 0 < n)%coq_nat as [Heq|Hgt0] by omega.
+  assert (0 = n ∨ 0 < n)%coq_nat as [Heq|Hgt0] by lia.
   { subst. rewrite ?big_geq => //=. }
 
   transitivity (\sum_(0 <= i < uphalf n) 1); last first.
-  { rewrite sum_nat_const_nat. nify. omega. }
+  { rewrite sum_nat_const_nat. nify. lia. }
 
   symmetry; rewrite (big_nat_widen 0 _ n); last first.
-  { rewrite -{2}(uphalf_double n). apply uphalf_le; nify; omega. }
+  { rewrite -{2}(uphalf_double n). apply uphalf_le; nify; lia. }
 
   rewrite -big_mkcondr //=. eapply eq_bigl.
   intros k. rewrite addnn. apply /ltP; case: ifP.
   - intros Hlt.
     assert (Hle': k.*2 < n - 1).
-    { move /ltP in Hlt. inversion Hlt; last (nify; omega).
+    { move /ltP in Hlt. inversion Hlt; last (nify; lia).
       subst. rewrite //= odd_double // in Heven. }
     assert (2 <= n).
-    { nify.  destruct n; first omega. destruct n; rewrite //= in Heven; omega. }
+    { nify.  destruct n; first lia. destruct n; rewrite //= in Heven; lia. }
 
     rewrite uphalf_half. destruct (odd n) => //=.
     rewrite add0n.
     apply (le_lt_trans _ (n - 2)./2); last first.
-    { assert (n = (S (S (n - 2)))) as Hsum by (nify; omega).
+    { assert (n = (S (S (n - 2)))) as Hsum by (nify; lia).
       rewrite {2}Hsum => //=. }
     apply /leP.
     rewrite -(half_double k) half_leq => //.
-    nify; omega.
+    nify; lia.
   - move /negbT/ltP => Hlt Hlt'.
     apply Hlt. apply /ltP/half_double_lt. rewrite uphalf_half in Hlt'.
-    move: Hlt'. destruct (odd n) => //= ?. nify. omega.
+    move: Hlt'. destruct (odd n) => //= ?. nify. lia.
 Qed.
 
 Lemma odd_half_double_lt n: odd n → n./2 + n./2 < n.
@@ -91,11 +91,11 @@ Lemma lt_addnn: ∀ n i, odd n → i ≠ uphalf n → (i + i < n.+2) = (i + i < 
 Proof.
   intros n i Hodd Hneq.
   apply /ltP; case: ifP.
-  - intros; nify; omega.
-  - move /ltP. intros Hlt. assert (i + i >= S n) by (nify; omega).
+  - intros; nify; lia.
+  - move /ltP. intros Hlt. assert (i + i >= S n) by (nify; lia).
     intros Hfalse.
     cut (i + i <> S n).
-    { intros. nify. omega. }
+    { intros. nify. lia. }
     intros Heq. apply Hneq.
     rewrite addnn in Heq.
     apply (f_equal half) in Heq. rewrite /= in Heq.
@@ -114,7 +114,7 @@ Proof.
     rewrite -{2}(half_double (S n)).
     apply /leP.
     apply half_leq.
-    nify. omega.
+    nify. lia.
   }
   rewrite (bigD1 (Ordinal Hlt)) //.
   rewrite //=. rewrite addnC; f_equal.
@@ -125,7 +125,7 @@ Proof.
       inversion Hneq; subst.
       rewrite ?uphalf_half in Hcontra. rewrite Hodd //= in Hcontra.
       rewrite -{3}(half_double n) -addnn halfD Hodd //= in Hcontra.
-      nify. omega.
+      nify. lia.
     }
     rewrite lt_addnn => //. intros Heq. subst. move /eqP in Hneq.
     apply /Hneq/ord_inj => //=.
@@ -133,7 +133,7 @@ Proof.
     move /ltP. intros Hn. contradiction Hn.
     rewrite uphalf_half Hodd => //=.
     specialize (odd_half_double_lt n Hodd) => ?.
-    nify. omega.
+    nify. lia.
 Qed.
 
 Lemma uphalf_sum_half n:
@@ -141,7 +141,7 @@ Lemma uphalf_sum_half n:
 Proof.
   transitivity (\sum_(0 <= i < n) (if i + i < n then 1 else 0)).
   { rewrite ?big_mkord -?big_mkcond. apply eq_bigl. intros (i&Hlt) => //=.
-    apply /ltP. case: ifP; move /ltP; rewrite -?plusE -?minusE => ?; omega.
+    apply /ltP. case: ifP; move /ltP; rewrite -?plusE -?minusE => ?; lia.
   }
   rewrite uphalf_half.
   elim: n => [|n IHn]; first by rewrite ?big_geq.
@@ -149,14 +149,14 @@ Proof.
   rewrite big_nat_recr //=. destruct n => //=.
   - rewrite ?big_geq //=.
   - case: ifP.
-    { move /ltP. rewrite -?plusE. intros. exfalso. omega. }
+    { move /ltP. rewrite -?plusE. intros. exfalso. lia. }
     intros. rewrite addn0.
     case_eq (odd n); last first.
     * intros Heven. rewrite uphalf_sum_edge_odd => //=; last by (rewrite Heven => //).
-      rewrite IHn //= uphalf_half !Heven /=. nify. omega.
+      rewrite IHn //= uphalf_half !Heven /=. nify. lia.
     * intros Hodd. rewrite uphalf_sum_edge_even => //=; last by (rewrite Hodd => //).
       rewrite //= uphalf_half Hodd //= in IHn.
-      rewrite uphalf_sum_rec //= IHn. nify; omega.
+      rewrite uphalf_sum_rec //= IHn. nify; lia.
 Qed.
 
 Lemma uphalf_sum_max n:
@@ -167,9 +167,9 @@ Proof.
   { rewrite ?big_mkord.
     eapply eq_bigr. intros (i&Hlt) _ => /=.
     case: ifP => Hlt'.
-    - rewrite ?Max.max_r => //=; nify; omega.
+    - rewrite ?Max.max_r => //=; nify; lia.
     - apply negbT in Hlt'. rewrite -leqNgt in Hlt'.
-      rewrite ?Max.max_l => //=; nify; omega.
+      rewrite ?Max.max_l => //=; nify; lia.
   }
   rewrite big_split //=. f_equal.
   apply uphalf_sum_half.
@@ -178,6 +178,6 @@ Qed.
 Lemma max_triangular_sum n : \sum_(0 <= i < n) max i (n - i - 1) = 'C(n, 2) + uphalf n * half n.
 Proof.
   elim: n => [|n IHn]; first by rewrite big_geq.
-  rewrite big_nat_recr //= binS bin1 Max.max_l; last by (nify; omega).
+  rewrite big_nat_recr //= binS bin1 Max.max_l; last by (nify; lia).
   rewrite uphalf_sum_max IHn. ring.
 Qed.

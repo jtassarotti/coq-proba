@@ -3,13 +3,13 @@ Building
 For dependencies see the coq-proba.opam file. The following configuration is
 known to work (listed by opam package name and version)
 
-- coq                       8.13.2
-- coq-bignums               8.13.0
-- coq-coquelicot            3.1.0
-- coq-flocq                 3.3.1
-- coq-interval              4.3.0
-- coq-mathcomp-ssreflect    1.12.0
-- coq-stdpp                 1.5.0
+- coq                       8.15.2
+- coq-bignums               8.15.0
+- coq-coquelicot            3.2.0
+- coq-flocq                 4.1.0
+- coq-interval              4.5.2
+- coq-mathcomp-ssreflect    1.15.0
+- coq-stdpp                 1.8.0
 
 We have not tested compilation under other configurations.
 

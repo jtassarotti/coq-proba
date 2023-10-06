@@ -1,5 +1,5 @@
 From discprob.basic Require Import base sval order monad bigop_ext nify seq_ext.
-Require Import Reals Psatz Omega.
+Require Import Reals Psatz Lia.
 
 Require ClassicalEpsilon.
 From mathcomp Require Import ssrfun ssreflect eqtype ssrbool seq fintype choice.

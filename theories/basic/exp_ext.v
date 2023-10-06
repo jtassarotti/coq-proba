@@ -30,7 +30,7 @@ Qed.
 Lemma exp_ineq1_le x: 0 <= x → 1 + x <= exp x.
 Proof.
   intros [Hlt|Heq].
-  * left. by apply exp_ineq1.
+  * left. apply exp_ineq1. nra.
   * rewrite -Heq exp_0. nra.
 Qed.
 Lemma exp_fold_plus (l: list R):

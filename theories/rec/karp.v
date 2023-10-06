@@ -7,8 +7,9 @@ From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choi
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
 Require Import Reals Fourier FunctionalExtensionality.
 Require Import Psatz.
-Require Import Coq.omega.Omega.
+Require Import Lia.
 Require Import Ranalysis5.
+Require Import Coq.Classes.Morphisms.
 Global Set Bullet Behavior "Strict Subproofs".
 
 Notation "x ≤ y" := (le x y) (at level 70, no associativity) : nat_scope.
@@ -30,8 +31,8 @@ Proof.
     - rewrite Heq. left. right. auto.
     - left. left. auto.
   }
-  rewrite Rminus_Int_part1; eauto. omega.
-  rewrite Rminus_Int_part2; eauto. omega.
+  rewrite Rminus_Int_part1; eauto. lia.
+  rewrite Rminus_Int_part2; eauto. lia.
 Qed.
 
 Lemma Int_part_pos x: 0 ≤ x → (0 <= Int_part x)%Z.
@@ -51,7 +52,7 @@ Qed.
 Lemma Int_part_mono x x': x ≤ x' → (Int_part x <= Int_part x')%Z.
 Proof.
   intros.
-  cut (0 <= Int_part x' - Int_part x)%Z; first by omega.
+  cut (0 <= Int_part x' - Int_part x)%Z; first by lia.
   etransitivity; last eapply Int_part_minus.
   apply Int_part_pos; fourier.
 Qed.
@@ -59,7 +60,7 @@ Qed.
 Lemma up_mono x x': x ≤ x' → (up x <= up x')%Z.
 Proof.
   intros Hint%Int_part_mono.
-  rewrite /Int_part in Hint. omega.
+  rewrite /Int_part in Hint. lia.
 Qed.
 
 Lemma Int_frac_decompose x: x = IZR (Int_part x) + frac_part x.
@@ -71,12 +72,12 @@ Lemma Rceil_mono x x': x ≤ x' → (Rceil x <= Rceil x')%Z.
 Proof.
   rewrite /Rceil.
   case: ifP.
-  - case: ifP; intros ?? ?%Int_part_mono; omega.
+  - case: ifP; intros ?? ?%Int_part_mono; lia.
   - case: ifP.
     * move /eqP => Heq0.
       move /eqP => Hneq0.
       intros Hle.
-      cut (Int_part x < Int_part x')%Z; first by omega.
+      cut (Int_part x < Int_part x')%Z; first by lia.
       specialize (Int_frac_decompose x) => Hde.
       specialize (Int_frac_decompose x') => Hde'.
       rewrite Hde Hde' in Hle.
@@ -84,7 +85,7 @@ Proof.
       assert (frac_part x > 0).
       { edestruct (base_fp x). inversion H; auto. nra. }
       intros. apply lt_IZR. fourier.
-    * intros ?? ?%Int_part_mono; omega.
+    * intros ?? ?%Int_part_mono; lia.
 Qed.
 
 Definition Rmono (f: R → R): Prop := ∀ x x', x ≤ x' → f x ≤ f x'.
@@ -94,8 +95,8 @@ Definition Rantimono_P P (f: R → R): Prop := ∀ x x', P x → P x' → x ≤ 
 
 Lemma Int_part_IZR z: Int_part (IZR z) = z.
 Proof.
-  rewrite /Int_part -(up_tech (IZR z) z) //=; try reflexivity; try fourier; try omega.
-  apply IZR_lt; omega.
+  rewrite /Int_part -(up_tech (IZR z) z) //=; try reflexivity; try fourier; try lia.
+  apply IZR_lt; lia.
 Qed.
 
 Lemma Rceil_IZR z: Rceil (IZR z) = z.
@@ -120,11 +121,11 @@ Proof.
   assert (∃ k,  Rceil (g x) - Rceil (g x') = Z_of_nat k)%Z as (k&Heqk).
   {
     apply Hganti, Rge_le, Rceil_mono in Hle.
-    eapply Z_of_nat_complete. omega.
+    eapply Z_of_nat_complete. lia.
   }
   revert x x' Hle Heqk. induction k; (* [|induction k]; *) intros x x'.
   - rewrite //= => Hle Heq0.
-    assert (Rceil (g x) = Rceil (g x')) as <- by omega.
+    assert (Rceil (g x) = Rceil (g x')) as <- by lia.
     apply (Hfmono (Rceil (g x))); auto.
   - intros. rewrite Nat2Z.inj_succ in Heqk.
     cut (∃ y, x ≤ y ∧ y ≤ x' ∧ (g y) = IZR (Rceil (g x) - 1))%Z.
@@ -137,12 +138,12 @@ Proof.
       * rewrite (Hboundary _ y) Hedge' //.
         rewrite Zplus_comm Zplus_minus.
         apply Hfmono; auto.
-      * eapply IHk; eauto. omega.
+      * eapply IHk; eauto. lia.
     }
     inversion Hle as [Hlt|Heq]; last first.
     {
       rewrite Heq in Heqk. rewrite -Zminus_diag_reverse in Heqk. exfalso.
-      specialize (Zle_0_nat k). rewrite Heqk. omega.
+      specialize (Zle_0_nat k). rewrite Heqk. lia.
     }
     destruct (f_interv_is_interv (λ z, - g z) x x' (- IZR (Rceil (g x) - 1))) as (y&(?&?)&Hneg);
       eauto.
@@ -155,7 +156,7 @@ Proof.
              destruct (base_fp (g x)) as (?&?).
              rewrite minus_IZR. rewrite plus_IZR.
              intros. fourier.
-      ** transitivity (IZR (Rceil (g x'))); first (apply IZR_ge; omega).
+      ** transitivity (IZR (Rceil (g x'))); first (apply IZR_ge; lia).
          rewrite {2}(Int_frac_decompose (g x')).
          rewrite /Rceil. case: ifP.
          *** move /eqP => ->.
@@ -186,11 +187,11 @@ Proof.
   assert (∃ k,  Rceil (g x) - Rceil (g x') = Z_of_nat k)%Z as (k&Heqk).
   {
     apply Hganti, Rge_le, Rceil_mono in Hle; eauto.
-    eapply Z_of_nat_complete. omega.
+    eapply Z_of_nat_complete. lia.
   }
   revert x x' HP HP' Hle Heqk. induction k; (* [|induction k]; *) intros x x' HP HP'.
   - rewrite //= => Hle Heq0.
-    assert (Rceil (g x) = Rceil (g x')) as <- by omega.
+    assert (Rceil (g x) = Rceil (g x')) as <- by lia.
     apply (Hfmono (Rceil (g x))); auto.
     exists x; eauto.
   - intros. rewrite Nat2Z.inj_succ in Heqk.
@@ -203,14 +204,14 @@ Proof.
       transitivity (f (Rceil (g y)) y).
       * transitivity (f (Rceil (g x)) y); first eapply Hfmono; eauto.
         rewrite Hedge' //. apply Rge_le.
-        replace (Rceil (g x)) with ((Rceil (g x) - 1) + 1)%Z at 2 by omega.
+        replace (Rceil (g x)) with ((Rceil (g x) - 1) + 1)%Z at 2 by lia.
         apply Hboundary; eauto.
-      * eapply IHk; eauto. omega.
+      * eapply IHk; eauto. lia.
     }
     inversion Hle as [Hlt|Heq]; last first.
     {
       rewrite Heq in Heqk. rewrite -Zminus_diag_reverse in Heqk. exfalso.
-      specialize (Zle_0_nat k). rewrite Heqk. omega.
+      specialize (Zle_0_nat k). rewrite Heqk. lia.
     }
     destruct (f_interv_is_interv (λ z, - g z) x x' (- IZR (Rceil (g x) - 1))) as (y&(?&?)&Hneg);
       eauto.
@@ -223,7 +224,7 @@ Proof.
              destruct (base_fp (g x)) as (?&?).
              rewrite minus_IZR. rewrite plus_IZR.
              intros. fourier.
-      ** transitivity (IZR (Rceil (g x'))); first (apply IZR_ge; omega).
+      ** transitivity (IZR (Rceil (g x'))); first (apply IZR_ge; lia).
          rewrite {2}(Int_frac_decompose (g x')).
          rewrite /Rceil. case: ifP.
          *** move /eqP => ->.
@@ -440,7 +441,7 @@ Proof.
   rewrite [@Finite.enum]unlock //=.
   rewrite (img_fin_big' _ (λ i, (pr_eq (rvar_comp _ _) i)) (λ x, Rgt_dec x v)).
   rewrite (img_fin_big' _ (λ i, (pr_eq (rvar_comp _ _) i)) (λ x, Rgt_dec x v)).
-  eapply sum_reidx_map with (h0 := λ x, x); auto.
+  eapply (sum_reidx_map _ _ _ _ (λ x, x)); auto.
   - intros a Hin' ->; split; auto.
     apply img_alt'.
     destruct x' as (x&Hin). rewrite //= in Hneq. rewrite //= in Hin'.
@@ -525,7 +526,7 @@ Proof.
        (λ x, true)).
   destruct i as (i&Hin).
   destruct (proj1  (img_alt _ _) Hin) as (x&Heq).
-    eapply sum_reidx_map with (h0 := λ x, x).
+    eapply (sum_reidx_map _ _ _ _ (λ x, x)).
     * intros; field.
     * intros a' (s&Heq')%img_alt' _.
       split; auto. apply img_alt'.
@@ -591,7 +592,7 @@ Proof.
        (λ x, true)).
     destruct i as (i&Hin).
     destruct (proj1  (img_alt _ _) Hin) as (x&Heq).
-    eapply sum_reidx_map with (h0 := λ x, x).
+    eapply (sum_reidx_map _ _ _ _ (λ x, x)).
     * intros; field.
     * intros a' (s&Heq')%img_alt' _.
       split; auto. apply img_alt'.
@@ -646,7 +647,7 @@ Proof.
   rewrite [@Finite.enum]unlock //=.
   rewrite (img_fin_big' _ (λ i, (pr_eq (rvar_comp _ _) i)) (λ x, Rgt_dec x v)).
   rewrite (img_fin_big' _ (λ i, (pr_eq (rvar_comp _ _) i)) (λ x, Rgt_dec x v)).
-  eapply sum_reidx_map with (h0 := λ x, x); auto.
+  eapply (sum_reidx_map _ _ _ _ (λ x, x)); auto.
   - intros a Hin' ->; split; auto.
     apply img_alt'.
     destruct x' as (x&Hin). rewrite //= in Hneq. rewrite //= in Hin'.
@@ -1065,7 +1066,6 @@ Proof. intros; fourier. Qed.
 Lemma Rle_plus_minus x y z: x - y ≤ z → x ≤ z + y.
 Proof. intros. fourier. Qed.
 
-Require Import Coq.Classes.Morphisms.
 Instance Rle_plus_proper: Proper (Rle ==> Rle ==> Rle) Rplus.
 Proof.
   intros ?? Hle ?? Hle'. apply Rplus_le_compat; auto.
@@ -1397,7 +1397,7 @@ Proof.
   rewrite plus_Int_part2 //=; last first.
   { rewrite frac_part_1. destruct (base_fp x); fourier. }
   replace 1 with (IZR 1) by auto. rewrite Int_part_IZR //.
-  case: ifP; intros; omega.
+  case: ifP; intros; lia.
 Qed.
 
 Lemma Rceil_minus_1 x:
@@ -1407,7 +1407,7 @@ Proof.
   rewrite plus_Int_part2 //=; last first.
   { rewrite frac_part_n1. destruct (base_fp x); fourier. }
   replace (-(1)) with (IZR (-1)) by auto. rewrite Int_part_IZR //.
-  case: ifP; intros; omega.
+  case: ifP; intros; lia.
 Qed.
 
 Lemma Rceil_mono_strict x x': frac_part x = 0 → x < x' → (Rceil x < Rceil x')%Z.
@@ -1431,8 +1431,8 @@ Proof.
   case: ifP.
   - move /eqP => Hfp0 Hgt.
     rewrite Hfp0 Rplus_0_r.
-    replace 1 with (IZR 1) by auto. move /le_IZR => ?; omega.
-  - move /eqP => ?. intros. cut (Int_part x < 1)%Z; first by (intros; omega).
+    replace 1 with (IZR 1) by auto. move /le_IZR => ?; lia.
+  - move /eqP => ?. intros. cut (Int_part x < 1)%Z; first by (intros; lia).
     apply lt_IZR. destruct (base_fp x) as (Hge0&Hlt1). replace (IZR 1) with 1 by auto.
     move: Hgt. move /Z.gt_lt/IZR_lt.
     rewrite plus_IZR. replace (IZR 1) with 1 by auto.
@@ -1517,7 +1517,7 @@ Proof.
            - nra.
            - apply a_pos. nra.
          }
-         assert (0 <= round (r - a (size x)) (size x))%Z by omega.
+         assert (0 <= round (r - a (size x)) (size x))%Z by lia.
          apply Rmin_case_strong.
          *** rewrite Hplus.
              intros Hminl. rewrite D_Dalt_equiv. rewrite /Dalt //.
@@ -1526,7 +1526,7 @@ Proof.
              destruct (Rlt_dec) as [Hlt'|?]; rewrite /is_left.
              { exfalso.  apply uu'_adjointrl in Hminl; nra. }
              right.
-             rewrite Z2Nat.inj_add; try omega.
+             rewrite Z2Nat.inj_add; try lia.
             rewrite plus_IZR. replace (IZR 1) with 1 by auto.
             rewrite //=.
             rewrite Rmult_plus_distr_l Rmult_1_r.

@@ -4,7 +4,7 @@ From discprob.monad.finite Require Import monad monad_hoare counter leader.
 From discprob.rec Require Import leader_rec.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
-Require Import Reals Fourier Psatz Omega.
+Require Import Reals Fourier Psatz Lia.
 
 Definition h (rp: nat * nat) :=
   match (fst rp) with
@@ -291,7 +291,7 @@ Proof.
                { clear -Hc1. rewrite //= in Hc1. rewrite //=. nra. }
              eapply Rge_gt_trans; eauto.
              apply Rle_ge. apply le_INR. nify. clear -Hlt. destruct x => //=.
-             destruct x, k => //=. simpl in Hlt. omega.
+             destruct x, k => //=. simpl in Hlt. lia.
           ** apply Rge_le, pr_eq_ge_0.
         }
         assert ( k \in img (h' (S rounds, S (S n)))) as Himg.
@@ -321,14 +321,14 @@ Proof.
                 destruct (Rgt_dec) as [Hc2|Hc2] => //=; try nra.
                 exfalso. apply Hc2. eapply Rge_gt_trans; eauto.
                 replace 1 with (INR 1) by auto. rewrite -plus_INR.
-                apply Rle_ge, le_INR. nify. omega.
+                apply Rle_ge, le_INR. nify. lia.
     * intros. rewrite //=. apply: le_dist_ldist_bind_ext => n'; clear k.
                 intros k. rewrite ?pr_gt_mret_simpl.
                 destruct (Rgt_dec) as [Hc1|Hc1] => //=; try nra;
                 destruct (Rgt_dec) as [Hc2|Hc2] => //=; try nra.
                 exfalso. apply Hc2. eapply Rge_gt_trans; eauto.
                 replace 1 with (INR 1) by auto. rewrite -plus_INR.
-                apply Rle_ge, le_INR. nify. omega.
+                apply Rle_ge, le_INR. nify. lia.
 Qed.
 
 Definition k := -/ ln(3/4).
@@ -370,7 +370,7 @@ Proof.
     destruct p as [| p].
     { apply mspec_mret. rewrite /recurrence_leader.size. rewrite //=. nra. }
     tbind (λ x, (sval x <= (S (S p)))%coq_nat).
-    { intros (x&?) _ => //=.  nify.  omega. }
+    { intros (x&?) _ => //=.  nify.  lia. }
     intros (pv&Hin) _.
     rewrite //=.
     case: ifP; intros; apply mspec_mret;
@@ -394,8 +394,8 @@ Proof.
     { rewrite leader_elect_unfold //. }
     destruct p; [| destruct p].
     rewrite //=.
-    * apply mspec_mret => //=. replace 0 with (INR 0) by auto. f_equal. nify. omega.
-    * apply mspec_mret => //=. replace 0 with (INR 0) by auto. f_equal. nify. omega.
+    * apply mspec_mret => //=. replace 0 with (INR 0) by auto. f_equal. nify. lia.
+    * apply mspec_mret => //=. replace 0 with (INR 0) by auto. f_equal. nify. lia.
     * exfalso. move : Hle.
       rewrite /leader_rec.recurrence_leader.size/leader_rec.recurrence_leader.rec_solution.d//=.
       destruct p; first nra.

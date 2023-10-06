@@ -3,7 +3,7 @@ From discprob.prob Require Import prob countable finite stochastic_order.
 From discprob.monad.finite Require Import monad.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
-Require Import Reals Fourier Psatz Omega.
+Require Import Reals Fourier Psatz Lia.
 
 Definition output {A} (p: ldist A) := [seq i.2 | i <- outcomes p].
 

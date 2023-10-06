@@ -1,5 +1,5 @@
 From stdpp Require Import tactics sets.
-Require Import Reals Psatz Omega Fourier.
+Require Import Reals Psatz Lia Fourier.
 From discprob.measure Require Export measurable_space.
 From mathcomp Require Import choice.
 Require ClassicalEpsilon.

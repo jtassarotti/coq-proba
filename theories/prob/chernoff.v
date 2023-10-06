@@ -107,8 +107,8 @@ Proof.
          split.
          *** nra.
          *** ring_simplify.
-             rewrite ln_exp. rewrite Rplus_comm. apply exp_ineq1_le. nra.
-      ** auto.
+             rewrite ln_exp. rewrite Rplus_comm. apply exp_ineq1_le.
+      ** apply exp_pos.
       ** apply exp_pos.
       ** by apply Rinv_0_lt_compat.
     * by apply indep_fn.

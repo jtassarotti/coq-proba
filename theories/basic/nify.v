@@ -1,5 +1,5 @@
 From mathcomp Require Import ssreflect ssrbool ssrnat div eqtype.
-Require Import Coq.omega.Omega.
+Require Import Lia.
 
 Ltac nify :=
     repeat match goal with
@@ -17,8 +17,8 @@ Ltac nify :=
           | |- context [ ?a - ?b ] => rewrite -minusE
           | H:context [ ?a * ?b ] |- _ => rewrite -multE in H
           | |- context [ ?a * ?b ] => rewrite -multE
-          | H:context [ ?a / ?b ] |- _ => rewrite -multE in H
-          | |- context [ ?a / ?b ] => rewrite -multE
+          | H:context [ ?a %/ ?b ] |- _ => rewrite -multE in H
+          | |- context [ ?a %/ ?b ] => rewrite -multE
           | H:context [ uphalf (double ?a) ] |- _ => rewrite uphalf_double in H
           | |- context [ uphalf (double ?a) ] => rewrite uphalf_double
           | H:context [ half (double ?a) ] |- _ => rewrite doubleK in H
@@ -30,12 +30,12 @@ Ltac nify :=
 Module nify_test.
 
 Remark test00 a b c: (a + b + c).*2 = (a + a) + (b - b) + (b - b) + (b + b) + (c + c).
-Proof. nify. omega. Qed.
+Proof. nify. lia. Qed.
 
 Remark test01 a b c: (a + b + c).*2 * 5 = ((a + a) + (b - b) + (b - b) + (b + b) + (c + c))*5.
-Proof. nify. omega. Qed.
+Proof. nify. lia. Qed.
 
 Remark test02 a: (a.*2)./2.*2 = a + a.
-Proof. nify. omega. Qed.
+Proof. nify. lia. Qed.
 
 End nify_test.

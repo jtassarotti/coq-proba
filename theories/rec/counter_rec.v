@@ -8,7 +8,7 @@ From Coquelicot Require AutoDerive.
 From Interval Require Import Tactic.
 Require Import Reals Fourier FunctionalExtensionality.
 Require Import Psatz.
-Require Import Coq.omega.Omega.
+Require Import Lia.
 Require Import Ranalysis5.
 
 Module recurrence_counter.
@@ -54,7 +54,7 @@ Section recurrence_counter_sec.
     replace 2 with (INR 2) by auto.
     replace 1 with (INR 1) by auto.
     intros ?%INR_lt ?%INR_lt.
-    omega.
+    lia.
   Qed.
 
   Theorem counter_bound x w:

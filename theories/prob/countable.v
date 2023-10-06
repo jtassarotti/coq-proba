@@ -1,5 +1,5 @@
 From discprob.basic Require Import base Series_Ext.
-Require Import Reals Fourier Omega Psatz.
+Require Import Reals Fourier Lia Psatz.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop.
 From Coquelicot Require Import Rcomplements Rbar Series Lim_seq Hierarchy Markov.
 

@@ -7,7 +7,7 @@ From discprob.rec Require Import rec_convert quicksort_rec.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
 From mathcomp Require Import path.
-Require Import Reals Fourier Psatz Omega.
+Require Import Reals Fourier Psatz Lia.
 
 Definition h (l: seq nat) :=
   match l with
@@ -167,8 +167,8 @@ Proof.
       rewrite Rmax_left //; last (fourier).
       replace (INR 0) with 0 by auto. ring_simplify.
       apply Rle_big0 => i _ //=.
-      destruct i as (i&Hlt) => //=. assert (i = O) as -> by (nify; omega).
-      replace (1 - 0 - 1)%nat with O by (nify; omega).
+      destruct i as (i&Hlt) => //=. assert (i = O) as -> by (nify; lia).
+      replace (1 - 0 - 1)%nat with O by (nify; lia).
       replace (INR 0) with 0 by auto. rewrite Rmax_left; last fourier.
       replace (INR 1) with 1 by auto. fourier.
     }
@@ -191,7 +191,7 @@ Proof.
                 (Ordinal (n:=(size l).+1) (m:=f x) (Hfsize x i)))).
     * intros (x, Hle) Hin.
       rewrite unif_pr. rewrite /Rdiv Rmult_1_l. apply Rmult_le_compat_l.
-      ** left. apply Rinv_0_lt_compat. apply lt_0_INR. rewrite //=. omega.
+      ** left. apply Rinv_0_lt_compat. apply lt_0_INR. rewrite //=. lia.
       ** rewrite -ldist_assoc. rewrite Ex_mbind_mret.
          apply Ex_bound.
          rewrite (ldist_cost_bind_fold (λ x, spl ← dist_ret _ (partition' (sval x) (a :: l));
@@ -438,7 +438,7 @@ Proof.
          apply (partition_work (a0 :: ls) pv).
         }
         intros ? ->.
-        apply cspec_mret => //=. nify. omega.
+        apply cspec_mret => //=. nify. lia.
       (* Should re-work the lemma, because much of this is tedious and the same,
          it's just the final application of work/span of partition calculation *)
       * intros d'. rewrite map_comp. move /mapP. intros [? Hin Heq]. rewrite Heq.
@@ -486,7 +486,7 @@ Proof.
     eapply ldist_bind_ext.
     intros ?.
     rewrite ?ldist_left_id ?ldist_right_id.
-    f_equal => //=. f_equal. nify. omega.
+    f_equal => //=. f_equal. nify. lia.
 Qed.
 
 Definition k := -/ ln(3/4).
@@ -536,7 +536,7 @@ Proof.
     rewrite Heq. clear Heq.
     assert (length (upper spl) = size (upper spl)) as Heq by auto.
     rewrite Heq. clear Heq.
-    clear -Hlt. rewrite //=. omega.
+    clear -Hlt. rewrite //=. lia.
   - rewrite /quicksort_rec.recurrence_span2.size //=.
     intros l ? Hgt. rewrite //=.
     cut (∀ n, INR (length (fst (result (rvar_of_ldist (h l) n)))) +
@@ -579,7 +579,7 @@ Proof.
     specialize (pos_INR (size (upper (spl)))).
     rewrite //=. intros.
     assert (Hge1: 1 <= INR (size (middle spl))).
-    { replace 1 with (INR 1) by auto. apply le_INR. omega. }
+    { replace 1 with (INR 1) by auto. apply le_INR. lia. }
     rewrite //= in Hge1. nra.
   - rewrite /quicksort_rec.recurrence_span2.size/quicksort_rec.recurrence_span2.rec_solution.d //=.
     intros x n Hle.
@@ -591,7 +591,7 @@ Proof.
       apply cspec_mret => //=.
     * rewrite qs_unfold.
       apply cspec_mret => //=.
-    * rewrite //= in Hle. omega.
+    * rewrite //= in Hle. lia.
   - intros. eapply (rec_pr_rec_gt _ rsize _ _ _ _ T h' (λ x, true) (λ xy, Rmax (fst xy) (snd xy)));
               auto; intros; apply Trec.
   - intros x.

@@ -1,4 +1,4 @@
-Require Import Reals Psatz Omega.
+Require Import Reals Psatz Lia.
 Local Open Scope R_scope.
 From mathcomp Require Import ssrfun ssreflect eqtype ssrbool seq fintype choice.
 From discprob.basic Require Import base sval order monad bigop_ext nify.

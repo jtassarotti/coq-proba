@@ -3,7 +3,7 @@ From discprob.prob Require Import prob countable finite stochastic_order.
 From discprob.monad.finite Require Import monad monad_par.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
-Require Import Coq.omega.Omega Coq.Program.Wf.
+Require Import Lia Coq.Program.Wf.
 Local Open Scope nat_scope.
 
 Definition compare (x y: nat) (* : cost (compare_nat x y (x < y) (y < x) (x == y)) *) :=
@@ -85,7 +85,7 @@ Proof.
 Qed.
 
 Lemma work_mret {A B} (m: cost A) (f: A → B): work (x ← m; mret (f x)) = work m.
-Proof. rewrite //=. nify; omega. Qed.
+Proof. rewrite //=. nify; lia. Qed.
 
 Lemma work_par2 {A B} (m: cost A) (m': cost B): work (par2 m m') = work m + work m'.
 Proof. rewrite //=. Qed.
@@ -101,13 +101,13 @@ Proof.
   intros Hcost. induction l => //=.
   rewrite /parfilter/parmap//= in IHl. rewrite -addnA IHl => //=.
   rewrite Hcost => //=.
-  - nify => //=. omega.
+  - nify => //=. lia.
   - rewrite in_cons eq_refl //.
   - intros ? Hin. eapply Hcost. rewrite in_cons. apply /orP; auto.
 Qed.
 
 Lemma span_mret {A B} (m: cost A) (f: A → B): span (x ← m; mret (f x)) = span m.
-Proof. rewrite //=; nify; omega. Qed.
+Proof. rewrite //=; nify; lia. Qed.
 
 Lemma span_par2 {A B} (m: cost A) (m': cost B): span (par2 m m') = max (span m) (span m').
 Proof. rewrite //=. Qed.
@@ -128,8 +128,8 @@ Proof.
   rewrite /parfilter/parmap//= in IHl.
   rewrite addn0 in IHl. rewrite IHl.
   - rewrite addn0 Hcost; last by (rewrite in_cons eq_refl //).
-    rewrite Max.max_l => //=; first by (nify; omega).
-    destruct l; nify; omega.
+    rewrite Max.max_l => //=; first by (nify; lia).
+    destruct l; nify; lia.
   - intros ? Hin. eapply Hcost. rewrite in_cons. apply /orP; auto.
 Qed.
 
@@ -152,7 +152,7 @@ Proof.
   rewrite (work_mret _ ( λ x, let '(l1, l2, l3) := x in {| lower := l1;
                                                            middle := l2;
                                                            upper := l3 |})).
-  rewrite work_par3 ?(work_parfilter _ _ 1); first (rewrite //=; nify; omega).
+  rewrite work_par3 ?(work_parfilter _ _ 1); first (rewrite //=; nify; lia).
   - rewrite /gtc => x ?; rewrite (work_mret) => //=.
   - rewrite /eqc => x ?; rewrite (work_mret) => //=.
   - rewrite /ltc => x ?; rewrite (work_mret) => //=.
@@ -165,7 +165,7 @@ Proof.
                                                            middle := l2;
                                                            upper := l3 |})).
   rewrite span_par3 ?(span_parfilter _ _ 1).
-  - repeat rewrite Max.max_l; nify; omega.
+  - repeat rewrite Max.max_l; nify; lia.
   - rewrite /gtc => x ?; rewrite (span_mret) => //=.
   - rewrite /eqc => x ?; rewrite (span_mret) => //=.
   - rewrite /ltc => x ?; rewrite (span_mret) => //=.
@@ -193,7 +193,7 @@ Next Obligation.
     destruct n; first fourier.
     replace 0 with (INR O) by auto.
     cut (INR 0 < INR (S n)); intros; first by fourier.
-    apply lt_INR. omega.
+    apply lt_INR. lia.
   - rewrite in_cons. move /orP => [Heq|Hin]; eauto.
     move /eqP in Heq. rewrite Heq.
     destruct (Rle_dec 0 (1 / _)) as [|Hn]; [ by auto | exfalso; apply Hn].
@@ -201,7 +201,7 @@ Next Obligation.
     destruct n; first by fourier.
     replace 0 with (INR O) by auto.
     cut (INR 0 < INR (S n)); intros; first by fourier.
-    apply lt_INR; omega.
+    apply lt_INR; lia.
 Qed.
 Next Obligation.
   rewrite -map_comp //= (@eq_map _ _ _ (λ x, 1 / INR (S n))); last by done.
@@ -215,7 +215,7 @@ Next Obligation.
     destruct n; first fourier.
     replace 0 with (INR O) by auto.
     cut (INR 0 < INR (S n)); first by intros; fourier.
-    apply lt_INR; omega.
+    apply lt_INR; lia.
   }
   induction o => k.
   - rewrite big_nil. replace (INR 0) with 0 by auto. rewrite /Rdiv Rmult_0_l //.
@@ -244,12 +244,12 @@ Definition qs : list nat → ldist_cost (list nat).
     destruct pf as (pf1&pf2); move /implyP in pf2;
     rewrite -(perm_size pf1) //= ?size_cat -?plusE;
     assert (0 < size (middle spl))%coq_nat by
-    ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=); omega).
+    ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=); lia).
   - abstract (destruct spl as (spl&pf) => //=; move /andP in pf;
     destruct pf as (pf1&pf2); move /implyP in pf2;
     rewrite -(perm_size pf1) //= ?size_cat -?plusE;
     assert (0 < size (middle spl))%coq_nat by
-    ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=); omega).
+    ( apply /ltP; apply pf2 => //=; destruct p; eauto; subst; rewrite //=); lia).
 Defined.
 
 Lemma easy_fix_eq:

@@ -331,7 +331,7 @@ Lemma map_nth_iota {A: eqType} (l: seq A) a:
 Proof.
   induction l => //=.
   replace 1%nat with (1 + 0)%nat by auto with *.
-  rewrite iota_addl -map_comp; f_equal => //=.
+  rewrite iotaDl -map_comp; f_equal => //=.
 Qed.
 
 Lemma img_rvar_of_ldist {A: eqType} (h: ldist A):

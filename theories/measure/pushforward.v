@@ -1,4 +1,4 @@
-Require Import Reals Psatz Omega Fourier.
+Require Import Reals Psatz Lia Fourier.
 From stdpp Require Import tactics list.
 From discprob.basic Require Import seq_ext.
 From discprob.measure Require Export borel integral isomorphism.

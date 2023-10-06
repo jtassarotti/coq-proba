@@ -5,7 +5,7 @@ From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choi
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
 Require Import Reals Fourier FunctionalExtensionality.
 Require Import Psatz.
-Require Import Coq.omega.Omega.
+Require Import Lia.
 Require Import Ranalysis5.
 Global Set Bullet Behavior "Strict Subproofs".
 
@@ -532,7 +532,7 @@ Proof.
       ** rewrite //=.
     * rewrite //=. intros (n&x'). rewrite ?img_alt'. intros (i&Hin) _.
       split; auto. exists i. move: Hin. rewrite //=.
-      case: ifP; intros; inversion Hin; subst; f_equal; auto; omega.
+      case: ifP; intros; inversion Hin; subst; f_equal; auto; lia.
     * rewrite //=. intros (n&x') Hin _ Hfalse.
       apply Rmult_eq_0_compat. right.
 
@@ -547,10 +547,10 @@ Proof.
       move: Himg'. case: ifP => ? [? ?].
       ** exists (S j, x'). rewrite img_alt'. repeat split; auto.
          *** eexists; f_equal; eauto.
-         *** f_equal; rewrite //=; try congruence; try omega.
+         *** f_equal; rewrite //=; try congruence; try lia.
       ** exists (S j, x'). rewrite img_alt'. repeat split; auto.
          *** eexists; f_equal; eauto.
-         *** f_equal; rewrite //=; try congruence; try omega.
+         *** f_equal; rewrite //=; try congruence; try lia.
     * rewrite /img. apply undup_uniq.
     * rewrite /img. apply undup_uniq.
     * intros (?&?) (?&?). rewrite //= => _. inversion 1. subst; done.
@@ -597,7 +597,7 @@ Proof.
     apply Rmult_lt_reg_l in Hlt; last auto.
     apply Rlt_plus_reg in Hlt as [Hlt1|Hlt2].
     * assert (P (fst b)) as HPb.
-      { rewrite img_alt' in Hin *. intros (n&<-). eapply hP. eauto. }
+      { rewrite img_alt' in Hin *. destruct Hin as (n&<-). eapply hP. eauto. }
       edestruct (IHi _ _ HPb Hlt1) as (φ&Hpr).
       exists (λ n, match n with
                 | O => true
@@ -627,7 +627,7 @@ Proof.
              **** eapply Rlt_le_trans; first apply Hpr.
                   right. apply pr_gt_path_shift.
     * assert (P (snd b)) as HPb.
-      { rewrite img_alt' in Hin *. intros (n&<-). eapply hP. eauto. }
+      { rewrite img_alt' in Hin. destruct Hin as (n&<-). eapply hP. eauto. }
       edestruct (IHi _ _ HPb Hlt2) as (φ&Hpr).
       exists (λ n, match n with
                 | O => false
@@ -811,7 +811,7 @@ Proof.
     rewrite {1}(Int_frac_decompose x) Heq.
     destruct (Z_le_dec (Int_part x) 0) as [l|nl].
     * apply IZR_le in l. replace (IZR 0) with 0 in l by auto. intros; fourier.
-    * intros. omega.
+    * intros. lia.
   - move /eqP => Hnfp0 Hgt.
     assert (Int_part x = 1 ∨ Int_part x = 0)%Z as [?|?].
     {
@@ -821,13 +821,13 @@ Proof.
       apply Int_part_mono in Hle.
       replace (Int_part 1) with 1%Z in Hle; last first.
       { replace 1 with (IZR 1) by auto. rewrite Int_part_IZR //=. }
-      assert (Int_part x = 1 ∨ Int_part x = 0)%Z as [?|?] by omega; omega.
+      assert (Int_part x = 1 ∨ Int_part x = 0)%Z as [?|?]; lia.
     }
     * exfalso. rewrite {1}(Int_frac_decompose x) in Hle.
       destruct (base_fp x) as [Hge0 ?].
       inversion Hge0; last by nra.
       rewrite H in Hle. replace (IZR 1) with 1 in Hle by auto. fourier.
-    * omega.
+    * lia.
 Qed.
 
 
@@ -942,7 +942,7 @@ Proof.
       - nra.
       - apply a_pos. nra.
     }
-    assert (0 <= round (r - a (size x)) (size x))%Z by omega.
+    assert (0 <= round (r - a (size x)) (size x))%Z by lia.
     apply Rmin_case_strong.
     * rewrite Hplus.
       intros Hminl. rewrite /kD. erewrite karp.D_Dalt_equiv; eauto. rewrite /karp.Dalt //.
@@ -951,7 +951,7 @@ Proof.
       destruct (Rlt_dec).
       { move: Hminl. move /uu'_adjointrl/Rle_ge/Rge_not_lt. nra. }
       right.
-      rewrite Z2Nat.inj_add; try omega.
+      rewrite Z2Nat.inj_add; try lia.
       rewrite plus_IZR. replace (IZR 1) with 1 by auto.
       rewrite //=.
       rewrite Rmult_plus_distr_l Rmult_1_r.

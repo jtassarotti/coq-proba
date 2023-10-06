@@ -1,4 +1,4 @@
-Require Import Reals Psatz Omega.
+Require Import Reals Psatz Lia.
 From discprob.measure Require Export measures.
 Export Hierarchy.
 Open Scope R_scope.
@@ -159,7 +159,7 @@ Section outer_measure_props.
         * rewrite -assoc. apply intersect_proper; first by reflexivity.
           intros x; split; first by firstorder.
           intros Hin; split; auto. intros i Hle.
-          eapply disjoint_elim; try eassumption. apply Hdisj. omega.
+          eapply disjoint_elim; try eassumption. apply Hdisj. lia.
         * rewrite -assoc. apply intersect_proper; first by reflexivity.
           intros x; split.
           ** intros [Hin1 Hin2] i. inversion 1; subst; eauto.
@@ -244,7 +244,7 @@ Section outer_measure_props.
     intros (Hex&Hseries). split; auto.
     - eapply ex_series_ext; try eassumption.
       intros n. apply outer_measure_proper, Hsimpl1.
-    - rewrite Hsimpl2 outer_measure_empty Rminus_0_r in Hseries * => Hseries.
+    - rewrite Hsimpl2 outer_measure_empty Rminus_0_r in Hseries.
       apply Rle_antisym.
       * etransitivity; last eapply Hseries.
         right. apply Series_ext => n. by rewrite Hsimpl1.

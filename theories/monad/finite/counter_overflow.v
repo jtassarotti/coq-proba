@@ -4,7 +4,7 @@ From discprob.monad.finite Require Import monad monad_hoare counter.
 From discprob.rec Require Import rec_convert counter_rec.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
-Require Import Reals Fourier Psatz Omega.
+Require Import Reals Fourier Psatz Lia.
 
 Definition h (n: nat) :=
   match n with
@@ -61,7 +61,7 @@ Proof.
     * assert (S (S n) < S (S (S n)))%coq_nat as Hbound by auto.
       specialize (IH (S (S n)) Hbound). rewrite /h in IH.
       rewrite Rplus_1_m; last first.
-      { replace 2 with (INR 2) by auto. apply Rle_ge, le_INR. omega. }
+      { replace 2 with (INR 2) by auto. apply Rle_ge, le_INR. lia. }
       rewrite /rsize in IH.
       rewrite -Ex_mbind_mret in IH.
       rewrite ldist_fmap_bind in IH. rewrite Rmult_plus_distr_l Rplus_assoc Rmult_1_r.
@@ -199,11 +199,11 @@ Proof.
     destruct l as [| l].
     { move: Hgt.  replace (INR 0) with 0 by auto. replace (INR 1) with 1 by auto. nra. }
     tbind (λ x, (sval x <= (S l))%coq_nat).
-    { intros (x&?) _ => //=.  nify.  omega. }
+    { intros (x&?) _ => //=.  nify.  lia. }
     intros (pv&Hin) _.
     apply mspec_mret.
     rewrite /sval. rewrite S_INR. ring_simplify.
-    apply le_INR. nify; omega.
+    apply le_INR. nify; lia.
   - intros l. rewrite //=.
     rewrite /counter_rec.recurrence_counter.size //= => Hgt.
     cut (∀ n, INR (((rvar_of_ldist (h l) n))) <= INR l); first by rewrite //=.
@@ -212,9 +212,9 @@ Proof.
     destruct l as [| l].
     { apply mspec_mret. reflexivity. }
     destruct l as [| l].
-    { apply mspec_mret, le_INR. omega. }
+    { apply mspec_mret, le_INR. lia. }
     tbind (λ x, (sval x <= (S l))%coq_nat).
-    { intros (x&?) _ => //=.  nify.  omega. }
+    { intros (x&?) _ => //=.  nify.  lia. }
     intros (pv&Hin) _.
     apply mspec_mret.
     rewrite /sval. rewrite S_INR.
@@ -239,7 +239,7 @@ Proof.
       { rewrite //=. }
       intros b _.
       destruct b; apply mspec_mret => //=.
-    * exfalso. omega.
+    * exfalso. lia.
   - intros. apply Trec; auto.
   - rewrite /counter_rec.recurrence_counter.size/counter_rec.recurrence_counter.rec_solution.d
             /counter_rec.recurrence_counter.rec_solution.m

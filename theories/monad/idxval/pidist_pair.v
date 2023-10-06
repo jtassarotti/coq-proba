@@ -7,7 +7,7 @@ Record pidist_couplingP {A1 A2} (Is1: pidist A1) (Is2: pidist A2) (P: A1 → A2 
      pc_proj1: eq_pidist Is1 (x ← pc_witness; mret (fst (sval x)));
      pc_proj2: eq_pidist Is2 (x ← pc_witness; mret (snd (sval x)));
      }.
-Require Import Reals Psatz Omega.
+Require Import Reals Psatz Lia.
 
 Definition lsupport {A1 A2 Is1 Is2 P} (Icouple: pidist_couplingP Is1 Is2 P) (y: A2) :=
   { x : A1 |  ∃ I Hpf i, pival.In I Icouple ∧ ival.ind I i = (exist _ (x, y) Hpf)

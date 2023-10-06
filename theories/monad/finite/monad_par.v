@@ -3,7 +3,7 @@ From discprob.prob Require Import prob countable finite stochastic_order.
 From discprob.monad.finite Require Import monad.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
-Require Import Fourier Psatz Omega.
+Require Import Fourier Psatz Lia.
 Require Import Arith.
 
 Section parcost.
@@ -382,13 +382,14 @@ Remark Hrange: (0 <= 1/2 <= 1)%R.
 Proof. split; fourier. Qed.
 
 Program Definition foo  : ldist_cost (seq nat) :=
-  x ← (y ← bernoulli (1/2) Hrange;
-        mret {| result := y; work := 0; span := 0|});
-  if (x : bool) then
-    dist_ret _ (parmap incr (1 :: 2 :: 3 :: [::]))
+  x ← bernoulli (1/2) Hrange;
+  if x then
+    dist_ret (cost (seq nat)) (parmap incr (1 :: 2 :: 3 :: [::]))
   else
-    a ← (dist_ret _ (parmap incr (1 :: 2 :: 3 :: [::])));
-    dist_ret _ (parmap incr a).
+    (a ← (dist_ret _ (parmap incr (1 :: 2 :: 3 :: [::])));
+    dist_ret _ (parmap incr a) : ldist_cost _).
+
+
 Eval compute in (outcomes foo).
 
 Program Definition foo'  : ldist_cost (seq nat) :=

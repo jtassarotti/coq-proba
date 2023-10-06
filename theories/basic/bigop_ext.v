@@ -1,7 +1,7 @@
 From discprob.basic Require Import base nify order seq_ext.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype choice fintype bigop seq.
 From Coquelicot Require Import Rcomplements Rbar Series Lim_seq Hierarchy Markov.
-Require Import Reals Psatz Omega.
+Require Import Reals Psatz Lia.
 
 (* Coquelicot defines some of its own algebraic hierarchy and
    functions for indexed sums: sum_n_m. But, ssreflect has its own
@@ -307,7 +307,7 @@ Proof.
       assert (ssrnat.leq (S m) (S (S m))) as Hrange by (nify; lia).
       rewrite (big_cat_nat _ _ _ _ Hrange); last by (nify; lia).
       rewrite IHm big_nat1 /plus//=.
-    * rewrite sum_n_m_zero; last by omega.
+    * rewrite sum_n_m_zero; last by lia.
       rewrite big_geq; try (nify; lia). done.
 Qed.
 
@@ -559,7 +559,7 @@ Lemma sum_nS {G: AbelianGroup} :
     sum_n a n.+1 = plus (a O) (sum_n (λ n, a (S n)) n).
 Proof.
   rewrite /sum_n. intros.
-  rewrite {1}sum_Sn_m //=; last by omega.
+  rewrite {1}sum_Sn_m //=; last by lia.
   f_equal.
   by rewrite sum_n_m_S.
 Qed.

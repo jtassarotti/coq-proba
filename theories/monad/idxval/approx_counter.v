@@ -2,7 +2,7 @@
 the "lazy" synchronization scheme *)
 
 From discprob.basic Require Import base sval order monad bigop_ext nify.
-Require Import Reals Psatz Omega.
+Require Import Reals Psatz Lia.
 
 Require ClassicalEpsilon.
 Global Set Bullet Behavior "Strict Subproofs".
@@ -136,28 +136,28 @@ Module counter.
         ** assert (i0 <= pt)%nat as ->.
            { auto with *. nify. done. }
            assert (i0 <= (S pt))%nat as ->.
-           { auto with *. nify. omega. }
+           { auto with *. nify. lia. }
            eapply pidist_bind_congr_le.
            { apply pidist_union_mono; first reflexivity.
              apply pidist_bind_congr_le; first reflexivity.
              intros.
              apply rep_upto_while_impl. intros => //=.
-             apply /implyP. intros. nify. omega.
+             apply /implyP. intros. nify. lia.
            }
-           intros (itotal&c). eapply IH. nify. omega.
+           intros (itotal&c). eapply IH. nify. lia.
         ** assert (i0 <= pt = false)%nat as ->.
-           { apply /negP. intros Hn. nify.  omega. }
+           { apply /negP. intros Hn. nify.  lia. }
            case: ifP.
            *** intros.
                assert (i0 = (S pt))%nat.
-               { nify.  omega. }
+               { nify.  lia. }
                subst.
                apply pidist_bind_congr_le.
                ****  apply pidist_union_le.
                **** intros (?&?). eapply IH.
-                    nify. omega.
+                    nify. lia.
            *** intros. setoid_rewrite pidist_left_id.
-               eapply IH. nify. omega.
+               eapply IH. nify. lia.
   Qed.
 
   Lemma approx_pt_S_Ex pt n k:
@@ -205,113 +205,113 @@ Module counter.
         ** setoid_rewrite pidist_left_id.
            simpl fst. simpl snd.
            subst.
-           replace ((S n + c2)%coq_nat - c2)%nat with (S n); last by (nify; omega).
+           replace ((S n + c2)%coq_nat - c2)%nat with (S n); last by (nify; lia).
            rewrite /approx -/approx.
-           assert (k1 <= k2 + Init.Nat.min 1 i2)%coq_nat as Hle' by (nify; omega).
+           assert (k1 <= k2 + Init.Nat.min 1 i2)%coq_nat as Hle' by (nify; lia).
            setoid_rewrite pidist_assoc.
            destruct Hle' as [| k2' Hle']. (* Might want inversion instead of destruct here *)
            *** eapply Ex_min_bind_congr; first by reflexivity.
                intros i.
                rewrite /rep_upto_while_count.
-               eapply IH; nify; try omega.
-               destruct i1; simpl in *; omega.
+               eapply IH; nify; try lia.
+               destruct i1; simpl in *; lia.
                destruct i1.
-               **** rewrite //=.  omega.
-               **** rewrite //= in Hle. omega.
+               **** rewrite //=.  lia.
+               **** rewrite //= in Hle. lia.
            *** eapply Ex_min_pidist_plus_bind_le_l;
                eapply Ex_min_pidist_plus_bind_le_r;
                setoid_rewrite pidist_left_id;
-               abstract (eapply IH; destruct i1; simpl in *; nify; omega).
+               abstract (eapply IH; destruct i1; simpl in *; nify; lia).
         ** setoid_rewrite pidist_assoc.
            destruct Hlek as [| k2' Hlek].
            *** eapply Ex_min_bind_congr; first by reflexivity.
                intros i.
                rewrite /rep_upto_while_count.
-               abstract (eapply IH; nify; try omega;
-                         destruct i1; destruct i2; destruct i; simpl in *; try omega).
+               abstract (eapply IH; nify; try lia.
+                         destruct i1; destruct i2; destruct i; simpl in *; try lia).
            *** eapply Ex_min_pidist_plus_bind_le_l;
                eapply Ex_min_pidist_plus_bind_le_r;
                setoid_rewrite pidist_left_id;
-               eapply IH; try omega;
-               destruct i1; destruct i2; simpl in *; nify; try omega.
+               eapply IH; try lia.
+               destruct i1; destruct i2; simpl in *; nify; try lia.
       * setoid_rewrite pidist_left_id.
         rewrite Hm2.
-        replace ((S n + c2)%coq_nat - c2) with (S ((n + c2)%coq_nat - c2)); last by (nify; omega).
+        replace ((S n + c2)%coq_nat - c2) with (S ((n + c2)%coq_nat - c2)); last by (nify; lia).
         rewrite /approx -/approx.
         rewrite /rep_upto_while_count.
         setoid_rewrite pidist_assoc.
-        replace ((n + c2)%coq_nat - c2) with n; last by (nify; omega).
+        replace ((n + c2)%coq_nat - c2) with n; last by (nify; lia).
         eapply Ex_min_pidist_plus_bind_le_l;
         setoid_rewrite pidist_left_id;
         eapply Ex_min_pidist_plus_bind_le_r;
         setoid_rewrite pidist_left_id;
-        by (eapply IH; try omega;
-          destruct i1; destruct i2; simpl in *; nify; try omega).
+        by (eapply IH; try lia.
+          destruct i1; destruct i2; simpl in *; nify; try lia).
       * move /negP in Hle_pt1.
         apply Ex_min_bind_union.
         ** setoid_rewrite pidist_left_id.
            rewrite Hm1 Hm2.
-           replace ((S n + c1)%coq_nat - c1) with (S ((n + c1)%coq_nat - c1)); last by (nify; omega).
-           replace ((S n + c2)%coq_nat - c2) with (S ((n + c2)%coq_nat - c2)); last by (nify; omega).
+           replace ((S n + c1)%coq_nat - c1) with (S ((n + c1)%coq_nat - c1)); last by (nify; lia).
+           replace ((S n + c2)%coq_nat - c2) with (S ((n + c2)%coq_nat - c2)); last by (nify; lia).
         rewrite /approx_worst -/approx_worst.
         rewrite /rep_while_count.
         rewrite /approx -/approx.
         rewrite /rep_upto_while_count.
-        replace ((n + c1)%coq_nat - c1) with n; last by (nify; omega).
-        replace ((n + c2)%coq_nat - c2) with n; last by (nify; omega).
+        replace ((n + c1)%coq_nat - c1) with n; last by (nify; lia).
+        replace ((n + c2)%coq_nat - c2) with n; last by (nify; lia).
         assert (k1 + min 1 i1 = k2 + Init.Nat.min 1 i2 ∨
                 k1 + min 1 i1 < k2 + Init.Nat.min 1 i2) as [Heq|Hlt].
         { rewrite //=.
-          destruct i1; destruct i2; rewrite //= in Hle; inversion Hle; nify; try omega; auto;
-          try (left; nify; omega);
-          try (right; nify; omega). }
+          destruct i1; destruct i2; rewrite //= in Hle; inversion Hle; nify; try lia. auto;
+          try (left; nify; lia.;
+          try (right; nify; lia). }
            *** rewrite Heq. subst. eapply Ex_min_bind_congr; first by reflexivity.
                intros i.
-               eapply IH; nify; try omega.
+               eapply IH; nify; try lia.
            *** eapply Ex_min_pidist_plus_bind_le_l;
                eapply Ex_min_pidist_plus_bind_le_r;
                setoid_rewrite pidist_left_id;
-               abstract (eapply IH; destruct i1; simpl in *; nify; omega).
+               abstract (eapply IH; destruct i1; simpl in *; nify; lia).
         ** setoid_rewrite pidist_assoc.
            setoid_rewrite pidist_left_id.
            rewrite Hm1.
-           replace ((S n + c1)%coq_nat - c1) with (S ((n + c1)%coq_nat - c1)); last by (nify; omega).
+           replace ((S n + c1)%coq_nat - c1) with (S ((n + c1)%coq_nat - c1)); last by (nify; lia).
            rewrite /approx_worst -/approx_worst.
            rewrite /rep_while_count.
-           replace ((n + c1)%coq_nat - c1) with n; last by (nify; omega).
+           replace ((n + c1)%coq_nat - c1) with n; last by (nify; lia).
            destruct Hlei.
-           { nify; omega. }
+           { nify; lia. }
            *** eapply Ex_min_bind_congr; first by reflexivity.
                intros i.
                eapply IH;
-                 destruct i1; destruct i2; destruct i; rewrite //=; nify; try omega; auto.
+                 destruct i1; destruct i2; destruct i; rewrite //=; nify; try lia. auto.
            *** eapply Ex_min_pidist_plus_bind_le_l;
                eapply Ex_min_pidist_plus_bind_le_r;
                setoid_rewrite pidist_left_id;
-               abstract (eapply IH; destruct i1; simpl in *; nify; omega).
+               abstract (eapply IH; destruct i1; simpl in *; nify; lia).
       * setoid_rewrite pidist_left_id.
         rewrite Hm1 Hm2.
-           replace ((S n + c1)%coq_nat - c1) with (S ((n + c1)%coq_nat - c1)); last by (nify; omega).
-           replace ((S n + c2)%coq_nat - c2) with (S ((n + c2)%coq_nat - c2)); last by (nify; omega).
+           replace ((S n + c1)%coq_nat - c1) with (S ((n + c1)%coq_nat - c1)); last by (nify; lia).
+           replace ((S n + c2)%coq_nat - c2) with (S ((n + c2)%coq_nat - c2)); last by (nify; lia).
         rewrite /approx_worst -/approx_worst.
         rewrite /rep_while_count.
         rewrite /approx -/approx.
         rewrite /rep_upto_while_count.
-        replace ((n + c1)%coq_nat - c1) with n; last by (nify; omega).
-        replace ((n + c2)%coq_nat - c2) with n; last by (nify; omega).
+        replace ((n + c1)%coq_nat - c1) with n; last by (nify; lia).
+        replace ((n + c2)%coq_nat - c2) with n; last by (nify; lia).
         assert (k1 + min 1 i1 = k2 + Init.Nat.min 1 i2 ∨
                 k1 + min 1 i1 < k2 + Init.Nat.min 1 i2) as [Heq|Hlt].
         { rewrite //=.
-          destruct i1; destruct i2; rewrite //= in Hle; inversion Hle; nify; try omega; auto;
-          try (left; nify; omega);
-          try (right; nify; omega). }
+          destruct i1; destruct i2; rewrite //= in Hle; inversion Hle; nify; try lia. auto;
+          try (left; nify; lia.;
+          try (right; nify; lia). }
            *** rewrite Heq. subst. eapply Ex_min_bind_congr; first by reflexivity.
                intros i.
-               eapply IH; nify; try omega.
+               eapply IH; nify; try lia.
            *** eapply Ex_min_pidist_plus_bind_le_l;
                eapply Ex_min_pidist_plus_bind_le_r;
                setoid_rewrite pidist_left_id;
-               abstract (eapply IH; destruct i1; simpl in *; nify; omega).
+               abstract (eapply IH; destruct i1; simpl in *; nify; lia).
   Qed.
 
   Lemma approx_worst_spec pt n k:
@@ -324,7 +324,7 @@ Module counter.
       rewrite /approx -/approx.
       rewrite /rep_upto_while_count.
       eapply Ex_min_bind_congr; first by reflexivity. intros i.
-      eapply approx_worst_aux; omega.
+      eapply approx_worst_aux; lia.
   Qed.
 
 
@@ -368,23 +368,23 @@ Module counter.
     - split.
       * intros i1 c1 m1 Hlt Heq.
         rewrite //=.  setoid_rewrite pidist_left_id. rewrite Heq.
-        replace ((0 + c1)%coq_nat - c1)%nat with O by (nify; omega).
+        replace ((0 + c1)%coq_nat - c1)%nat with O by (nify; lia).
         rewrite //=. rewrite Ex_min_mret.
         rewrite /approx_estimate; destruct i1 => //=; rewrite ?addn0 ?addn1 //=.
-        destruct pt; rewrite ?addn0 ?addn1 //=. omega.
+        destruct pt; rewrite ?addn0 ?addn1 //=. lia.
       * rewrite //=. apply Ex_min_mret.
     - split.
       * intros i1 c1 m1 Hlt Heq.
       rewrite /rep_while -/rep_while. rewrite /Ex_approx_worst -/Ex_approx_worst.
       rewrite /fst.
-      assert (i1 <= pt)%N as -> by (nify; omega).
+      assert (i1 <= pt)%N as -> by (nify; lia).
       case_eq (S pt - S i1)%nat.
       { intros.
-        assert (pt = i1) as -> by (nify; omega).
+        assert (pt = i1) as -> by (nify; lia).
         destruct n.
         * rewrite //=.  setoid_rewrite pidist_assoc. setoid_rewrite pidist_left_id.
           rewrite Ex_min_pidist_plus_bind. setoid_rewrite pidist_left_id.
-          replace (m1 - S c1)%nat with O by (nify; omega).
+          replace (m1 - S c1)%nat with O by (nify; lia).
           rewrite //=. rewrite ?Ex_min_mret ?addn1 ?addn0 => //=.
           rewrite Min.min_idempotent.
           destruct i1; rewrite ?addn0 ?addn1; auto.
@@ -392,44 +392,44 @@ Module counter.
         * setoid_rewrite pidist_assoc.
           rewrite Ex_min_pidist_plus_bind. setoid_rewrite pidist_left_id.
           destruct (IH (S n)) with (k := k) as (IHl&_); first by auto.
-          rewrite [a in _ + (_ * a) = _]IHl; try (rewrite //=; nify; omega).
+          rewrite [a in _ + (_ * a) = _]IHl; try (rewrite //=; nify; lia).
           rewrite addn0.
           f_equal. f_equal.
           rewrite /rep_while -/rep_while. rewrite addn1.
           assert (S i1 <= i1 = false)%nat as ->.
-          { apply /negP. nify. omega. }
+          { apply /negP. nify. lia. }
           setoid_rewrite pidist_left_id.
           rewrite /snd.
-          replace (m1 - S c1)%nat with (S n) by (nify; omega).
+          replace (m1 - S c1)%nat with (S n) by (nify; lia).
           specialize (IH (S n)).
           assert (Hltn: (S n < S (S n))%coq_nat) by auto.
           destruct (IH Hltn (k + min 1 (S i1))%nat) as (_&IHr);
             last (rewrite (IHr); clear IHr); eauto;
-            try (rewrite //=; nify; omega).
+            try (rewrite //=; nify; lia).
           rewrite ?Min.min_idempotent ?subnn.
           destruct i1.
-          ** rewrite Min.min_idempotent. rewrite ?Min.min_r; last by omega.
-          ** rewrite ?Min.min_l; last by omega. rewrite ?addn0; f_equal.
+          ** rewrite Min.min_idempotent. rewrite ?Min.min_r; last by lia.
+          ** rewrite ?Min.min_l; last by lia. rewrite ?addn0; f_equal.
              f_equal. f_equal.
-             *** rewrite //=. nify. omega.
+             *** rewrite //=. nify. lia.
       }
       intros diff Hdiff.
       setoid_rewrite pidist_assoc.
       rewrite Ex_min_pidist_plus_bind.
       setoid_rewrite pidist_left_id.
-      rewrite Heq. replace (S n + c1)%coq_nat with (n + S c1)%coq_nat; last by (nify; omega).
+      rewrite Heq. replace (S n + c1)%coq_nat with (n + S c1)%coq_nat; last by (nify; lia).
       specialize (IH n).
       assert (n < S n)%coq_nat as Hltn.
       { auto.  }
       destruct (IH Hltn k) as (IHl&_); last (rewrite [a in _ + (_ * a) = _](IHl _ (S c1)); clear IHl);
-        try (rewrite //=; nify; omega);
+        try (rewrite //=; nify; lia.;
       destruct (IH Hltn k) as (IHl&_); last (rewrite (IHl _ (S c1)); clear IHl);
-        try (rewrite //=; nify; omega).
+        try (rewrite //=; nify; lia).
       rewrite addn1 addn0 //=.
       destruct pt as [| pt].
-      { exfalso. nify. omega. }
+      { exfalso. nify. lia. }
       assert (i1 <= pt)%coq_nat.
-      { nify.  omega. }
+      { nify.  lia. }
       rewrite ?(Min.min_l i1 (S pt)); last by auto.
       rewrite ?(Min.min_l i1 pt); last by auto.
       rewrite Hdiff; f_equal.
@@ -439,11 +439,11 @@ Module counter.
         specialize (IH n).
         assert (n < S n)%coq_nat as Hltn by auto.
       destruct (IH Hltn k) as (IHl&_); last (rewrite [a in _ + (_ * a) = _](IHl _ O); clear IHl);
-        try (rewrite //=; nify; omega).
+        try (rewrite //=; nify; lia).
       destruct (IH Hltn k) as (IHl&_); last (rewrite (IHl _ O); clear IHl);
-        try (rewrite //=; nify; omega).
+        try (rewrite //=; nify; lia).
       rewrite //=.
-      rewrite subn1 //=. destruct pt; first by omega.
+      rewrite subn1 //=. destruct pt; first by lia.
       done.
   Qed.
 
@@ -475,22 +475,22 @@ Module counter.
            { auto. }
 
            destruct (IH n Hltnn k) as (IHl&_).
-           rewrite [a in _ + (_ * a) = _]IHl; try (rewrite //=; nify; omega); [].
+           rewrite [a in _ + (_ * a) = _]IHl; try (rewrite //=; nify; lia.; [].
            rewrite ?addn0.
            f_equal. f_equal.
            destruct (IH _ Hltnn k%nat) as (IHl'&IHr).
            replace ((S (n + c1)%coq_nat)) with (n + (S c1))%coq_nat; last by auto.
            rewrite IHl'  //=; auto. rewrite addn1. done.
         ** rewrite //=. setoid_rewrite pidist_left_id.
-           replace (S (n + c1)%coq_nat - c1)%nat with (S n); last by (nify; omega).
+           replace (S (n + c1)%coq_nat - c1)%nat with (S n); last by (nify; lia).
            rewrite //=. rewrite Ex_min_pidist_plus_bind.
            setoid_rewrite pidist_left_id.
            assert (n < S n)%coq_nat as Hltnn.
            { auto. }
-           destruct (IH n Hltnn (k + 1)%nat) as (IHl&_); rewrite IHl; try (rewrite //=; nify; omega).
+           destruct (IH n Hltnn (k + 1)%nat) as (IHl&_); rewrite IHl; try (rewrite //=; nify; lia).
            f_equal.
            {rewrite //= ?addn1. f_equal. }
-           destruct (IH n Hltnn (k + 1))%nat as (IHl'&_); rewrite IHl'; try (rewrite //=; nify; omega).
+           destruct (IH n Hltnn (k + 1))%nat as (IHl'&_); rewrite IHl'; try (rewrite //=; nify; lia).
            rewrite //= ?addn1 ?addn0. f_equal.
       * rewrite //=.
         assert (n < S n)%coq_nat as Hltnn.
@@ -498,7 +498,7 @@ Module counter.
         rewrite Ex_min_pidist_plus_bind.
         setoid_rewrite pidist_left_id.
         destruct (IH n Hltnn k)%nat as (IHl'&_).
-        rewrite ?IHl'; try (rewrite //=; nify; omega).
+        rewrite ?IHl'; try (rewrite //=; nify; lia).
         rewrite //= ?addn1 ?addn0. done.
   Qed.
 
@@ -508,7 +508,7 @@ Module counter.
     destruct pt as [| pt].
     - edestruct Ex_approx_worst_spec_aux2; eauto.
     - edestruct (Ex_approx_worst_spec_aux (S pt) n k); eauto.
-      nify. omega.
+      nify. lia.
   Qed.
 
 

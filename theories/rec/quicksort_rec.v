@@ -10,7 +10,7 @@ From Coquelicot Require AutoDerive.
 From Interval Require Import Tactic.
 Require Import Reals Fourier FunctionalExtensionality.
 Require Import Psatz.
-Require Import Coq.omega.Omega.
+Require Import Lia.
 Require Import Ranalysis5.
 
 (* Assuming flatten takes log n *)
@@ -472,13 +472,13 @@ Module recurrence_span2.
   Proof.
     intros x n.
     generalize (hrange_sum x n). rewrite /size -?plus_INR.
-    move /INR_le => ?. apply le_INR. nify. omega.
+    move /INR_le => ?. apply le_INR. nify. lia.
   Qed.
   Lemma hrange21: ∀ x n, size (snd ((h x) n)) ≤ size x.
   Proof.
     intros x n.
     generalize (hrange_sum x n). rewrite /size -?plus_INR.
-    move /INR_le => ?. apply le_INR. nify. omega.
+    move /INR_le => ?. apply le_INR. nify. lia.
   Qed.
   Lemma hrange12: ∀ x n, d < size x →  0 ≤ size (fst ((h x) n)).
     intros x n. rewrite /size => ?. apply pos_INR.
@@ -516,7 +516,7 @@ Module recurrence_span2.
     replace 2 with (INR 2) by auto.
     replace 1 with (INR 1) by auto.
     intros ?%INR_lt ?%INR_lt.
-    omega.
+    lia.
   Qed.
 
   Import qs_factor.
@@ -617,13 +617,13 @@ Section recurrence_work3.
   Proof.
     intros x n.
     generalize (hrange_sum x n). rewrite /size -?plus_INR.
-    move /INR_le => ?. apply le_INR. nify. omega.
+    move /INR_le => ?. apply le_INR. nify. lia.
   Qed.
   Lemma hrange21: ∀ x n, size (snd ((h x) n)) ≤ size x.
   Proof.
     intros x n.
     generalize (hrange_sum x n). rewrite /size -?plus_INR.
-    move /INR_le => ?. apply le_INR. nify. omega.
+    move /INR_le => ?. apply le_INR. nify. lia.
   Qed.
   Lemma hrange12: ∀ x n, d < size x →  0 ≤ size (fst ((h x) n)).
     intros x n. rewrite /size => ?. apply pos_INR.
@@ -942,7 +942,7 @@ Section recurrence_work3.
     replace 2 with (INR 2) by auto.
     replace 1 with (INR 1) by auto.
     intros ?%INR_lt ?%INR_lt.
-    omega.
+    lia.
   Qed.
 
   Lemma ghrange_sum: ∀ x n, size x > d →

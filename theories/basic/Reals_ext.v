@@ -4,7 +4,7 @@ Require Import Ranalysis5.
 Require Import Reals Fourier FunctionalExtensionality.
 From Coquelicot Require Export Rcomplements Rbar Series Lim_seq Hierarchy Markov Continuity ElemFct.
 Require Import List.
-Require Import Psatz Omega.
+Require Import Psatz Lia.
 
 
 Local Notation "x ≤ y" := (Rle x y) (at level 70, no associativity).
@@ -259,18 +259,18 @@ Proof.
   intros Hpos. exists (Z.to_nat (up r - 1)).
   cut (INR (Z.to_nat (up r - 1)) = IZR (up r)- 1).
   { rewrite S_INR => ->. specialize (archimed r). nra. }
-  rewrite Z2Nat.inj_sub; last omega.
+  rewrite Z2Nat.inj_sub; last lia.
   rewrite minus_INR.
   * rewrite //=. f_equal.
     rewrite INR_IZR_INZ.  f_equal.
     apply Z2Nat.id.
     apply le_IZR. specialize (archimed r); nra.
-  * apply Z2Nat.inj_le; try omega.
+  * apply Z2Nat.inj_le; try lia.
     ** apply le_IZR. specialize (archimed r); nra.
     ** apply le_IZR. specialize (archimed r). intros (Hgt&?).
        assert (0 < up r)%Z.
        { apply lt_IZR. nra. }
-       apply IZR_le. omega.
+       apply IZR_le. lia.
 Qed.
 
 Lemma pow_INR n k: INR (n^k) = INR n^k.
@@ -287,7 +287,7 @@ Proof.
   rewrite -minus_INR in Hdiff; auto.
   replace 1 with (INR 1) in Hdiff; auto.
   apply INR_lt in Hdiff.
-  omega.
+  lia.
 Qed.
 
 Lemma Sup_seq_const k: Sup_seq (λ n, k) = k.

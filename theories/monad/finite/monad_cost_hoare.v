@@ -3,7 +3,7 @@ From discprob.prob Require Import prob countable finite stochastic_order.
 From discprob.monad.finite Require Import monad monad_cost.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
-Require Import Reals Fourier Psatz Omega.
+Require Import Reals Fourier Psatz Lia.
 
 (* The following form of writing down a spec for the output of the monad comes
    from how Adam Chlipala does monadic reasoning in his PoplMark challenge solution;
@@ -91,7 +91,7 @@ Proof.
   exists r'', c', a; repeat split; first done.
   - apply /mapP; eauto.
     eexists; eauto => //=; f_equal; auto with *.
-  - rewrite //=. rewrite -?plusE -?minusE. omega.
+  - rewrite //=. rewrite -?plusE -?minusE. lia.
 Qed.
 
 Lemma cspec_mbind {A B: eqType} (f: A → ldist_cost B) m (P: nat * A → Prop) (Q: nat * B → Prop):

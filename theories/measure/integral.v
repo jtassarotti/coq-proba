@@ -1,4 +1,4 @@
-Require Import Reals Psatz Omega Fourier.
+Require Import Reals Psatz Lia Fourier.
 From stdpp Require Import tactics list.
 From discprob.basic Require Import seq_ext.
 From mathcomp Require Import bigop.
@@ -973,7 +973,7 @@ Section integral.
     specialize (almost_everywhere_meas_conj μ _ _ Hlim Hmono).
     intros (HF&Hμ0).
     apply sigma_closed_complements in HF.
-    rewrite compl_involutive in HF * => HF.
+    rewrite compl_involutive in HF.
     feed pose proof (is_integral_levi_ex (λ n, λ x, fn n x * wpt_fun (wpt_indicator _ HF) x)
                                          (λ x, f x * wpt_fun (wpt_indicator _ HF) x))
          as Hlevi.
@@ -1004,16 +1004,13 @@ Section integral.
     { eapply ex_integral_ae_ext; eauto. eapply ae_equal_mult_indicator_compl_0; measurable. }
     split; auto.
     setoid_rewrite <-(Integral_ae_ext_weak) in Hlevi_lim; eauto.
-    { eapply is_lim_seq_ext; last eauto.
-      intros n => //=.
-      symmetry. apply Integral_ae_ext_weak; eauto.
-      { eapply almost_everywhere_meas_ext; last eapply ae_equal_mult_indicator_compl_0.
-        * intros ?; split; symmetry; eauto.
-        * measurable.
-        * eauto.
-      }
-      measurable.
+    { eapply is_lim_seq_ext in Hlevi_lim; last eauto.
+      eapply almost_everywhere_meas_ext; last eapply ae_equal_mult_indicator_compl_0.
+      * intros ?; split; symmetry; eauto.
+      * measurable.
+      * eauto.
     }
+    { measurable. }
     { eapply almost_everywhere_meas_ext; last eapply ae_equal_mult_indicator_compl_0.
       * intros ?; split; symmetry; eauto.
       * measurable.

@@ -9,7 +9,7 @@
 From discprob.basic Require Import base order bigop_ext nify Series_Ext.
 From discprob.prob Require Import countable rearrange.
 From stdpp Require tactics.
-Require Import Reals Fourier Omega Psatz.
+Require Import Reals Fourier Lia Psatz.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype seq bigop fintype ssrnat choice.
 From Coquelicot Require Import Rcomplements Rbar Series Lim_seq Hierarchy Markov.
 
@@ -24,7 +24,7 @@ Proof.
   intros (r&N&Hcond).
   exists r => n.
   destruct (le_ge_dec N n) as [Hle|Hge].
-  - apply Hcond. omega.
+  - apply Hcond. lia.
   - transitivity (sum_n (λ j, sum_n (λ k, Rabs (a (j, k))) N) N).
     { clear Hcond.
       induction Hge; first reflexivity.
@@ -33,7 +33,7 @@ Proof.
       rewrite -[a in a <= _]Rplus_0_r.
       apply Rplus_le_compat.
       * rewrite ?sum_n_bigop.
-        apply Rle_bigr => ??. apply sum_n_nonneg_terms_increasing; first omega.
+        apply Rle_bigr => ??. apply sum_n_nonneg_terms_increasing; first lia.
         intros; apply Rle_ge, Rabs_pos.
       * apply sum_n_pos; eauto => ?.
         apply Rle_ge, Rabs_pos.
@@ -290,7 +290,7 @@ Proof.
           exfalso. apply Hfalse. rewrite //=.
           assert (is_true ((leq (σ i).1 l) && (leq (σ i).2 m))) as Hpf'.
           { rewrite //=; apply /andP; split; rewrite //= in Hb1 Hb2; destruct (σ n0); nify;
-              omega. }
+              lia. }
           exists (exist _ i Hpf'); repeat split.
             ** rewrite /index_enum //= -enumT mem_enum //=.
             ** rewrite //=.
@@ -305,8 +305,8 @@ Proof.
                               end) :
           { x: 'I_(S (max n N)) | leq (fst (σ x)) l && leq (snd (σ x)) m} → 'I_(S l) * 'I_(S m) in _).
       Unshelve. all:swap 1 3.
-      { abstract (move: Hpf; move /andP => [? ?]; nify; omega). }
-      { abstract (move: Hpf; move /andP => [? ?]; nify; omega). }
+      { abstract (move: Hpf; move /andP => [? ?]; nify; lia). }
+      { abstract (move: Hpf; move /andP => [? ?]; nify; lia). }
       rewrite [a in a = _]bigop_cond_non0.
       eapply (sum_reidx_map _ _ _ _ σ').
         - rewrite /σ'//=. intros (?&?) _ => //=. destruct (σ x) => //.
@@ -315,10 +315,10 @@ Proof.
           * rewrite //=. rewrite //= in Hneq0. destruct (σ i); auto.
         - rewrite //=. intros (l0, m0) _. rewrite //=. move /eqP. intros Hneq0 Hfalse.
           exfalso; apply Hfalse. edestruct (Hn l0 m0) as [(n0&Hle&Heq)|]; last by (exfalso; eauto).
-          { clear. destruct l0 => //=. nify. omega. }
-          { clear. destruct m0 => //=. nify. omega. }
+          { clear. destruct l0 => //=. nify. lia. }
+          { clear. destruct m0 => //=. nify. lia. }
           assert (Hpf1:  (n0 < S (max n N))%nat).
-          { nify. specialize (Max.le_max_l n N); omega. }
+          { nify. specialize (Max.le_max_l n N); lia. }
           set (n0' := Ordinal Hpf1).
           assert (Hpf2: leq (fst (σ n0')) l && leq (snd (σ n0')) m).
           { apply /andP; rewrite Heq//=; destruct l0, m0 => //=; clear; split; nify. }
@@ -347,8 +347,8 @@ Proof.
     * intros (x&Hlex) ? => //=.
     * intros (n'&Hle) ? Hneq0; split; auto. apply /andP; split; auto.
       rewrite //=. apply /andP; split.
-      ** nify. transitivity K; auto. edestruct (HK n'); eauto. clear -Hle. nify. omega.
-      ** nify. transitivity K; auto. edestruct (HK n'); eauto. clear -Hle. nify. omega.
+      ** nify. transitivity K; auto. edestruct (HK n'); eauto. clear -Hle. nify. lia.
+      ** nify. transitivity K; auto. edestruct (HK n'); eauto. clear -Hle. nify. lia.
     * intros i _. move /andP => [? Hneq0] => //= Hfalse.
       exfalso. apply Hfalse. exists i; split; auto.
       rewrite /index_enum -enumT mem_enum //.
@@ -422,7 +422,7 @@ Proof.
   apply double_summable_mono_cond.
   destruct EXS as (r&His).
   exists r, N. intros n Hge.
-  destruct (HN n n) as (N'&Hge'&Hdiff); try omega.
+  destruct (HN n n) as (N'&Hge'&Hdiff); try lia.
   rewrite sum_O //= in Hdiff.
   setoid_rewrite <-Rabs_triang_inv in Hdiff.
   apply Rle_minus_l in Hdiff.
@@ -470,7 +470,7 @@ Proof.
       eapply Rle_lt_trans; first apply Rle_abs.
       assert (N0 <= N)%coq_nat.
       { rewrite /N. apply Max.le_max_l. }
-      eapply IHN; auto. omega.
+      eapply IHN; auto. lia.
     - eapply HN2.
       rewrite /N. etransitivity; first apply Max.le_max_r. done.
   }
@@ -681,14 +681,14 @@ Lemma a_a'_finite_sum n m:
   sum_n (λ j, sum_n (λ k, a' (j, k)) (S m)) (S n).
 Proof.
   symmetry. rewrite /sum_n.
-  rewrite sum_Sn_m; last by (nify; omega).
+  rewrite sum_Sn_m; last by (nify; lia).
   rewrite sum_n_m_ext_const_zero; last first.
   { intros [|] => //=.  }
   rewrite plus_zero_l.
   rewrite -sum_n_m_S.
   apply sum_n_m_ext.
   intros n'.
-  rewrite sum_Sn_m; last by (nify; omega).
+  rewrite sum_Sn_m; last by (nify; lia).
   rewrite plus_zero_l.
   rewrite -sum_n_m_S.
   done.
@@ -699,14 +699,14 @@ Lemma a_a'_finite_sum_abs n m:
   sum_n (λ j, sum_n (λ k, Rabs (a' (j, k))) (S m)) (S n).
 Proof.
   symmetry. rewrite /sum_n.
-  rewrite sum_Sn_m; last by (nify; omega).
+  rewrite sum_Sn_m; last by (nify; lia).
   rewrite sum_n_m_ext_const_zero; last first.
   { intros [|] => //=; rewrite Rabs_R0; done. }
   rewrite plus_zero_l.
   rewrite -sum_n_m_S.
   apply sum_n_m_ext.
   intros n'.
-  rewrite sum_Sn_m; last by (nify; omega).
+  rewrite sum_Sn_m; last by (nify; lia).
   rewrite Rabs_R0 plus_zero_l.
   rewrite -sum_n_m_S.
   done.

@@ -6,7 +6,7 @@ From discprob.rec Require Import rec_convert quicksort_rec.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq div choice fintype.
 From mathcomp Require Import tuple finfun bigop prime binomial finset.
 From mathcomp Require Import path.
-Require Import Reals Fourier Psatz Omega.
+Require Import Reals Fourier Psatz Lia.
 
 Definition h (l: seq nat) :=
   match l with
@@ -151,7 +151,7 @@ Proof.
     * rewrite //= in Hbs.
     * rewrite //=. eapply Ht; last apply IHHab; eauto.
       move /pathP in Hsorted => //=. apply Hsorted.
-      ** nify. rewrite //= in Hbs. omega.
+      ** nify. rewrite //= in Hbs. lia.
       ** rewrite //= in Hsorted. destruct s => //=.
          move /andP in Hsorted. destruct Hsorted as (?&?); eauto.
 Qed.
@@ -219,7 +219,7 @@ Lemma lower_split_size_sorted l1 l2 x:
 Proof.
   intros (lmid&Heq)%lower_split_sorted.
   rewrite -[a in (_ <= size a)%nat]Heq.
-  rewrite size_cat. rewrite -plusE. apply /leP. destruct size; omega.
+  rewrite size_cat. rewrite -plusE. apply /leP. destruct size; lia.
 Qed.
 
 
@@ -295,8 +295,8 @@ Proof.
     ** apply /andP; split; auto.
       *** rewrite -index_mem ?size_cat //= ?size_cat in Hin'.
           move: Hin'.
-          rewrite ?size_cat //= -?plusE. move /leP => Hle'. apply /leP. destruct (size l2); omega.
-      *** repeat (rewrite ?size_cat //=). rewrite -?plusE. apply /ltP => //=. omega.
+          rewrite ?size_cat //= -?plusE. move /leP => Hle'. apply /leP. destruct (size l2); lia.
+      *** repeat (rewrite ?size_cat //=). rewrite -?plusE. apply /ltP => //=. lia.
 Qed.
 
 Lemma upper_split_size_sorted l1 l2 x:
@@ -305,7 +305,7 @@ Lemma upper_split_size_sorted l1 l2 x:
 Proof.
   intros (lmid&Heq)%upper_split_sorted.
   rewrite -[a in (_ <= size a)%nat]Heq.
-  rewrite size_cat. rewrite -plusE. apply /leP. destruct size; omega.
+  rewrite size_cat. rewrite -plusE. apply /leP. destruct size; lia.
 Qed.
 
 Lemma upper_split_size_sorted_nth  l x a:
@@ -318,7 +318,7 @@ Proof.
   { rewrite -size_legacy. apply /ltP. auto. }
   rewrite {2}Heq.
   assert (Hlen': (length l2 <= length l - x - 1)%nat).
-  { rewrite Heq app_length //=. rewrite -?plusE -?minusE. apply /leP. rewrite -Hlen //=. omega. }
+  { rewrite Heq app_length //=. rewrite -?plusE -?minusE. apply /leP. rewrite -Hlen //=. lia. }
   eapply leq_trans; last apply Hlen'.
   apply upper_split_size_sorted. rewrite Heq in Hsort => //.
 Qed.
@@ -347,21 +347,21 @@ Proof.
   exists (λ x, nth O Is x).
   repeat split.
   - intros x Hlt.
-    rewrite Heq => //=. erewrite nth_map; auto; rewrite HsizeIs; nify; omega.
+    rewrite Heq => //=. erewrite nth_map; auto; rewrite HsizeIs; nify; lia.
   - intros x Hlt.
     assert (Hin: nth O Is x \in Is).
-    { apply nth_lt_size. nify. omega. }
+    { apply nth_lt_size. nify. lia. }
     apply perm_mem in Hperm. specialize (Hperm (nth O Is x)).
     rewrite Hperm mem_iota in Hin. move /andP in Hin. destruct Hin as (?&?).
-    nify. omega.
+    nify. lia.
   - intros x lt. exists (index x Is); split.
     * rewrite Hsize -(size_iota O (size l2)) -(perm_size Hperm) index_mem.
-      rewrite (perm_mem Hperm) mem_iota. apply /andP; split; nify; omega.
+      rewrite (perm_mem Hperm) mem_iota. apply /andP; split; nify; lia.
     * apply nth_index.
-      rewrite (perm_mem Hperm) mem_iota. apply /andP; split; nify; omega.
+      rewrite (perm_mem Hperm) mem_iota. apply /andP; split; nify; lia.
   - intros x x' Hlt Hlt'. move /eqP. rewrite nth_uniq; first by move /eqP.
-    * rewrite HsizeIs; nify; omega.
-    * rewrite HsizeIs; nify; omega.
+    * rewrite HsizeIs; nify; lia.
+    * rewrite HsizeIs; nify; lia.
     * rewrite (perm_uniq Hperm). apply iota_uniq.
 Qed.
 
@@ -388,8 +388,8 @@ Proof.
       rewrite Rmax_left //; last (fourier).
       replace (INR 0) with 0 by auto. ring_simplify.
       apply Rle_big0 => i _ //=.
-      destruct i as (i&Hlt) => //=. assert (i = O) as -> by (nify; omega).
-      replace (1 - 0 - 1)%nat with O by (nify; omega).
+      destruct i as (i&Hlt) => //=. assert (i = O) as -> by (nify; lia).
+      replace (1 - 0 - 1)%nat with O by (nify; lia).
       replace (INR 0) with 0 by auto. rewrite Rmax_left; last fourier.
       replace (INR 1) with 1 by auto. fourier.
     }
@@ -412,7 +412,7 @@ Proof.
                 (Ordinal (n:=(size l).+1) (m:=f x) (Hfsize x i)))).
     * intros (x, Hle) Hin.
       rewrite unif_pr. rewrite /Rdiv Rmult_1_l. apply Rmult_le_compat_l.
-      ** left. apply Rinv_0_lt_compat. apply lt_0_INR. rewrite //=. omega.
+      ** left. apply Rinv_0_lt_compat. apply lt_0_INR. rewrite //=. lia.
       ** rewrite -ldist_assoc. rewrite Ex_mbind_mret.
          apply Ex_bound.
          rewrite ldist_cost_bind_fold.
@@ -513,7 +513,7 @@ Qed.
 Lemma succ_product_even k:
   ~~ odd (S k * k).
 Proof.
-  rewrite odd_mul => //=. destruct (odd k) => //=.
+  rewrite oddM => //=. destruct (odd k) => //=.
 Qed.
 
 Lemma sum_le_m l:
@@ -532,7 +532,7 @@ Proof.
     {
       apply Rmult_le_compat_l.
       { left. apply Rinv_0_lt_compat. replace 0 with (INR 0) by auto.
-        apply (lt_INR 0 (S k)). omega. }
+        apply (lt_INR 0 (S k)). lia. }
       { right. eapply eq_bigr => i /=. rewrite Rmax_INR => //.  }
     }
     rewrite big_INR.
@@ -747,10 +747,10 @@ Proof.
          clear. rewrite /snd. destruct pv as (pv&?).  rewrite /sval.
          remember (a0 :: ls) as l. clear.
          induction l as [| a l] => //=.
-         destruct (ltngtP a pv) => //=; nify; rewrite /partition' /= in IHl; rewrite IHl; omega.
+         destruct (ltngtP a pv) => //=; nify; rewrite /partition' /= in IHl; rewrite IHl; lia.
         }
         intros (c, spl) ->.
-        apply cspec_mret => //=. nify. omega.
+        apply cspec_mret => //=. nify. lia.
     }
     (* TODO TODO: a good deal of this could be automated *)
     rewrite Heql0.
@@ -775,7 +775,7 @@ Proof.
     eapply ldist_bind_ext.
     intros (?&?).
     rewrite ?ldist_left_id ?ldist_right_id.
-    f_equal => //=. f_equal. nify. omega.
+    f_equal => //=. f_equal. nify. lia.
 Qed.
 
 Definition k := -/ ln(3/4).
@@ -826,7 +826,7 @@ Proof.
     rewrite Heq. clear Heq.
     assert (length (upper spl) = size (upper spl)) as Heq by auto.
     rewrite Heq. clear Heq.
-    clear -Hlt. rewrite //=. omega.
+    clear -Hlt. rewrite //=. lia.
   - rewrite /quicksort_rec.recurrence_work3.size //=.
     intros l ? Hgt. rewrite //=.
     cut (∀ n, INR (length (fst (snd (rvar_of_ldist (h l) n)))) +
@@ -869,7 +869,7 @@ Proof.
     specialize (pos_INR (size (upper (spl)))).
     rewrite //=. intros.
     assert (Hge1: 1 <= INR (size (middle spl))).
-    { replace 1 with (INR 1) by auto. apply le_INR. omega. }
+    { replace 1 with (INR 1) by auto. apply le_INR. lia. }
     rewrite //= in Hge1. nra.
   - rewrite /quicksort_rec.recurrence_work3.size/quicksort_rec.recurrence_work3.d //=.
     intros x n Hle.
@@ -881,7 +881,7 @@ Proof.
       apply cspec_mret => //=.
     * rewrite qs_unfold.
       apply cspec_mret => //=.
-    * rewrite //= in Hle. omega.
+    * rewrite //= in Hle. lia.
   - intros. eapply (rec_pr_rec_gt _ rsize _ _ _ _ T h' (λ x, true)); auto; intros; apply Trec.
   - intros x. rewrite /quicksort_rec.recurrence_work3.size/quicksort_rec.recurrence_work3.d //=.
     eapply Ex_max_partition.

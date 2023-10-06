@@ -8,7 +8,7 @@ From Coquelicot Require Import Derive.
 From Coquelicot Require AutoDerive.
 Require Import Reals Fourier FunctionalExtensionality.
 Require Import Psatz.
-Require Import Coq.omega.Omega.
+Require Import Lia.
 Require Import Ranalysis5.
 
 
